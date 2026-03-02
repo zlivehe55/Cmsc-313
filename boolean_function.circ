@@ -37,7 +37,6 @@
       <a name="label" val="F"/>
       <a name="type" val="output"/>
     </comp>
-    <comp lib="1" loc="(220,260)" name="Buffer"/>
     <comp lib="1" loc="(230,260)" name="NOT Gate"/>
     <comp lib="1" loc="(370,210)" name="AND Gate"/>
     <comp lib="1" loc="(370,310)" name="AND Gate"/>
