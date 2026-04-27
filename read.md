@@ -1,5 +1,5 @@
 
-## Project 2
+## Go to Project 2
 
 Reads a number from stdin, doubles it, prints The doubble is:  followed by a newline.
 
