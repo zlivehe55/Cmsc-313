@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1.1 — Systems of Linear Equations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Spline+Sans+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#161512;
+    --paper:#f4f0e6;
+    --paper-2:#ece6d6;
+    --accent:#b3431f;       /* terracotta */
+    --accent-2:#1f5e57;     /* deep teal */
+    --gold:#c8922a;
+    --line:#cdc4ad;
+    --shadow:rgba(40,30,15,.16);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Newsreader',Georgia,serif;
+    font-size:19px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(179,67,31,.05), transparent 45%),
+      radial-gradient(circle at 88% 8%, rgba(31,94,87,.06), transparent 40%);
+  }
+  /* grain overlay */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.4;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  }
+  .mono{font-family:'Spline Sans Mono',monospace}
+  .disp{font-family:'Fraunces',serif}
+
+  /* ---------- layout shell ---------- */
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+  .grid{display:grid;grid-template-columns:230px 1fr;gap:56px;align-items:start}
+  @media(max-width:880px){.grid{grid-template-columns:1fr;gap:0}}
+
+  /* ---------- hero ---------- */
+  header.hero{
+    position:relative;overflow:hidden;
+    border-bottom:2px solid var(--ink);
+    background:var(--ink);color:var(--paper);
+    padding:72px 0 64px;
+  }
+  header.hero::after{
+    content:"";position:absolute;inset:0;opacity:.14;pointer-events:none;
+    background:
+      repeating-linear-gradient(90deg,transparent 0 38px,rgba(244,240,230,.5) 38px 39px),
+      repeating-linear-gradient(0deg,transparent 0 38px,rgba(244,240,230,.5) 38px 39px);
+  }
+  .hero .wrap{position:relative;z-index:2}
+  .badge{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:26px;
+  }
+  .badge::before{content:"";width:34px;height:1px;background:var(--gold)}
+  h1.title{
+    font-family:'Fraunces',serif;font-weight:900;
+    font-size:clamp(2.7rem,7vw,5.4rem);line-height:.96;letter-spacing:-.02em;
+  }
+  h1.title em{font-style:italic;color:var(--accent)}
+  .sub{
+    margin-top:22px;max-width:620px;font-size:1.15rem;color:#d8d1bf;font-style:italic;
+  }
+  .chapnum{
+    position:absolute;top:-30px;right:-10px;font-family:'Fraunces',serif;font-weight:900;
+    font-size:clamp(8rem,26vw,20rem);line-height:1;color:rgba(200,146,42,.13);z-index:1;user-select:none;
+  }
+
+  /* ---------- sidebar nav ---------- */
+  nav.toc{
+    position:sticky;top:24px;padding-top:48px;
+  }
+  nav.toc .label{
+    font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--accent-2);margin-bottom:18px;
+  }
+  nav.toc a{
+    display:block;color:var(--ink);text-decoration:none;padding:7px 0 7px 16px;
+    border-left:2px solid var(--line);font-size:.96rem;transition:.18s;
+  }
+  nav.toc a:hover{border-left-color:var(--accent);color:var(--accent);padding-left:22px}
+  @media(max-width:880px){nav.toc{display:none}}
+
+  /* ---------- content ---------- */
+  main{padding:64px 0 120px}
+  section{margin-bottom:78px;scroll-margin-top:24px}
+  .kicker{
+    font-family:'Spline Sans Mono',monospace;font-size:.7rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:8px;
+  }
+  h2{
+    font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.7rem,3.5vw,2.6rem);
+    line-height:1.05;letter-spacing:-.01em;margin-bottom:22px;position:relative;
+  }
+  h2::before{
+    content:"";display:block;width:54px;height:4px;background:var(--accent);margin-bottom:16px;
+  }
+  h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.3rem;margin:26px 0 10px}
+  p{margin-bottom:16px}
+  p .term{color:var(--accent);font-weight:600;font-style:italic}
+
+  /* big lead intro paragraph */
+  .lead{font-size:1.35rem;line-height:1.55;border-left:3px solid var(--gold);padding-left:24px;color:#3a352b}
+
+  /* ---------- formula card ---------- */
+  .formula{
+    background:var(--ink);color:var(--paper);border-radius:4px;
+    padding:30px 34px;margin:24px 0;font-family:'Spline Sans Mono',monospace;
+    font-size:1.25rem;text-align:center;box-shadow:8px 8px 0 var(--accent);
+    overflow-x:auto;
+  }
+  .formula small{display:block;margin-top:14px;font-size:.7rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--gold);font-family:'Spline Sans Mono',monospace}
+
+  /* ---------- definition boxes ---------- */
+  .defs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:24px 0}
+  .def{
+    background:var(--paper-2);border:1px solid var(--line);border-radius:3px;padding:20px 22px;
+    position:relative;transition:.2s;
+  }
+  .def:hover{transform:translateY(-3px);box-shadow:0 10px 24px var(--shadow)}
+  .def .word{font-family:'Fraunces',serif;font-weight:600;font-size:1.18rem;color:var(--accent-2);margin-bottom:6px}
+  .def p{font-size:.96rem;margin:0;color:#4a4438}
+
+  /* ---------- rules list ---------- */
+  .rules{counter-reset:r;list-style:none;margin:20px 0}
+  .rules li{
+    position:relative;padding:16px 18px 16px 64px;border-bottom:1px dashed var(--line);
+  }
+  .rules li::before{
+    counter-increment:r;content:counter(r);position:absolute;left:14px;top:14px;
+    width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600;
+  }
+  .rules li strong{color:var(--accent-2)}
+
+  /* ---------- three outcomes ---------- */
+  .outcomes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0}
+  @media(max-width:680px){.outcomes{grid-template-columns:1fr}}
+  .oc{padding:22px 18px;border:2px solid var(--ink);border-radius:3px;text-align:center;background:var(--paper)}
+  .oc .big{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:900;line-height:1;color:var(--accent)}
+  .oc .nm{font-family:'Spline Sans Mono',monospace;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;margin-top:8px;color:var(--accent-2)}
+  .oc small{display:block;margin-top:8px;font-size:.85rem;color:#5a5446}
+
+  /* matrix display */
+  .matrix{display:inline-grid;gap:2px 22px;font-family:'Spline Sans Mono',monospace;
+    border-left:3px solid var(--ink);border-right:3px solid var(--ink);padding:8px 16px;font-size:1.1rem}
+  .matrix.c4{grid-template-columns:repeat(4,auto)}
+  .matrix.c3{grid-template-columns:repeat(3,auto)}
+  .matrix span{text-align:right;min-width:1.6em}
+  .mx-aug span:nth-child(4n){color:var(--accent);font-weight:600}
+
+  /* worked example steps */
+  .step{display:flex;gap:18px;margin:14px 0;align-items:flex-start}
+  .step .num{flex:0 0 auto;width:30px;height:30px;border:2px solid var(--accent-2);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-family:'Spline Sans Mono',monospace;
+    font-size:.85rem;color:var(--accent-2);font-weight:600;margin-top:2px}
+  .step .body{flex:1}
+  .step code{font-family:'Spline Sans Mono',monospace;background:var(--paper-2);padding:1px 7px;border-radius:3px;font-size:.95rem}
+
+  /* callout */
+  .callout{
+    background:linear-gradient(180deg,var(--paper-2),var(--paper));
+    border:1px solid var(--line);border-left:5px solid var(--gold);
+    padding:22px 26px;border-radius:0 4px 4px 0;margin:24px 0;
+  }
+  .callout .h{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+
+  /* purpose / what it teaches */
+  .teach{background:var(--accent-2);color:var(--paper);border-radius:4px;padding:38px 40px;margin:24px 0;
+    box-shadow:8px 8px 0 var(--ink)}
+  .teach h3{color:var(--gold);margin-top:0}
+  .teach p{color:#e4ded0}
+  .teach p:last-child{margin-bottom:0}
+
+  footer{border-top:2px solid var(--ink);padding:34px 0;font-family:'Spline Sans Mono',monospace;
+    font-size:.78rem;color:#6b6453;letter-spacing:.04em}
+
+  .pill{display:inline-block;font-family:'Spline Sans Mono',monospace;font-size:.72rem;
+    padding:3px 10px;border-radius:20px;border:1px solid var(--accent-2);color:var(--accent-2);margin:0 4px 6px 0}
+
+  /* ---------- AI: floating explain button ---------- */
+  #ai-explain-btn{
+    position:absolute;z-index:10000;display:none;
+    font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.08em;
+    background:var(--ink);color:var(--paper);border:none;border-radius:30px;
+    padding:9px 16px;cursor:pointer;box-shadow:0 6px 18px var(--shadow);
+    transform:translate(-50%,-100%);white-space:nowrap;animation:pop .14s ease-out;
+  }
+  #ai-explain-btn:hover{background:var(--accent)}
+  #ai-explain-btn::before{content:"✦ ";color:var(--gold)}
+  @keyframes pop{from{opacity:0;transform:translate(-50%,-90%)}to{opacity:1;transform:translate(-50%,-100%)}}
+
+  /* ---------- AI: open tab ---------- */
+  #ai-tab{
+    position:fixed;right:0;top:46%;z-index:9000;
+    background:var(--accent-2);color:var(--paper);border:none;cursor:pointer;
+    writing-mode:vertical-rl;text-orientation:mixed;
+    font-family:'Spline Sans Mono',monospace;font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;
+    padding:18px 10px;border-radius:8px 0 0 8px;box-shadow:-4px 4px 14px var(--shadow);transition:.2s;
+  }
+  #ai-tab:hover{background:var(--accent);padding-right:16px}
+
+  /* ---------- AI: sidebar panel ---------- */
+  #ai-panel{
+    position:fixed;top:0;right:0;height:100%;width:min(420px,92vw);z-index:9500;
+    background:var(--paper);border-left:2px solid var(--ink);
+    box-shadow:-18px 0 50px rgba(40,30,15,.22);
+    transform:translateX(100%);transition:transform .32s cubic-bezier(.6,.05,.2,1);
+    display:flex;flex-direction:column;
+  }
+  #ai-panel.open{transform:translateX(0)}
+  .ai-head{
+    background:var(--ink);color:var(--paper);padding:20px 22px;display:flex;
+    align-items:center;justify-content:space-between;flex:0 0 auto;
+  }
+  .ai-head .t{font-family:'Fraunces',serif;font-weight:600;font-size:1.25rem}
+  .ai-head .t span{color:var(--gold)}
+  .ai-head .sub2{font-family:'Spline Sans Mono',monospace;font-size:.62rem;letter-spacing:.2em;
+    text-transform:uppercase;color:#bdb6a4;margin-top:3px}
+  .ai-close{background:none;border:1px solid #4a463c;color:var(--paper);width:34px;height:34px;
+    border-radius:50%;cursor:pointer;font-size:1.1rem;line-height:1;transition:.18s}
+  .ai-close:hover{background:var(--accent);border-color:var(--accent)}
+
+  .ai-body{flex:1 1 auto;overflow-y:auto;padding:20px 22px}
+  .ai-empty{color:#6b6453;font-style:italic;font-size:.98rem;line-height:1.6}
+  .ai-empty b{color:var(--accent-2);font-style:normal}
+
+  .ai-msg{margin-bottom:20px;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .ai-msg .who{font-family:'Spline Sans Mono',monospace;font-size:.62rem;letter-spacing:.18em;
+    text-transform:uppercase;margin-bottom:6px}
+  .ai-msg.user .who{color:var(--accent)}
+  .ai-msg.bot .who{color:var(--accent-2)}
+  .ai-msg .quote{border-left:3px solid var(--gold);padding:6px 12px;margin-bottom:8px;
+    background:var(--paper-2);font-size:.9rem;color:#4a4438;border-radius:0 3px 3px 0}
+  .ai-msg .txt{font-size:1rem;line-height:1.6}
+  .ai-msg .txt code{font-family:'Spline Sans Mono',monospace;background:var(--paper-2);
+    padding:1px 6px;border-radius:3px;font-size:.9rem}
+  .ai-msg .txt strong{color:var(--accent-2)}
+  .dots span{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent-2);
+    margin-right:5px;animation:bounce 1s infinite}
+  .dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+  @keyframes bounce{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-5px)}}
+
+  .ai-foot{flex:0 0 auto;border-top:1px solid var(--line);padding:14px 16px;background:var(--paper-2)}
+  .ai-foot form{display:flex;gap:8px;align-items:flex-end}
+  #ai-input{flex:1;resize:none;border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+    font-family:'Newsreader',serif;font-size:.98rem;background:var(--paper);color:var(--ink);min-height:44px;max-height:120px}
+  #ai-input:focus{outline:none;border-color:var(--accent-2)}
+  #ai-send{background:var(--ink);color:var(--paper);border:none;border-radius:8px;padding:0 16px;height:44px;
+    cursor:pointer;font-family:'Spline Sans Mono',monospace;font-size:.8rem;transition:.18s}
+  #ai-send:hover{background:var(--accent)}
+  #ai-send:disabled{opacity:.4;cursor:not-allowed}
+  .ai-hint{font-family:'Spline Sans Mono',monospace;font-size:.58rem;letter-spacing:.1em;
+    text-transform:uppercase;color:#8a836f;margin-top:8px;text-align:center}
+  #ai-scrim{position:fixed;inset:0;background:rgba(22,21,18,.35);z-index:9400;opacity:0;
+    pointer-events:none;transition:opacity .3s}
+  #ai-scrim.show{opacity:1;pointer-events:auto}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="chapnum">1</span>
+    <div class="badge">Linear Algebra · Chapter 1 · Section 1.1</div>
+    <h1 class="title">Systems of<br><em>Linear Equations</em></h1>
+    <p class="sub">The starting point of the whole subject: what a linear equation is, how to record a system as a matrix, and how to grind it down with row operations until the answer falls out.</p>
+  </div>
+</header>
+
+<div class="wrap grid">
+
+  <nav class="toc">
+    <div class="label">On this page</div>
+    <a href="#intro">What this section teaches</a>
+    <a href="#define">Core definitions</a>
+    <a href="#formula">The key formula</a>
+    <a href="#outcomes">Three possible outcomes</a>
+    <a href="#matrix">Matrix notation</a>
+    <a href="#rowops">Elementary row operations</a>
+    <a href="#example">Worked example</a>
+    <a href="#inconsistent">Spotting "no solution"</a>
+    <a href="#remember">Rules to remember</a>
+  </nav>
+
+  <main>
+
+    <section id="intro">
+      <div class="kicker">The big idea</div>
+      <h2>What is Section 1.1 trying to teach?</h2>
+      <p class="lead">Linear algebra begins with one practical question: given several linear equations sharing the same unknowns, what values of those unknowns make <em>every</em> equation true at once?</p>
+      <p>Section 1.1 hands you three things. First, the <span class="term">vocabulary</span> — linear equation, system, solution, solution set, consistent vs. inconsistent. Second, a compact way to <span class="term">record</span> a messy system as a grid of numbers (a matrix), so you stop rewriting variables over and over. Third, a reliable, mechanical <span class="term">procedure</span> — elementary row operations — that simplifies any system into one you can read the answer off directly.</p>
+      <p>The real lesson underneath it all: <strong>solving doesn't require cleverness, it requires a systematic process.</strong> You repeatedly swap a system for an <em>equivalent</em> one (same solutions, simpler form) until the answer is obvious. Everything later in the course — matrices, vectors, transformations — is built on this one move.</p>
+    </section>
+
+    <section id="define">
+      <div class="kicker">Vocabulary</div>
+      <h2>Core definitions</h2>
+      <div class="defs">
+        <div class="def"><div class="word">Linear equation</div><p>An equation where each variable appears only to the first power, with no products of variables — written a₁x₁ + a₂x₂ + … + aₙxₙ = b.</p></div>
+        <div class="def"><div class="word">System / linear system</div><p>A collection of one or more linear equations that all involve the same variables x₁,…,xₙ.</p></div>
+        <div class="def"><div class="word">Solution</div><p>A list (s₁, s₂,…, sₙ) that makes every equation true when substituted in for the variables.</p></div>
+        <div class="def"><div class="word">Solution set</div><p>The set of <em>all</em> solutions to the system.</p></div>
+        <div class="def"><div class="word">Equivalent systems</div><p>Two systems are equivalent if they have exactly the same solution set.</p></div>
+        <div class="def"><div class="word">Consistent / Inconsistent</div><p><strong>Consistent</strong> = has at least one solution. <strong>Inconsistent</strong> = has no solution.</p></div>
+      </div>
+    </section>
+
+    <section id="formula">
+      <div class="kicker">The shape of everything</div>
+      <h2>The key formula</h2>
+      <p>Every single equation you meet in this section fits one template. If you can write it this way, it's linear:</p>
+      <div class="formula">
+        a₁x₁ + a₂x₂ + ⋯ + aₙxₙ = b
+        <small>the a's are coefficients · b is the constant · the x's are unknowns</small>
+      </div>
+      <div class="callout">
+        <div class="h">Quick linearity check</div>
+        <p style="margin:0">Linear: <span class="mono">4x₁ − 5x₂ = 2</span> &nbsp;and&nbsp; <span class="mono">x₃ = 2(√6 − x₁) + x₂</span> (rearranges fine).<br>
+        <strong>Not</strong> linear: anything with <span class="mono">x₁x₂</span>, <span class="mono">x²</span>, or <span class="mono">√x₁</span> — variables can't multiply each other or carry powers/roots.</p>
+      </div>
+    </section>
+
+    <section id="outcomes">
+      <div class="kicker">The only three endings</div>
+      <h2>A system has exactly one of three outcomes</h2>
+      <p>No matter how complicated, every linear system lands in one of these buckets — there is no fourth possibility.</p>
+      <div class="outcomes">
+        <div class="oc"><div class="big">0</div><div class="nm">No solution</div><small>Inconsistent. The equations contradict each other.</small></div>
+        <div class="oc"><div class="big">1</div><div class="nm">Exactly one</div><small>Consistent &amp; unique. Lines/planes meet at a single point.</small></div>
+        <div class="oc"><div class="big">∞</div><div class="nm">Infinitely many</div><small>Consistent. The equations overlap; a free variable remains.</small></div>
+      </div>
+      <p>So the two fundamental questions about any system are: <strong>(1) Does a solution exist?</strong> (consistency) and <strong>(2) If so, is it the only one?</strong> (uniqueness).</p>
+    </section>
+
+    <section id="matrix">
+      <div class="kicker">Recording the system</div>
+      <h2>Matrix notation</h2>
+      <p>Writing variables repeatedly is wasteful. A <span class="term">matrix</span> is just a rectangular grid that stores the numbers. Take this system:</p>
+      <div class="formula" style="font-size:1.1rem">
+        x₁ − 2x₂ + x₃ = 0<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2x₂ − 8x₃ = 8<br>
+        −4x₁ + 5x₂ + 9x₃ = −9
+      </div>
+      <div class="defs" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+        <div class="def">
+          <div class="word">Coefficient matrix</div>
+          <p style="margin-bottom:14px">Just the coefficients of the variables.</p>
+          <div class="matrix c3">
+            <span>1</span><span>−2</span><span>1</span>
+            <span>0</span><span>2</span><span>−8</span>
+            <span>−4</span><span>5</span><span>9</span>
+          </div>
+        </div>
+        <div class="def">
+          <div class="word">Augmented matrix</div>
+          <p style="margin-bottom:14px">Coefficients <em>plus</em> a final column for the constants (shown in colour).</p>
+          <div class="matrix c4 mx-aug">
+            <span>1</span><span>−2</span><span>1</span><span>0</span>
+            <span>0</span><span>2</span><span>−8</span><span>8</span>
+            <span>−4</span><span>5</span><span>9</span><span>−9</span>
+          </div>
+        </div>
+      </div>
+      <div class="callout">
+        <div class="h">Matrix size</div>
+        <p style="margin:0">An <strong>m × n</strong> matrix has <strong>m rows and n columns</strong> — rows always come first. The augmented matrix above is 3 × 4.</p>
+      </div>
+    </section>
+
+    <section id="rowops">
+      <div class="kicker">The engine</div>
+      <h2>Elementary row operations</h2>
+      <p>These are the <em>only</em> three moves you're allowed. Each one turns a matrix into a <strong>row-equivalent</strong> one — different numbers, identical solution set. They are also fully <em>reversible</em>.</p>
+      <ol class="rules">
+        <li><strong>Replacement.</strong> Replace a row by the sum of itself and a multiple of another row. <em>(This is how you eliminate variables.)</em></li>
+        <li><strong>Interchange.</strong> Swap two rows. <em>(Used to get a useful number into the pivot position.)</em></li>
+        <li><strong>Scaling.</strong> Multiply every entry in a row by a nonzero constant. <em>(Used to turn a leading coefficient into 1.)</em></li>
+      </ol>
+      <div class="callout">
+        <div class="h">Why this matters</div>
+        <p style="margin:0">If the augmented matrices of two systems are row-equivalent, the systems have the <strong>same solution set</strong>. That's the licence to keep simplifying without changing the answer.</p>
+      </div>
+    </section>
+
+    <section id="example">
+      <div class="kicker">Putting it together</div>
+      <h2>Worked example — solving a system</h2>
+      <p>Solve the system from above. The strategy: eliminate downward to reach a triangular form, then back-substitute upward.</p>
+      <div class="step"><div class="num">1</div><div class="body"><strong>Eliminate x₁ from row 3.</strong> Add 4× row 1 to row 3 → the x₁ term cancels, leaving <code>−3x₂ + 13x₃ = −9</code>.</div></div>
+      <div class="step"><div class="num">2</div><div class="body"><strong>Scale row 2.</strong> Multiply by ½ so x₂ has coefficient 1: <code>x₂ − 4x₃ = 4</code>.</div></div>
+      <div class="step"><div class="num">3</div><div class="body"><strong>Eliminate x₂ from row 3.</strong> Add 3× row 2 to row 3 → <code>x₃ = 3</code>. The system is now triangular.</div></div>
+      <div class="step"><div class="num">4</div><div class="body"><strong>Back-substitute.</strong> Use x₃ = 3 to clear x₃ from the rows above, then use x₂ = 16 to clear x₂ from row 1.</div></div>
+      <div class="formula c4" style="font-size:1.05rem">
+        <div class="matrix c4 mx-aug" style="border:none;color:inherit;justify-content:center">
+          <span>1</span><span>0</span><span>0</span><span style="color:var(--gold)">29</span>
+          <span>0</span><span>1</span><span>0</span><span style="color:var(--gold)">16</span>
+          <span>0</span><span>0</span><span>1</span><span style="color:var(--gold)">3</span>
+        </div>
+        <small>reduced form → read the answer directly</small>
+      </div>
+      <p style="text-align:center;font-size:1.25rem" class="disp">Solution: <strong>(x₁, x₂, x₃) = (29, 16, 3)</strong></p>
+      <div class="callout">
+        <div class="h">Always verify</div>
+        <p style="margin:0">Plug (29, 16, 3) back into the <em>original</em> equations. If all three come out true, your answer is "reasonable" and confirmed.</p>
+      </div>
+    </section>
+
+    <section id="inconsistent">
+      <div class="kicker">Watch for this</div>
+      <h2>How to spot "no solution"</h2>
+      <p>While reducing, if you ever produce a row that says <strong>0 = (a nonzero number)</strong> — for example <code style="font-family:'Spline Sans Mono',monospace">0 = 5/2</code> — stop. That equation can never be true, so the whole system is <span class="term">inconsistent</span>: it has no solution.</p>
+      <div class="formula">
+        [ 0 &nbsp; 0 &nbsp; 0 &nbsp;|&nbsp; <span style="color:var(--accent)">5/2</span> ] &nbsp; ⟶ &nbsp; 0 = 5/2 &nbsp; ✗
+        <small>a contradiction row = inconsistent system</small>
+      </div>
+    </section>
+
+    <section id="remember">
+      <div class="kicker">Cheat sheet</div>
+      <h2>Rules &amp; facts to remember</h2>
+      <ol class="rules">
+        <li>An equation is <strong>linear</strong> only if variables appear to the first power with no products, powers, or roots of variables.</li>
+        <li>A system has <strong>0, 1, or ∞</strong> solutions — never any other count.</li>
+        <li><strong>Consistent</strong> = ≥1 solution. <strong>Inconsistent</strong> = 0 solutions.</li>
+        <li>Matrix size is <strong>rows × columns</strong>, in that order.</li>
+        <li>The <strong>augmented matrix</strong> = coefficient matrix + a constants column.</li>
+        <li>Only three legal moves: <strong>replace, interchange, scale</strong> (scale by a <em>nonzero</em> constant).</li>
+        <li>Row operations are <strong>reversible</strong> and preserve the solution set.</li>
+        <li>Row-equivalent augmented matrices ⇒ <strong>same solution set</strong>.</li>
+        <li>A row reading <strong>0 = nonzero</strong> means the system is <strong>inconsistent</strong>.</li>
+        <li>Strategy: reduce to <strong>triangular form</strong>, then <strong>back-substitute</strong>, then <strong>verify</strong>.</li>
+      </ol>
+      <div style="margin-top:14px">
+        <span class="pill">linear equation</span><span class="pill">system</span><span class="pill">solution set</span>
+        <span class="pill">consistent</span><span class="pill">inconsistent</span><span class="pill">augmented matrix</span>
+        <span class="pill">row operations</span><span class="pill">row equivalent</span><span class="pill">triangular form</span>
+      </div>
+    </section>
+
+    <section id="purpose">
+      <div class="teach">
+        <h3>In one breath</h3>
+        <p>Section 1.1 teaches you to take a tangle of linear equations, write it compactly as an augmented matrix, and apply three reversible row operations to simplify it into a form where the solution is obvious — while always knowing whether a solution exists and whether it's unique.</p>
+        <p>It's not about a single trick; it's about installing a <strong>repeatable algorithm</strong>. Master this, and the rest of linear algebra has a foundation to stand on.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">LINEAR ALGEBRA &nbsp;·&nbsp; §1.1 SYSTEMS OF LINEAR EQUATIONS &nbsp;·&nbsp; STUDY REFERENCE &nbsp;·&nbsp; built from your slides</div>
+</footer>
+<!-- ===================== AI TUTOR ===================== -->
+<button id="ai-explain-btn">Explain with AI</button>
+<button id="ai-tab">✦ Ask AI</button>
+<div id="ai-scrim"></div>
+
+<aside id="ai-panel" aria-label="AI tutor">
+  <div class="ai-head">
+    <div>
+      <div class="t">AI <span>Tutor</span></div>
+      <div class="sub2">§1.1 · Linear Algebra</div>
+    </div>
+    <button class="ai-close" id="ai-close" title="Close">×</button>
+  </div>
+  <div class="ai-body" id="ai-body">
+    <p class="ai-empty">
+      <b>Two ways to use me:</b><br><br>
+      1. <b>Highlight any text</b> on the page — a little <em>“Explain with AI”</em> button pops up. Click it and I'll explain that exact phrase in the context of this section.<br><br>
+      2. <b>Type a question</b> below — e.g. <em>“why can't variables multiply?”</em> or <em>“what does triangular form mean?”</em>
+    </p>
+  </div>
+  <div class="ai-foot">
+    <form id="ai-form">
+      <textarea id="ai-input" placeholder="Ask anything about Section 1.1…" rows="1"></textarea>
+      <button id="ai-send" type="submit">Send</button>
+    </form>
+    <div class="ai-hint">Powered by DeepSeek · press Enter to send</div>
+  </div>
+</aside>
+
+<script>
+/* ============================================================
+   AI TUTOR — DeepSeek integration
+   ------------------------------------------------------------
+   PASTE YOUR REAL KEY BELOW (replace the placeholder).
+   ⚠ NOTE: a key here is visible to anyone who opens the page.
+   Fine for personal/local use; for a public site put it behind
+   a small backend proxy instead.
+   ============================================================ */
+const DEEPSEEK_API_KEY = "sk-3342872f6d7e45f297924e908d646eb0";   // <-- put your key here
+const DEEPSEEK_URL = "https://api.deepseek.com/chat/completions";
+const DEEPSEEK_MODEL = "deepseek-chat";
+
+const SYSTEM_PROMPT =
+  "You are a friendly, concise linear-algebra tutor embedded in a study website for " +
+  "Section 1.1: Systems of Linear Equations (Lay, Linear Algebra and Its Applications). " +
+  "Topics in scope: linear equations, systems, solutions and solution sets, consistent vs " +
+  "inconsistent systems, the three solution outcomes (0/1/infinite), coefficient and augmented " +
+  "matrices, matrix size (m x n), elementary row operations (replacement, interchange, scaling), " +
+  "row equivalence, triangular form, and back-substitution. " +
+  "Explain clearly for a student seeing this for the first time. Keep answers short (2-5 sentences " +
+  "unless asked for more). Use plain text; wrap inline math/notation in backticks. Use **bold** for key terms.";
+
+const panel  = document.getElementById('ai-panel');
+const scrim  = document.getElementById('ai-scrim');
+const tab    = document.getElementById('ai-tab');
+const closeB = document.getElementById('ai-close');
+const body   = document.getElementById('ai-body');
+const form   = document.getElementById('ai-form');
+const input  = document.getElementById('ai-input');
+const sendB  = document.getElementById('ai-send');
+const hlBtn  = document.getElementById('ai-explain-btn');
+
+let history = [];          // running conversation for context
+let busy = false;
+
+/* ---- open / close ---- */
+function openPanel(){ panel.classList.add('open'); scrim.classList.add('show'); }
+function closePanel(){ panel.classList.remove('open'); scrim.classList.remove('show'); }
+tab.addEventListener('click', openPanel);
+closeB.addEventListener('click', closePanel);
+scrim.addEventListener('click', closePanel);
+
+/* ---- highlight-to-explain ---- */
+document.addEventListener('mouseup', (e) => {
+  if (panel.contains(e.target) || e.target === hlBtn) return;
+  const sel = window.getSelection();
+  const text = sel.toString().trim();
+  if (text.length > 1) {
+    const rect = sel.getRangeAt(0).getBoundingClientRect();
+    hlBtn.style.left = (rect.left + rect.width/2 + window.scrollX) + 'px';
+    hlBtn.style.top  = (rect.top + window.scrollY - 8) + 'px';
+    hlBtn.style.display = 'block';
+    hlBtn.dataset.text = text;
+  } else {
+    hlBtn.style.display = 'none';
+  }
+});
+document.addEventListener('mousedown', (e) => {
+  if (e.target !== hlBtn) hlBtn.style.display = 'none';
+});
+hlBtn.addEventListener('click', () => {
+  const t = hlBtn.dataset.text;
+  hlBtn.style.display = 'none';
+  openPanel();
+  ask('Explain this phrase from the section: "' + t + '"', t);
+});
+
+/* ---- textarea: grow + Enter to send ---- */
+input.addEventListener('input', () => {
+  input.style.height = 'auto';
+  input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+});
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); form.requestSubmit(); }
+});
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = ''; input.style.height = 'auto';
+  ask(q, null);
+});
+
+/* ---- render helpers ---- */
+function clearEmpty(){ const e = body.querySelector('.ai-empty'); if (e) e.remove(); }
+function fmt(s){
+  return s
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\n/g,'<br>');
+}
+function addUser(q, quote){
+  clearEmpty();
+  const d = document.createElement('div'); d.className='ai-msg user';
+  d.innerHTML = '<div class="who">You</div>' +
+    (quote ? '<div class="quote">“'+fmt(quote)+'”</div>' : '') +
+    '<div class="txt">'+fmt(quote ? 'Explain this' : q)+'</div>';
+  body.appendChild(d); body.scrollTop = body.scrollHeight;
+}
+function addBot(){
+  const d = document.createElement('div'); d.className='ai-msg bot';
+  d.innerHTML = '<div class="who">AI Tutor</div><div class="txt"><span class="dots"><span></span><span></span><span></span></span></div>';
+  body.appendChild(d); body.scrollTop = body.scrollHeight;
+  return d.querySelector('.txt');
+}
+
+/* ---- the call ---- */
+async function ask(prompt, quote){
+  if (busy) return;
+  busy = true; sendB.disabled = true;
+  addUser(prompt, quote);
+  const target = addBot();
+
+  history.push({ role:'user', content: prompt });
+  const messages = [{ role:'system', content: SYSTEM_PROMPT }, ...history];
+
+  if (!DEEPSEEK_API_KEY || DEEPSEEK_API_KEY.includes('REPLACE')){
+    target.innerHTML = '<em style="color:var(--accent)">No API key set.</em> Open this file and paste your DeepSeek key into the <code>DEEPSEEK_API_KEY</code> line near the bottom of the source.';
+    busy = false; sendB.disabled = false; return;
+  }
+
+  try{
+    const res = await fetch(DEEPSEEK_URL, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+DEEPSEEK_API_KEY },
+      body: JSON.stringify({ model: DEEPSEEK_MODEL, messages, temperature: 0.4, max_tokens: 600 })
+    });
+    if (!res.ok){
+      const err = await res.text();
+      target.innerHTML = '<em style="color:var(--accent)">Request failed ('+res.status+').</em> Check your key/credits.<br><small>'+fmt(err.slice(0,200))+'</small>';
+      busy = false; sendB.disabled = false; return;
+    }
+    const data = await res.json();
+    const answer = data.choices?.[0]?.message?.content || 'No response.';
+    history.push({ role:'assistant', content: answer });
+    target.innerHTML = fmt(answer);
+  }catch(err){
+    target.innerHTML = '<em style="color:var(--accent)">Network error.</em> '+fmt(String(err));
+  }
+  body.scrollTop = body.scrollHeight;
+  busy = false; sendB.disabled = false;
+}
+</script>
+
+</body>
+</html>

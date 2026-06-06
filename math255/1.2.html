@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1.2 — Row Reduction and Echelon Forms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Spline+Sans+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#161512;
+    --paper:#f4f0e6;
+    --paper-2:#ece6d6;
+    --accent:#b3431f;
+    --accent-2:#1f5e57;
+    --gold:#c8922a;
+    --line:#cdc4ad;
+    --shadow:rgba(40,30,15,.16);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:'Newsreader',Georgia,serif;font-size:19px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(179,67,31,.05), transparent 45%),
+      radial-gradient(circle at 88% 8%, rgba(31,94,87,.06), transparent 40%);
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.4;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  }
+  .mono{font-family:'Spline Sans Mono',monospace}
+  .disp{font-family:'Fraunces',serif}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+  .grid{display:grid;grid-template-columns:230px 1fr;gap:56px;align-items:start}
+  @media(max-width:880px){.grid{grid-template-columns:1fr;gap:0}}
+
+  header.hero{position:relative;overflow:hidden;border-bottom:2px solid var(--ink);
+    background:var(--ink);color:var(--paper);padding:72px 0 64px}
+  header.hero::after{content:"";position:absolute;inset:0;opacity:.14;pointer-events:none;
+    background:
+      repeating-linear-gradient(90deg,transparent 0 38px,rgba(244,240,230,.5) 38px 39px),
+      repeating-linear-gradient(0deg,transparent 0 38px,rgba(244,240,230,.5) 38px 39px)}
+  .hero .wrap{position:relative;z-index:2}
+  .badge{display:inline-flex;align-items:center;gap:10px;
+    font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:26px}
+  .badge::before{content:"";width:34px;height:1px;background:var(--gold)}
+  h1.title{font-family:'Fraunces',serif;font-weight:900;
+    font-size:clamp(2.5rem,6.4vw,5rem);line-height:.96;letter-spacing:-.02em}
+  h1.title em{font-style:italic;color:var(--accent)}
+  .sub{margin-top:22px;max-width:640px;font-size:1.15rem;color:#d8d1bf;font-style:italic}
+  .chapnum{position:absolute;top:-30px;right:-10px;font-family:'Fraunces',serif;font-weight:900;
+    font-size:clamp(8rem,26vw,20rem);line-height:1;color:rgba(200,146,42,.13);z-index:1;user-select:none}
+
+  nav.toc{position:sticky;top:24px;padding-top:48px}
+  nav.toc .label{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--accent-2);margin-bottom:18px}
+  nav.toc a{display:block;color:var(--ink);text-decoration:none;padding:7px 0 7px 16px;
+    border-left:2px solid var(--line);font-size:.96rem;transition:.18s}
+  nav.toc a:hover{border-left-color:var(--accent);color:var(--accent);padding-left:22px}
+  @media(max-width:880px){nav.toc{display:none}}
+
+  main{padding:64px 0 120px}
+  section{margin-bottom:78px;scroll-margin-top:24px}
+  .kicker{font-family:'Spline Sans Mono',monospace;font-size:.7rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+  h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.7rem,3.5vw,2.6rem);
+    line-height:1.05;letter-spacing:-.01em;margin-bottom:22px;position:relative}
+  h2::before{content:"";display:block;width:54px;height:4px;background:var(--accent);margin-bottom:16px}
+  h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.3rem;margin:26px 0 10px}
+  p{margin-bottom:16px}
+  p .term{color:var(--accent);font-weight:600;font-style:italic}
+  .lead{font-size:1.35rem;line-height:1.55;border-left:3px solid var(--gold);padding-left:24px;color:#3a352b}
+
+  .formula{background:var(--ink);color:var(--paper);border-radius:4px;padding:30px 34px;margin:24px 0;
+    font-family:'Spline Sans Mono',monospace;font-size:1.2rem;text-align:center;
+    box-shadow:8px 8px 0 var(--accent);overflow-x:auto}
+  .formula small{display:block;margin-top:14px;font-size:.7rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--gold);font-family:'Spline Sans Mono',monospace}
+
+  .defs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:24px 0}
+  .def{background:var(--paper-2);border:1px solid var(--line);border-radius:3px;padding:20px 22px;
+    position:relative;transition:.2s}
+  .def:hover{transform:translateY(-3px);box-shadow:0 10px 24px var(--shadow)}
+  .def .word{font-family:'Fraunces',serif;font-weight:600;font-size:1.18rem;color:var(--accent-2);margin-bottom:6px}
+  .def p{font-size:.96rem;margin:0;color:#4a4438}
+
+  .rules{counter-reset:r;list-style:none;margin:20px 0}
+  .rules li{position:relative;padding:16px 18px 16px 64px;border-bottom:1px dashed var(--line)}
+  .rules li::before{counter-increment:r;content:counter(r);position:absolute;left:14px;top:14px;
+    width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600}
+  .rules li strong{color:var(--accent-2)}
+
+  .matrix{display:inline-grid;gap:2px 18px;font-family:'Spline Sans Mono',monospace;
+    border-left:3px solid var(--ink);border-right:3px solid var(--ink);padding:8px 16px;font-size:1.05rem}
+  .matrix span{text-align:right;min-width:1.6em}
+  .matrix.c6{grid-template-columns:repeat(6,auto)}
+  .matrix.c4{grid-template-columns:repeat(4,auto)}
+  .pivot{color:var(--accent);font-weight:600;position:relative}
+
+  .step{display:flex;gap:18px;margin:14px 0;align-items:flex-start}
+  .step .num{flex:0 0 auto;width:30px;height:30px;border:2px solid var(--accent-2);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-family:'Spline Sans Mono',monospace;
+    font-size:.85rem;color:var(--accent-2);font-weight:600;margin-top:2px}
+  .step .body{flex:1}
+  .step code{font-family:'Spline Sans Mono',monospace;background:var(--paper-2);padding:1px 7px;border-radius:3px;font-size:.95rem}
+
+  .callout{background:linear-gradient(180deg,var(--paper-2),var(--paper));
+    border:1px solid var(--line);border-left:5px solid var(--gold);
+    padding:22px 26px;border-radius:0 4px 4px 0;margin:24px 0}
+  .callout .h{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:22px 0}
+  @media(max-width:680px){.twocol{grid-template-columns:1fr}}
+  .card{border:2px solid var(--ink);border-radius:3px;padding:22px;background:var(--paper)}
+  .card .t{font-family:'Fraunces',serif;font-weight:600;font-size:1.2rem;color:var(--accent);margin-bottom:10px}
+
+  .theorem{background:var(--accent-2);color:var(--paper);border-radius:4px;padding:30px 34px;margin:24px 0;
+    box-shadow:8px 8px 0 var(--ink)}
+  .theorem .lbl{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+  .theorem p{color:#e6e0d2}.theorem p:last-child{margin:0}
+
+  .teach{background:var(--accent-2);color:var(--paper);border-radius:4px;padding:38px 40px;margin:24px 0;
+    box-shadow:8px 8px 0 var(--ink)}
+  .teach h3{color:var(--gold);margin-top:0}
+  .teach p{color:#e4ded0}.teach p:last-child{margin-bottom:0}
+
+  footer{border-top:2px solid var(--ink);padding:34px 0;font-family:'Spline Sans Mono',monospace;
+    font-size:.78rem;color:#6b6453;letter-spacing:.04em}
+  .pill{display:inline-block;font-family:'Spline Sans Mono',monospace;font-size:.72rem;
+    padding:3px 10px;border-radius:20px;border:1px solid var(--accent-2);color:var(--accent-2);margin:0 4px 6px 0}
+
+  /* ---- AI tutor ---- */
+  #ai-explain-btn{position:absolute;z-index:10000;display:none;
+    font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.08em;
+    background:var(--ink);color:var(--paper);border:none;border-radius:30px;padding:9px 16px;cursor:pointer;
+    box-shadow:0 6px 18px var(--shadow);transform:translate(-50%,-100%);white-space:nowrap;animation:pop .14s ease-out}
+  #ai-explain-btn:hover{background:var(--accent)}
+  #ai-explain-btn::before{content:"✦ ";color:var(--gold)}
+  @keyframes pop{from{opacity:0;transform:translate(-50%,-90%)}to{opacity:1;transform:translate(-50%,-100%)}}
+  #ai-tab{position:fixed;right:0;top:46%;z-index:9000;background:var(--accent-2);color:var(--paper);
+    border:none;cursor:pointer;writing-mode:vertical-rl;text-orientation:mixed;
+    font-family:'Spline Sans Mono',monospace;font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;
+    padding:18px 10px;border-radius:8px 0 0 8px;box-shadow:-4px 4px 14px var(--shadow);transition:.2s}
+  #ai-tab:hover{background:var(--accent);padding-right:16px}
+  #ai-panel{position:fixed;top:0;right:0;height:100%;width:min(420px,92vw);z-index:9500;
+    background:var(--paper);border-left:2px solid var(--ink);box-shadow:-18px 0 50px rgba(40,30,15,.22);
+    transform:translateX(100%);transition:transform .32s cubic-bezier(.6,.05,.2,1);display:flex;flex-direction:column}
+  #ai-panel.open{transform:translateX(0)}
+  .ai-head{background:var(--ink);color:var(--paper);padding:20px 22px;display:flex;
+    align-items:center;justify-content:space-between;flex:0 0 auto}
+  .ai-head .t{font-family:'Fraunces',serif;font-weight:600;font-size:1.25rem}
+  .ai-head .t span{color:var(--gold)}
+  .ai-head .sub2{font-family:'Spline Sans Mono',monospace;font-size:.62rem;letter-spacing:.2em;
+    text-transform:uppercase;color:#bdb6a4;margin-top:3px}
+  .ai-close{background:none;border:1px solid #4a463c;color:var(--paper);width:34px;height:34px;
+    border-radius:50%;cursor:pointer;font-size:1.1rem;line-height:1;transition:.18s}
+  .ai-close:hover{background:var(--accent);border-color:var(--accent)}
+  .ai-body{flex:1 1 auto;overflow-y:auto;padding:20px 22px}
+  .ai-empty{color:#6b6453;font-style:italic;font-size:.98rem;line-height:1.6}
+  .ai-empty b{color:var(--accent-2);font-style:normal}
+  .ai-msg{margin-bottom:20px;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .ai-msg .who{font-family:'Spline Sans Mono',monospace;font-size:.62rem;letter-spacing:.18em;
+    text-transform:uppercase;margin-bottom:6px}
+  .ai-msg.user .who{color:var(--accent)}.ai-msg.bot .who{color:var(--accent-2)}
+  .ai-msg .quote{border-left:3px solid var(--gold);padding:6px 12px;margin-bottom:8px;
+    background:var(--paper-2);font-size:.9rem;color:#4a4438;border-radius:0 3px 3px 0}
+  .ai-msg .txt{font-size:1rem;line-height:1.6}
+  .ai-msg .txt code{font-family:'Spline Sans Mono',monospace;background:var(--paper-2);padding:1px 6px;border-radius:3px;font-size:.9rem}
+  .ai-msg .txt strong{color:var(--accent-2)}
+  .dots span{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent-2);
+    margin-right:5px;animation:bounce 1s infinite}
+  .dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+  @keyframes bounce{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-5px)}}
+  .ai-foot{flex:0 0 auto;border-top:1px solid var(--line);padding:14px 16px;background:var(--paper-2)}
+  .ai-foot form{display:flex;gap:8px;align-items:flex-end}
+  #ai-input{flex:1;resize:none;border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+    font-family:'Newsreader',serif;font-size:.98rem;background:var(--paper);color:var(--ink);min-height:44px;max-height:120px}
+  #ai-input:focus{outline:none;border-color:var(--accent-2)}
+  #ai-send{background:var(--ink);color:var(--paper);border:none;border-radius:8px;padding:0 16px;height:44px;
+    cursor:pointer;font-family:'Spline Sans Mono',monospace;font-size:.8rem;transition:.18s}
+  #ai-send:hover{background:var(--accent)}#ai-send:disabled{opacity:.4;cursor:not-allowed}
+  .ai-hint{font-family:'Spline Sans Mono',monospace;font-size:.58rem;letter-spacing:.1em;
+    text-transform:uppercase;color:#8a836f;margin-top:8px;text-align:center}
+  #ai-scrim{position:fixed;inset:0;background:rgba(22,21,18,.35);z-index:9400;opacity:0;
+    pointer-events:none;transition:opacity .3s}
+  #ai-scrim.show{opacity:1;pointer-events:auto}
+
+  /* ---- pivot simulator ---- */
+  .sim{background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:26px 24px;margin:22px 0}
+  .sim-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .sim-badge{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
+    padding:5px 12px;border-radius:20px;background:var(--accent-2);color:var(--paper);font-weight:600}
+  .sim-badge.done{background:var(--gold);color:var(--ink)}
+  .sim-desc{font-size:1rem;color:#4a4438;font-style:italic}
+  .sim-matrix{display:flex;justify-content:center;margin:24px 0 18px}
+  .sim-bracket{position:relative;padding:0 20px}
+  .sim-bracket::before,.sim-bracket::after{content:"";position:absolute;top:0;bottom:0;width:11px;
+    border-top:3px solid var(--ink);border-bottom:3px solid var(--ink)}
+  .sim-bracket::before{left:0;border-left:3px solid var(--ink)}
+  .sim-bracket::after{right:0;border-right:3px solid var(--ink)}
+  .sim-grid{display:grid;gap:7px;padding:12px 6px}
+  .sim-grid.g4{grid-template-columns:repeat(4,58px)}
+  .sim-grid.g5{grid-template-columns:repeat(5,56px)}
+  .cell{display:flex;align-items:center;justify-content:center;height:48px;border-radius:6px;
+    font-family:'Spline Sans Mono',monospace;font-size:1.05rem;background:var(--paper);color:var(--ink);
+    border:1px solid var(--line);transition:background .35s,color .35s,box-shadow .35s,transform .35s}
+  .cell.col-active{box-shadow:inset 0 0 0 2px var(--accent)}
+  .cell.pivot{background:var(--accent-2);color:#fff;font-weight:600;transform:scale(1.07);border-color:var(--accent-2)}
+  .cell.cleared{background:#e4ddca;color:#8a836f}
+  .cell.free{box-shadow:inset 0 0 0 2px var(--gold)}
+  .sim-legend{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;font-size:.82rem;color:#5a5446;margin-bottom:18px}
+  .sim-legend i{display:inline-block;width:13px;height:13px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+  .sim-ctrl{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
+  .sim-ctrl button{font-family:'Spline Sans Mono',monospace;font-size:.82rem;padding:9px 16px;border:1px solid var(--ink);
+    background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;transition:.16s}
+  .sim-ctrl button:hover:not(:disabled){background:var(--ink);color:var(--paper)}
+  .sim-ctrl button:disabled{opacity:.35;cursor:not-allowed}
+  .sim-ctrl button.play{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .sim-ctrl button.play:hover:not(:disabled){background:#9a3819}
+  .sim-cap{text-align:center;font-size:.95rem;color:#4a4438;margin:18px auto 0;max-width:520px;min-height:46px;line-height:1.6}
+  .sim-progress{display:flex;gap:6px;justify-content:center;margin-top:16px}
+  .sim-dot{width:9px;height:9px;border-radius:50%;background:var(--line);transition:.2s}
+  .sim-dot.on{background:var(--accent);transform:scale(1.25)}
+
+  /* echelon form examples gallery */
+  .ech-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:22px 0}
+  .ech-ex{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px;cursor:pointer;transition:.18s}
+  .ech-ex:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 20px var(--shadow)}
+  .ech-ex.sel{border:2px solid var(--accent-2)}
+  .ech-mini{display:inline-grid;gap:3px;font-family:'Spline Sans Mono',monospace;font-size:.85rem;margin:0 auto;justify-content:center}
+  .ech-mini span{width:1.5em;height:1.5em;display:flex;align-items:center;justify-content:center;border-radius:3px;background:var(--paper-2)}
+  .ech-mini .lead{background:var(--accent-2);color:#fff;font-weight:600}
+  .ech-mini .bad{background:var(--accent);color:#fff}
+  .ech-verdict{text-align:center;font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.05em;
+    margin-top:10px;padding:4px;border-radius:4px}
+  .ech-verdict.ok{background:rgba(31,94,87,.12);color:var(--accent-2)}
+  .ech-verdict.no{background:rgba(179,67,31,.12);color:var(--accent)}
+  .ech-detail{background:var(--paper-2);border-left:5px solid var(--accent-2);border-radius:0 4px 4px 0;
+    padding:16px 20px;margin-top:8px;font-size:.95rem;min-height:54px}
+
+  /* row-operation annotation line under the player */
+  .sim-op{text-align:center;font-family:'Spline Sans Mono',monospace;font-size:.85rem;color:var(--accent);
+    background:rgba(179,67,31,.08);border-radius:5px;padding:8px;margin:6px auto 0;max-width:420px;min-height:18px}
+  .cell.target{box-shadow:inset 0 0 0 2px var(--accent);animation:tflash .8s ease}
+  @keyframes tflash{0%,100%{box-shadow:inset 0 0 0 2px var(--accent)}50%{box-shadow:inset 0 0 0 3px var(--gold)}}
+  .cell.one{background:var(--gold);color:var(--ink);font-weight:600;border-color:var(--gold)}
+  .phase-tag{display:inline-block;font-family:'Spline Sans Mono',monospace;font-size:.62rem;letter-spacing:.14em;
+    text-transform:uppercase;padding:3px 9px;border-radius:14px;margin-left:6px}
+  .phase-tag.fwd{background:rgba(31,94,87,.15);color:var(--accent-2)}
+  .phase-tag.bwd{background:rgba(200,146,42,.18);color:#8a5e10}
+
+  /* free variable explorer */
+  .fv-wrap{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:center;margin:22px 0}
+  @media(max-width:680px){.fv-wrap{grid-template-columns:1fr}}
+  .fv-slider label{font-family:'Spline Sans Mono',monospace;font-size:.78rem;color:var(--accent-2);display:block;margin-bottom:8px}
+  .fv-slider input[type=range]{width:100%}
+  .fv-val{font-family:'Spline Sans Mono',monospace;font-size:1.05rem;color:var(--accent);font-weight:600}
+  .fv-vec{display:flex;align-items:center;justify-content:center;gap:14px;font-family:'Spline Sans Mono',monospace}
+  .fv-col{display:inline-grid;gap:8px;border-left:3px solid var(--ink);border-right:3px solid var(--ink);padding:12px 16px}
+  .fv-col span{display:flex;align-items:center;gap:6px;justify-content:flex-end;font-size:1rem}
+  .fv-var{color:#8a836f;font-size:.78rem}
+  .fv-basic{color:var(--accent-2);font-weight:600}
+  .fv-free{color:var(--accent);font-weight:600}
+  .fv-eq{font-family:'Spline Sans Mono',monospace;font-size:.95rem;text-align:center;margin:14px 0 0;color:#4a4438}
+  .fv-soln-list{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+  .fv-chip{font-family:'Spline Sans Mono',monospace;font-size:.8rem;padding:5px 11px;border-radius:16px;
+    background:var(--paper-2);border:1px solid var(--line);cursor:pointer;transition:.15s}
+  .fv-chip:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="chapnum">1.2</span>
+    <div class="badge">Linear Algebra · Chapter 1 · Section 1.2</div>
+    <h1 class="title">Row Reduction<br>&amp; <em>Echelon Forms</em></h1>
+    <p class="sub">From "any old simplification" to a precise algorithm: turn a matrix into echelon form, then the unique reduced echelon form, and read off exactly how many solutions a system has.</p>
+  </div>
+</header>
+
+<div class="wrap grid">
+
+  <nav class="toc">
+    <div class="label">On this page</div>
+    <a href="#intro">What 1.2 teaches</a>
+    <a href="#echelon">Echelon form</a>
+    <a href="#pivots">Pivots</a>
+    <a href="#watch">Watch pivots appear</a>
+    <a href="#algorithm">The row reduction algorithm</a>
+    <a href="#example">Worked example</a>
+    <a href="#variables">Basic vs. free variables</a>
+    <a href="#existence">Existence &amp; uniqueness</a>
+    <a href="#solve">Solving a system, start to finish</a>
+    <a href="#remember">Rules to remember</a>
+  </nav>
+
+  <main>
+
+    <section id="intro">
+      <div class="kicker">The big idea</div>
+      <h2>What is Section 1.2 trying to teach?</h2>
+      <p class="lead">Section 1.1 showed that row operations work. Section 1.2 makes them into a precise, repeatable algorithm — and gives you a way to read the answer's <em>shape</em> straight off the simplified matrix.</p>
+      <p>Two destinations matter here: <span class="term">echelon form</span> (a "staircase" of leading entries — good enough to tell if a system is consistent) and <span class="term">reduced echelon form</span> (cleaned up further so each solution can be read directly). The big theoretical payoff: the reduced echelon form is <strong>unique</strong> — every matrix leads to one and only one.</p>
+      <p>By the end you can answer the two questions from 1.1 mechanically: <strong>Is the system consistent?</strong> and <strong>Is the solution unique?</strong> — just by spotting pivots and free variables.</p>
+    </section>
+
+    <section id="echelon">
+      <div class="kicker">The target shapes</div>
+      <h2>Echelon form &amp; reduced echelon form</h2>
+      <div class="twocol">
+        <div class="card">
+          <div class="t">Echelon form (REF)</div>
+          <p style="font-size:.96rem">1. All nonzero rows are above any all-zero rows.<br>2. Each leading entry is in a column to the right of the leading entry above it.<br>3. All entries below a leading entry are zero.</p>
+        </div>
+        <div class="card">
+          <div class="t">Reduced echelon form (RREF)</div>
+          <p style="font-size:.96rem">All of the above, <em>plus</em>:<br>4. Each leading entry is a <strong>1</strong>.<br>5. Each leading 1 is the <em>only</em> nonzero entry in its column.</p>
+        </div>
+      </div>
+      <div class="theorem">
+        <div class="lbl">Theorem 1 — Uniqueness of the RREF</div>
+        <p>A matrix can be reduced to <em>many</em> different echelon forms (depending on which operations you choose), but each matrix is row equivalent to <strong>one and only one</strong> reduced echelon matrix.</p>
+      </div>
+
+      <h3>Is it in echelon form? — tap each to check</h3>
+      <p>The leading entry of each row (its first nonzero number) is highlighted. Tap a matrix to see whether it obeys the staircase rules — and if not, exactly which rule it breaks.</p>
+      <div class="ech-gallery" id="ech-gallery"></div>
+      <div class="ech-detail" id="ech-detail">Tap any matrix above to inspect it.</div>
+    </section>
+
+    <section id="pivots">
+      <div class="kicker">Key vocabulary</div>
+      <h2>Pivot positions &amp; pivot columns</h2>
+      <div class="defs">
+        <div class="def"><div class="word">Pivot position</div><p>A location in a matrix that holds a leading 1 in the matrix's reduced echelon form.</p></div>
+        <div class="def"><div class="word">Pivot column</div><p>A column that contains a pivot position.</p></div>
+        <div class="def"><div class="word">Pivot</div><p>A nonzero number in a pivot position, used to create zeros in the rest of its column.</p></div>
+      </div>
+      <p>Pivots are the whole game in 1.2: where they land tells you which variables are determined, which are free, and whether the system is solvable at all.</p>
+    </section>
+
+    <section id="watch">
+      <div class="kicker">See it happen</div>
+      <h2>Watch pivots appear</h2>
+      <p>A pivot is the <strong>first nonzero entry in a row</strong> once the matrix is reduced to staircase form. Step through (or press play) and watch where they land — notice each pivot sits below <em>and to the right</em> of the one before it.</p>
+
+      <div class="sim" id="sim1">
+        <div class="sim-head">
+          <span class="sim-badge" data-badge>Start</span>
+          <span class="sim-desc" data-desc>The original matrix.</span>
+        </div>
+        <div class="sim-matrix"><div class="sim-bracket"><div class="sim-grid g4" data-grid></div></div></div>
+        <div class="sim-legend">
+          <span><i style="background:var(--accent-2)"></i>pivot position</span>
+          <span><i style="background:#e4ddca"></i>zeroed below pivot</span>
+          <span><i style="border:2px solid var(--accent)"></i>active column</span>
+        </div>
+        <div class="sim-ctrl">
+          <button data-back>← Back</button>
+          <button class="play" data-play>▶ Play</button>
+          <button data-next>Next →</button>
+          <button data-reset>Reset</button>
+        </div>
+        <div class="sim-progress" data-progress></div>
+        <p class="sim-cap" data-cap></p>
+      </div>
+
+      <h3>Now a case with a free variable</h3>
+      <p>Same idea, but here one column gets <em>skipped</em> — no pivot lands in it. That column's variable becomes <span class="term">free</span>, which is exactly what produces infinitely many solutions.</p>
+
+      <div class="sim" id="sim2">
+        <div class="sim-head">
+          <span class="sim-badge" data-badge>Start</span>
+          <span class="sim-desc" data-desc>The original matrix.</span>
+        </div>
+        <div class="sim-matrix"><div class="sim-bracket"><div class="sim-grid g5" data-grid></div></div></div>
+        <div class="sim-legend">
+          <span><i style="background:var(--accent-2)"></i>pivot</span>
+          <span><i style="background:#e4ddca"></i>zeroed below</span>
+          <span><i style="border:2px solid var(--accent)"></i>active column</span>
+          <span><i style="border:2px solid var(--gold)"></i>free-variable column</span>
+        </div>
+        <div class="sim-ctrl">
+          <button data-back>← Back</button>
+          <button class="play" data-play>▶ Play</button>
+          <button data-next>Next →</button>
+          <button data-reset>Reset</button>
+        </div>
+        <div class="sim-progress" data-progress></div>
+        <p class="sim-cap" data-cap></p>
+      </div>
+    </section>
+
+    <section id="algorithm">
+      <div class="kicker">The procedure</div>
+      <h2>The row reduction algorithm</h2>
+      <p>Steps 1–4 are the <span class="term">forward phase</span> (produce an echelon form). Step 5 is the <span class="term">backward phase</span> (produce the unique reduced echelon form).</p>
+      <ol class="rules">
+        <li><strong>Leftmost nonzero column.</strong> Start with the leftmost column that isn't all zeros — this is a pivot column; the pivot position is at its top.</li>
+        <li><strong>Choose a pivot.</strong> Pick a nonzero entry in that column as the pivot. Interchange rows if needed to move it into the pivot position.</li>
+        <li><strong>Create zeros below.</strong> Use replacement operations to make every entry below the pivot zero.</li>
+        <li><strong>Cover &amp; repeat.</strong> Ignore the pivot row, and apply steps 1–3 to the submatrix that remains. Repeat until there are no more nonzero rows to process. → you now have an <em>echelon form</em>.</li>
+        <li><strong>Backward phase.</strong> Starting from the rightmost pivot and moving up-left, create zeros <em>above</em> each pivot, and scale each pivot to 1. → you now have the <em>reduced echelon form</em>.</li>
+      </ol>
+
+      <h3>Run the whole algorithm</h3>
+      <p>This plays the full thing on one matrix — first the <strong>forward phase</strong> building echelon form, then the <strong>backward phase</strong> cleaning it into reduced echelon form. The line under the matrix names the exact row operation at each step.</p>
+      <div class="sim" id="sim3">
+        <div class="sim-head">
+          <span class="sim-badge" data-badge>Start</span>
+          <span class="sim-desc" data-desc>Original matrix.</span>
+          <span class="phase-tag fwd" data-ptag>Forward phase</span>
+        </div>
+        <div class="sim-matrix"><div class="sim-bracket"><div class="sim-grid g4" data-grid></div></div></div>
+        <div class="sim-op" data-op></div>
+        <div class="sim-legend">
+          <span><i style="background:var(--accent-2)"></i>pivot</span>
+          <span><i style="background:var(--gold)"></i>scaled to 1</span>
+          <span><i style="background:#e4ddca"></i>made zero</span>
+          <span><i style="border:2px solid var(--accent)"></i>row being changed</span>
+        </div>
+        <div class="sim-ctrl">
+          <button data-back>← Back</button>
+          <button class="play" data-play>▶ Play</button>
+          <button data-next>Next →</button>
+          <button data-reset>Reset</button>
+        </div>
+        <div class="sim-progress" data-progress></div>
+        <p class="sim-cap" data-cap></p>
+      </div>
+    </section>
+
+    <section id="example">
+      <div class="kicker">Putting it together</div>
+      <h2>Worked example</h2>
+      <p>Reduce this matrix to echelon form, then to reduced echelon form (this is the textbook's Example 2):</p>
+      <div class="formula">
+        <div class="matrix c6" style="border:none;color:inherit;justify-content:center">
+          <span>0</span><span>3</span><span>-6</span><span>6</span><span>4</span><span>-5</span>
+          <span>3</span><span>-7</span><span>8</span><span>-5</span><span>8</span><span>9</span>
+          <span>3</span><span>-9</span><span>12</span><span>-9</span><span>6</span><span>15</span>
+        </div>
+      </div>
+      <div class="step"><div class="num">1</div><div class="body"><strong>Pick a pivot in column 1.</strong> The top entry is 0, so interchange rows to bring a nonzero entry up. After clearing below, the staircase begins to form.</div></div>
+      <div class="step"><div class="num">2</div><div class="body"><strong>Move to the next submatrix.</strong> Column 2 becomes the next pivot column; clear below its pivot with replacement operations.</div></div>
+      <div class="step"><div class="num">3</div><div class="body"><strong>Echelon form reached.</strong> Three pivots, arranged in a staircase. Forward phase done.</div></div>
+      <div class="step"><div class="num">4</div><div class="body"><strong>Backward phase.</strong> From the rightmost pivot upward, scale each pivot to 1 and zero out everything above it.</div></div>
+      <div class="formula">
+        <div class="matrix c6 mx-aug" style="border:none;color:inherit;justify-content:center">
+          <span class="pivot">1</span><span>0</span><span>-2</span><span>3</span><span>0</span><span>-24</span>
+          <span>0</span><span class="pivot">1</span><span>-2</span><span>2</span><span>0</span><span>-7</span>
+          <span>0</span><span>0</span><span>0</span><span>0</span><span class="pivot">1</span><span>4</span>
+        </div>
+        <small>the unique reduced echelon form — pivots in columns 1, 2, 5</small>
+      </div>
+      <p>Three pivot columns (1, 2, 5). Columns 3 and 4 have no pivot — those correspond to <em>free</em> variables.</p>
+    </section>
+
+    <section id="variables">
+      <div class="kicker">Reading the answer</div>
+      <h2>Basic variables vs. free variables</h2>
+      <div class="defs">
+        <div class="def"><div class="word">Basic variable</div><p>A variable whose column is a pivot column. It's pinned down by the equations.</p></div>
+        <div class="def"><div class="word">Free variable</div><p>A variable whose column has no pivot. You may choose any value for it; the basic variables then follow.</p></div>
+      </div>
+      <p>To write the <span class="term">general solution</span>: solve each pivot equation for its basic variable in terms of the free variables. Each choice of the free variables gives a different solution — that's why a free variable means infinitely many solutions.</p>
+      <div class="callout">
+        <div class="h">Example</div>
+        <p style="margin:0">From a reduced system <code>x₁ − 5x₃ = 1</code>, <code>x₂ + x₃ = 4</code>, with x₃ free: write <code>x₁ = 1 + 5x₃</code>, <code>x₂ = 4 − x₃</code>, x₃ free. Pick x₃ = 0 → (1, 4, 0); pick x₃ = 1 → (6, 3, 1).</p>
+      </div>
+
+      <h3>Free-variable explorer</h3>
+      <p>This <em>is</em> that example, made live. Drag the slider to choose a value for the free variable x₃ — watch x₁ and x₂ recompute from it. Every slider position is a different valid solution, which is precisely why one free variable gives <strong>infinitely many</strong> solutions.</p>
+      <div class="sim">
+        <div class="fv-eq">
+          <code>x₁ = 1 + 5·x₃</code> &nbsp;&nbsp; <code>x₂ = 4 − x₃</code> &nbsp;&nbsp; <code>x₃ = free</code>
+        </div>
+        <div class="fv-wrap">
+          <div class="fv-slider">
+            <label>Choose the free variable &nbsp; x₃ = <span class="fv-val" id="fv-out">0</span></label>
+            <input type="range" id="fv-range" min="-5" max="5" step="1" value="0">
+            <div class="fv-soln-list" id="fv-chips"></div>
+          </div>
+          <div class="fv-vec">
+            <span style="color:#8a836f">x =</span>
+            <div class="fv-col">
+              <span><span class="fv-var">x₁</span> <span class="fv-basic" id="fv-x1">1</span></span>
+              <span><span class="fv-var">x₂</span> <span class="fv-basic" id="fv-x2">4</span></span>
+              <span><span class="fv-var">x₃</span> <span class="fv-free" id="fv-x3">0</span></span>
+            </div>
+          </div>
+        </div>
+        <p class="sim-cap" id="fv-cap"></p>
+      </div>
+    </section>
+
+    <section id="existence">
+      <div class="kicker">The payoff theorem</div>
+      <h2>Existence and uniqueness</h2>
+      <div class="theorem">
+        <div class="lbl">Theorem 2 — Existence &amp; Uniqueness</div>
+        <p>A linear system is <strong>consistent</strong> if and only if the rightmost (constants) column is <em>not</em> a pivot column — equivalently, no echelon row looks like <span class="mono">[0 … 0 | b]</span> with b nonzero.</p>
+        <p>If consistent, then it has <strong>(i) a unique solution</strong> when there are no free variables, or <strong>(ii) infinitely many solutions</strong> when there is at least one free variable.</p>
+      </div>
+      <div class="twocol">
+        <div class="card"><div class="t">Consistency check</div><p style="font-size:.96rem">Is the last column a pivot column? If yes → <strong>no solution</strong>. If no → solvable.</p></div>
+        <div class="card"><div class="t">Uniqueness check</div><p style="font-size:.96rem">Any free variables? None → <strong>exactly one</strong> solution. At least one → <strong>infinitely many</strong>.</p></div>
+      </div>
+    </section>
+
+    <section id="solve">
+      <div class="kicker">The full routine</div>
+      <h2>Using row reduction to solve a system</h2>
+      <ol class="rules">
+        <li>Write the <strong>augmented matrix</strong> of the system.</li>
+        <li>Row reduce to an <strong>echelon form</strong>. Decide if it's consistent — if a row says 0 = nonzero, stop, no solution.</li>
+        <li>If consistent, continue to <strong>reduced echelon form</strong>.</li>
+        <li>Write the system of equations that matches the reduced matrix.</li>
+        <li>Solve each equation for its <strong>basic variable</strong> in terms of any free variables.</li>
+      </ol>
+    </section>
+
+    <section id="remember">
+      <div class="kicker">Cheat sheet</div>
+      <h2>Rules &amp; facts to remember</h2>
+      <ol class="rules">
+        <li><strong>Echelon form</strong>: staircase of leading entries, zeros below each, zero rows at the bottom.</li>
+        <li><strong>Reduced echelon form</strong>: echelon + leading 1's that are alone in their columns.</li>
+        <li>A matrix has <strong>many</strong> echelon forms but <strong>one unique</strong> reduced echelon form (Theorem 1).</li>
+        <li><strong>Pivot column</strong> = column with a pivot position = a <strong>basic</strong> variable.</li>
+        <li>A column with <strong>no pivot</strong> = a <strong>free</strong> variable = you choose its value.</li>
+        <li>Consistent ⇔ the <strong>last column is not a pivot column</strong> (no <code>[0…0 | b≠0]</code> row).</li>
+        <li>Consistent &amp; <strong>no free variables</strong> ⇒ exactly one solution.</li>
+        <li>Consistent &amp; <strong>≥1 free variable</strong> ⇒ infinitely many solutions.</li>
+        <li>Forward phase (steps 1–4) → echelon; backward phase (step 5) → reduced echelon.</li>
+      </ol>
+      <div style="margin-top:14px">
+        <span class="pill">echelon form</span><span class="pill">reduced echelon form</span><span class="pill">pivot position</span>
+        <span class="pill">pivot column</span><span class="pill">basic variable</span><span class="pill">free variable</span>
+        <span class="pill">general solution</span><span class="pill">existence &amp; uniqueness</span>
+      </div>
+    </section>
+
+    <section id="purpose">
+      <div class="teach">
+        <h3>In one breath</h3>
+        <p>Section 1.2 turns row operations into a fixed algorithm that drives any matrix to echelon form and then to its one unique reduced echelon form. Pivot positions tell you the basic variables; columns without pivots are free. From there you instantly know whether a system has no solution, exactly one, or infinitely many.</p>
+        <p>This is the computational backbone of the whole course — almost everything later runs row reduction underneath.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">LINEAR ALGEBRA &nbsp;·&nbsp; §1.2 ROW REDUCTION &amp; ECHELON FORMS &nbsp;·&nbsp; STUDY REFERENCE &nbsp;·&nbsp; built from your slides</div>
+</footer>
+
+<!-- ===================== AI TUTOR ===================== -->
+<button id="ai-explain-btn">Explain with AI</button>
+<button id="ai-tab">✦ Ask AI</button>
+<div id="ai-scrim"></div>
+
+<aside id="ai-panel" aria-label="AI tutor">
+  <div class="ai-head">
+    <div><div class="t">AI <span>Tutor</span></div><div class="sub2">§1.2 · Linear Algebra</div></div>
+    <button class="ai-close" id="ai-close" title="Close">×</button>
+  </div>
+  <div class="ai-body" id="ai-body">
+    <p class="ai-empty">
+      <b>Two ways to use me:</b><br><br>
+      1. <b>Highlight any text</b> on the page — an <em>“Explain with AI”</em> button pops up. Click it and I'll explain that phrase in the context of this section.<br><br>
+      2. <b>Type a question</b> below — e.g. <em>“difference between echelon and reduced echelon?”</em> or <em>“how do I spot a free variable?”</em>
+    </p>
+  </div>
+  <div class="ai-foot">
+    <form id="ai-form">
+      <textarea id="ai-input" placeholder="Ask anything about Section 1.2…" rows="1"></textarea>
+      <button id="ai-send" type="submit">Send</button>
+    </form>
+    <div class="ai-hint">Powered by DeepSeek · press Enter to send</div>
+  </div>
+</aside>
+
+<script>
+/* ===================== PIVOT SIMULATORS ===================== */
+(function(){
+  const SIMS = {
+    sim1: { cols:4, steps:[
+      { m:[[1,-2,1,0],[2,-3,4,1],[-1,5,-2,3]], pivots:[], active:null, cleared:[], free:[],
+        badge:"Start", done:false, desc:"The original matrix.",
+        cap:"A pivot is the first nonzero entry in a row once the matrix is in staircase form. Let's find them, column by column." },
+      { m:[[1,-2,1,0],[2,-3,4,1],[-1,5,-2,3]], pivots:[[0,0]], active:0, cleared:[], free:[],
+        badge:"Column 1", done:false, desc:"The 1 in the top row becomes the first pivot.",
+        cap:"Scan the leftmost column for a nonzero entry. The 1 in row 1 is chosen as the pivot — it anchors row 1." },
+      { m:[[1,-2,1,0],[0,1,2,1],[0,3,-1,3]], pivots:[[0,0]], active:0, cleared:[[1,0],[2,0]], free:[],
+        badge:"Column 1", done:false, desc:"Everything below the pivot is cleared to 0.",
+        cap:"Using row replacement, the entries below the pivot become 0. Column 1 is done — variable x\u2081 is pinned." },
+      { m:[[1,-2,1,0],[0,1,2,1],[0,3,-1,3]], pivots:[[0,0],[1,1]], active:1, cleared:[[1,0],[2,0]], free:[],
+        badge:"Column 2", done:false, desc:"Move down-right: the 1 in row 2 is the next pivot.",
+        cap:"Ignore row 1 now. In the leftover submatrix, the leftmost nonzero column gives the next pivot \u2014 note it sits to the RIGHT of the first." },
+      { m:[[1,-2,1,0],[0,1,2,1],[0,0,-7,0]], pivots:[[0,0],[1,1]], active:1, cleared:[[1,0],[2,0],[2,1]], free:[],
+        badge:"Column 2", done:false, desc:"Clear below the second pivot.",
+        cap:"The entry below pivot 2 is zeroed out. Two pivots locked in (x\u2081 and x\u2082)." },
+      { m:[[1,-2,1,0],[0,1,2,1],[0,0,-7,0]], pivots:[[0,0],[1,1],[2,2]], active:2, cleared:[[1,0],[2,0],[2,1]], free:[],
+        badge:"Column 3", done:false, desc:"The \u22127 in row 3 is the third pivot.",
+        cap:"The last row's leading entry (\u22127) is the third pivot. It's nonzero, so it counts \u2014 pivots needn't equal 1 in echelon form." },
+      { m:[[1,-2,1,0],[0,1,2,1],[0,0,-7,0]], pivots:[[0,0],[1,1],[2,2]], active:null, cleared:[[1,0],[2,0],[2,1]], free:[],
+        badge:"Echelon form \u2713", done:true, desc:"Three pivots, one per row \u2014 a clean staircase.",
+        cap:"Done. Pivots in columns 1, 2, 3 \u2192 all three variables are BASIC. No free variable, so this system has exactly one solution." }
+    ]},
+    sim2: { cols:5, steps:[
+      { m:[[1,2,-1,3,4],[2,4,1,0,5],[-1,-2,3,1,2]], pivots:[], active:null, cleared:[], free:[],
+        badge:"Start", done:false, desc:"A 3\u00d75 augmented matrix (4 variables).",
+        cap:"Watch what happens to column 2 this time \u2014 it's the one to keep an eye on." },
+      { m:[[1,2,-1,3,4],[2,4,1,0,5],[-1,-2,3,1,2]], pivots:[[0,0]], active:0, cleared:[], free:[],
+        badge:"Column 1", done:false, desc:"The 1 in row 1 is the first pivot.",
+        cap:"Same start as before: the leftmost nonzero column gives pivot 1." },
+      { m:[[1,2,-1,3,4],[0,0,3,-6,-3],[0,0,2,4,6]], pivots:[[0,0]], active:0, cleared:[[1,0],[2,0]], free:[],
+        badge:"Column 1", done:false, desc:"Clear below \u2014 but look at column 2 now.",
+        cap:"After clearing column 1, column 2 has become ALL ZEROS below the top row. There's no nonzero entry to use as a pivot here." },
+      { m:[[1,2,-1,3,4],[0,0,3,-6,-3],[0,0,2,4,6]], pivots:[[0,0]], active:1, cleared:[[1,0],[2,0]], free:[[1,1],[2,1]],
+        badge:"Column 2 skipped", done:false, desc:"No pivot possible \u2014 column 2 is free.",
+        cap:"Column 2 gets no pivot, so x\u2082 is a FREE variable. The algorithm moves right to look for the next pivot." },
+      { m:[[1,2,-1,3,4],[0,0,3,-6,-3],[0,0,2,4,6]], pivots:[[0,0],[1,2]], active:2, cleared:[[1,0],[2,0]], free:[[1,1],[2,1]],
+        badge:"Column 3", done:false, desc:"The 3 in row 2 is the next pivot.",
+        cap:"Pivot 2 lands in column 3 instead \u2014 it skipped over the free column to get here." },
+      { m:[[1,2,-1,3,4],[0,0,3,-6,-3],[0,0,0,8,8]], pivots:[[0,0],[1,2]], active:2, cleared:[[1,0],[2,0],[2,2]], free:[[1,1],[2,1]],
+        badge:"Column 3", done:false, desc:"Clear below pivot 2.",
+        cap:"Standard clear-below step on column 3." },
+      { m:[[1,2,-1,3,4],[0,0,3,-6,-3],[0,0,0,8,8]], pivots:[[0,0],[1,2],[2,3]], active:3, cleared:[[1,0],[2,0],[2,2]], free:[[1,1],[2,1]],
+        badge:"Column 4", done:false, desc:"The 8 in row 3 is the third pivot.",
+        cap:"Pivot 3 in column 4. Three pivots total, sitting in columns 1, 3, 4." },
+      { m:[[1,2,-1,3,4],[0,0,3,-6,-3],[0,0,0,8,8]], pivots:[[0,0],[1,2],[2,3]], active:null, cleared:[[1,0],[2,0],[2,2]], free:[[1,1],[2,1]],
+        badge:"Echelon form \u2713", done:true, desc:"Pivots in columns 1, 3, 4 \u2014 column 2 has none.",
+        cap:"x\u2081, x\u2083, x\u2084 are basic; x\u2082 is free (gold). One free variable \u2192 infinitely many solutions. That gold gap is the whole difference." }
+    ]},
+    sim3: { cols:4, steps:[
+      { m:[[2,4,-2,2],[1,3,0,4],[3,5,-1,1]], pivots:[], active:null, cleared:[], one:[], phase:"fwd",
+        badge:"Start", done:false, desc:"Original augmented matrix.", op:"",
+        cap:"We'll take this all the way: forward phase to echelon form, then backward phase to reduced echelon form." },
+      { m:[[1,2,-1,1],[1,3,0,4],[3,5,-1,1]], pivots:[[0,0]], active:0, cleared:[], one:[[0,0]], phase:"fwd",
+        badge:"Scale R1", done:false, desc:"Make the first pivot a 1.", op:"R1 \u2192 (1/2)\u00b7R1",
+        cap:"Optional but tidy: scale row 1 by 1/2 so the leading entry is 1. This becomes our first pivot." },
+      { m:[[1,2,-1,1],[0,1,1,3],[3,5,-1,1]], pivots:[[0,0]], active:1, cleared:[[1,0]], one:[[0,0]], phase:"fwd",
+        badge:"Clear below", done:false, desc:"Zero out the entry under the pivot in R2.", op:"R2 \u2192 R2 \u2212 R1",
+        cap:"Subtract row 1 from row 2 to kill the 1 beneath the pivot. Row 2's leading entry is now in column 2." },
+      { m:[[1,2,-1,1],[0,1,1,3],[0,-1,2,-2]], pivots:[[0,0]], active:0, cleared:[[1,0],[2,0]], one:[[0,0]], phase:"fwd",
+        badge:"Clear below", done:false, desc:"Zero out the column-1 entry in R3.", op:"R3 \u2192 R3 \u2212 3\u00b7R1",
+        cap:"Subtract 3 times row 1 from row 3. Column 1 is now fully cleared below the pivot." },
+      { m:[[1,2,-1,1],[0,1,1,3],[0,0,3,1]], pivots:[[0,0],[1,1]], active:1, cleared:[[1,0],[2,0],[2,1]], one:[[0,0],[1,1]], phase:"fwd",
+        badge:"Clear below", done:false, desc:"Pivot 2 set; clear beneath it.", op:"R3 \u2192 R3 + R2",
+        cap:"Row 2's leading 1 is pivot 2. Add row 2 to row 3 to zero the entry below it." },
+      { m:[[1,2,-1,1],[0,1,1,3],[0,0,1,0.33]], pivots:[[0,0],[1,1],[2,2]], active:2, cleared:[[1,0],[2,0],[2,1]], one:[[0,0],[1,1],[2,2]], phase:"fwd",
+        badge:"Echelon \u2713", done:false, desc:"Scale R3 to finish the forward phase.", op:"R3 \u2192 (1/3)\u00b7R3",
+        cap:"Three pivots in a staircase \u2014 this is echelon form. Forward phase complete. Now we go backward." },
+      { m:[[1,2,-1,1],[0,1,0,2.67],[0,0,1,0.33]], pivots:[[0,0],[1,1],[2,2]], active:1, cleared:[[1,0],[2,0],[2,1],[1,2]], one:[[0,0],[1,1],[2,2]], phase:"bwd",
+        badge:"Clear above", done:false, desc:"Backward phase begins from the bottom pivot.", op:"R2 \u2192 R2 \u2212 R3",
+        cap:"Backward phase: use the bottom pivot to clear entries ABOVE it. Here it zeros R2's column-3 entry." },
+      { m:[[1,2,0,1.33],[0,1,0,2.67],[0,0,1,0.33]], pivots:[[0,0],[1,1],[2,2]], active:0, cleared:[[1,0],[2,0],[2,1],[1,2],[0,2]], one:[[0,0],[1,1],[2,2]], phase:"bwd",
+        badge:"Clear above", done:false, desc:"Clear the column-3 entry in R1 too.", op:"R1 \u2192 R1 + R3",
+        cap:"Same pivot clears upward into row 1. Column 3 now has the pivot alone." },
+      { m:[[1,0,0,-4],[0,1,0,2.67],[0,0,1,0.33]], pivots:[[0,0],[1,1],[2,2]], active:0, cleared:[[1,0],[2,0],[2,1],[1,2],[0,2]], one:[[0,0],[1,1],[2,2]], phase:"bwd",
+        badge:"Reduced echelon \u2713", done:true, desc:"Clear column 2 in R1 \u2014 finished.", op:"R1 \u2192 R1 \u2212 2\u00b7R2",
+        cap:"Every pivot is a lone 1 in its column. This is the unique reduced echelon form \u2014 read the solution straight off: x\u2081=\u22124, x\u2082\u22482.67, x\u2083\u22480.33." }
+    ]}
+  };
+
+  function build(id){
+    const cfg = SIMS[id], root = document.getElementById(id), steps = cfg.steps;
+    const grid = root.querySelector('[data-grid]'), badge = root.querySelector('[data-badge]'),
+      desc = root.querySelector('[data-desc]'), cap = root.querySelector('[data-cap]'),
+      prog = root.querySelector('[data-progress]'),
+      back = root.querySelector('[data-back]'), next = root.querySelector('[data-next]'),
+      play = root.querySelector('[data-play]'), reset = root.querySelector('[data-reset]');
+    const opEl = root.querySelector('[data-op]'), ptag = root.querySelector('[data-ptag]');
+    let i = 0, timer = null;
+    const has = (l,r,c)=>l&&l.some(p=>p[0]===r&&p[1]===c);
+
+    prog.innerHTML = steps.map(()=>'<span class="sim-dot"></span>').join('');
+    const dots = prog.querySelectorAll('.sim-dot');
+
+    function fnum(v){ return (typeof v==='number' && !Number.isInteger(v)) ? v.toFixed(2) : v; }
+
+    function render(){
+      const s = steps[i];
+      grid.innerHTML = '';
+      for(let r=0;r<3;r++) for(let c=0;c<cfg.cols;c++){
+        const d = document.createElement('div'); d.className='cell'; d.textContent=fnum(s.m[r][c]);
+        if(s.active===c) d.classList.add('col-active');
+        if(has(s.cleared,r,c)) d.classList.add('cleared');
+        if(has(s.free,r,c)) d.classList.add('free');
+        if(has(s.one,r,c)) d.classList.add('one');
+        if(has(s.pivots,r,c)){ d.classList.remove('cleared'); d.classList.remove('one'); d.classList.add('pivot'); }
+        grid.appendChild(d);
+      }
+      badge.textContent = s.badge; badge.classList.toggle('done', s.done);
+      desc.textContent = s.desc; cap.textContent = s.cap;
+      if(opEl) opEl.textContent = s.op || '';
+      if(ptag && s.phase){
+        ptag.textContent = s.phase==='bwd' ? 'Backward phase' : 'Forward phase';
+        ptag.className = 'phase-tag ' + (s.phase==='bwd' ? 'bwd' : 'fwd');
+      }
+      dots.forEach((d,k)=>d.classList.toggle('on',k===i));
+      back.disabled = i===0; next.disabled = i===steps.length-1;
+    }
+    function stop(){ if(timer){ clearInterval(timer); timer=null; play.textContent='▶ Play'; } }
+    next.onclick = ()=>{ stop(); if(i<steps.length-1){ i++; render(); } };
+    back.onclick = ()=>{ stop(); if(i>0){ i--; render(); } };
+    reset.onclick = ()=>{ stop(); i=0; render(); };
+    play.onclick = ()=>{
+      if(timer){ stop(); return; }
+      if(i===steps.length-1){ i=0; render(); }
+      play.textContent='❚❚ Pause';
+      timer = setInterval(()=>{ if(i<steps.length-1){ i++; render(); } else { stop(); } }, 1700);
+    };
+    render();
+  }
+  build('sim1'); build('sim2'); build('sim3');
+
+  /* ---- echelon-form classifier gallery ---- */
+  (function(){
+    const examples = [
+      { m:[[2,-3,2,1],[0,1,-4,8],[0,0,1,3]], leads:[[0,0],[1,1],[2,2]], bad:null, ok:true,
+        verdict:"Echelon form",
+        detail:"A clean staircase: each leading entry sits strictly to the right of the one above, and everything below each lead is zero. This is a valid echelon form (not yet reduced \u2014 the leads aren't all 1 and aren't alone in their columns)." },
+      { m:[[1,0,0,-4],[0,1,0,2],[0,0,1,3]], leads:[[0,0],[1,1],[2,2]], bad:null, ok:true,
+        verdict:"Reduced echelon form",
+        detail:"Every leading entry is a 1 and is the only nonzero number in its column. This satisfies all five conditions \u2014 it's the reduced echelon form, and you can read the solution directly: x\u2081=\u22124, x\u2082=2, x\u2083=3." },
+      { m:[[1,2,3,4],[0,0,1,2],[0,1,0,5]], leads:[[0,0],[1,2],[2,1]], bad:[2,1], ok:false,
+        verdict:"Not echelon",
+        detail:"Rule broken: a leading entry must be to the RIGHT of the one in the row above. Row 3's leading entry (column 2) is to the LEFT of row 2's (column 3). The staircase goes backwards \u2014 rows need reordering." },
+      { m:[[1,2,0,4],[0,0,0,0],[0,0,1,3]], leads:[[0,0],[2,2]], bad:[1,0], ok:false,
+        verdict:"Not echelon",
+        detail:"Rule broken: all-zero rows must sit at the BOTTOM. Here the zero row (row 2) is above a nonzero row (row 3). Swapping them would fix it." }
+    ];
+    const gal = document.getElementById('ech-gallery');
+    const det = document.getElementById('ech-detail');
+    if(!gal) return;
+    const has = (l,r,c)=>l&&l.some(p=>p[0]===r&&p[1]===c);
+    examples.forEach((ex,idx)=>{
+      const card = document.createElement('div'); card.className='ech-ex';
+      const mini = document.createElement('div'); mini.className='ech-mini';
+      mini.style.gridTemplateColumns = 'repeat('+ex.m[0].length+', 1.5em)';
+      for(let r=0;r<ex.m.length;r++) for(let c=0;c<ex.m[r].length;c++){
+        const sp = document.createElement('span'); sp.textContent = ex.m[r][c];
+        if(has(ex.leads,r,c)) sp.classList.add('lead');
+        if(ex.bad && ex.bad[0]===r && ex.bad[1]===c) sp.classList.add('bad');
+        mini.appendChild(sp);
+      }
+      const v = document.createElement('div');
+      v.className = 'ech-verdict ' + (ex.ok ? 'ok' : 'no');
+      v.textContent = (ex.ok ? '\u2713 ' : '\u2717 ') + ex.verdict;
+      card.appendChild(mini); card.appendChild(v);
+      card.onclick = ()=>{
+        gal.querySelectorAll('.ech-ex').forEach(e=>e.classList.remove('sel'));
+        card.classList.add('sel');
+        det.textContent = ex.detail;
+      };
+      gal.appendChild(card);
+    });
+  })();
+
+  /* ---- free-variable explorer ---- */
+  (function(){
+    const range = document.getElementById('fv-range');
+    if(!range) return;
+    const out = document.getElementById('fv-out'), x1 = document.getElementById('fv-x1'),
+      x2 = document.getElementById('fv-x2'), x3 = document.getElementById('fv-x3'),
+      cap = document.getElementById('fv-cap'), chips = document.getElementById('fv-chips');
+    function update(t){
+      const a = 1 + 5*t, b = 4 - t;
+      out.textContent = t; x3.textContent = t; x1.textContent = a; x2.textContent = b;
+      cap.textContent = 'With x\u2083 = '+t+', the solution is ('+a+', '+b+', '+t+'). Slide to a different value and you get a different valid solution \u2014 there are infinitely many, one per choice of x\u2083.';
+    }
+    range.addEventListener('input', e=>update(parseInt(e.target.value,10)));
+    [-2,0,1,3].forEach(v=>{
+      const c = document.createElement('span'); c.className='fv-chip'; c.textContent='x\u2083 = '+v;
+      c.onclick = ()=>{ range.value=v; update(v); };
+      chips.appendChild(c);
+    });
+    update(0);
+  })();
+})();
+</script>
+
+<script>
+/* ============================================================
+   AI TUTOR — DeepSeek integration
+   PASTE YOUR REAL KEY BELOW (replace the placeholder).
+   ⚠ A key here is visible to anyone who opens the page — fine
+   for personal/local use; for a public site use a backend proxy.
+   ============================================================ */
+const DEEPSEEK_API_KEY = "sk-3342872f6d7e45f297924e908d646eb0";   // <-- put your key here
+const DEEPSEEK_URL = "https://api.deepseek.com/chat/completions";
+const DEEPSEEK_MODEL = "deepseek-chat";
+
+const SYSTEM_PROMPT =
+  "You are a friendly, concise linear-algebra tutor embedded in a study website for " +
+  "Section 1.2: Row Reduction and Echelon Forms (Lay, Linear Algebra and Its Applications). " +
+  "Topics in scope: echelon form and reduced echelon form, uniqueness of the reduced echelon form, " +
+  "pivot positions and pivot columns, the row reduction algorithm (forward and backward phases), " +
+  "basic vs free variables, general solution, the existence and uniqueness theorem, and using row " +
+  "reduction to solve a linear system. Explain clearly for a student seeing this for the first time. " +
+  "Keep answers short (2-5 sentences unless asked for more). Use plain text; wrap inline math/notation " +
+  "in backticks. Use **bold** for key terms.";
+
+const panel=document.getElementById('ai-panel'),scrim=document.getElementById('ai-scrim'),
+  tab=document.getElementById('ai-tab'),closeB=document.getElementById('ai-close'),
+  body=document.getElementById('ai-body'),form=document.getElementById('ai-form'),
+  input=document.getElementById('ai-input'),sendB=document.getElementById('ai-send'),
+  hlBtn=document.getElementById('ai-explain-btn');
+let history=[],busy=false;
+
+function openPanel(){panel.classList.add('open');scrim.classList.add('show');}
+function closePanel(){panel.classList.remove('open');scrim.classList.remove('show');}
+tab.addEventListener('click',openPanel);closeB.addEventListener('click',closePanel);
+scrim.addEventListener('click',closePanel);
+
+document.addEventListener('mouseup',(e)=>{
+  if(panel.contains(e.target)||e.target===hlBtn)return;
+  const sel=window.getSelection(),text=sel.toString().trim();
+  if(text.length>1){
+    const rect=sel.getRangeAt(0).getBoundingClientRect();
+    hlBtn.style.left=(rect.left+rect.width/2+window.scrollX)+'px';
+    hlBtn.style.top=(rect.top+window.scrollY-8)+'px';
+    hlBtn.style.display='block';hlBtn.dataset.text=text;
+  }else{hlBtn.style.display='none';}
+});
+document.addEventListener('mousedown',(e)=>{if(e.target!==hlBtn)hlBtn.style.display='none';});
+hlBtn.addEventListener('click',()=>{
+  const t=hlBtn.dataset.text;hlBtn.style.display='none';openPanel();
+  ask('Explain this phrase from the section: "'+t+'"',t);
+});
+
+input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,120)+'px';});
+input.addEventListener('keydown',(e)=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit();}});
+form.addEventListener('submit',(e)=>{e.preventDefault();const q=input.value.trim();if(!q)return;
+  input.value='';input.style.height='auto';ask(q,null);});
+
+function clearEmpty(){const e=body.querySelector('.ai-empty');if(e)e.remove();}
+function fmt(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>');}
+function addUser(q,quote){clearEmpty();const d=document.createElement('div');d.className='ai-msg user';
+  d.innerHTML='<div class="who">You</div>'+(quote?'<div class="quote">“'+fmt(quote)+'”</div>':'')+
+  '<div class="txt">'+fmt(quote?'Explain this':q)+'</div>';body.appendChild(d);body.scrollTop=body.scrollHeight;}
+function addBot(){const d=document.createElement('div');d.className='ai-msg bot';
+  d.innerHTML='<div class="who">AI Tutor</div><div class="txt"><span class="dots"><span></span><span></span><span></span></span></div>';
+  body.appendChild(d);body.scrollTop=body.scrollHeight;return d.querySelector('.txt');}
+
+async function ask(prompt,quote){
+  if(busy)return;busy=true;sendB.disabled=true;addUser(prompt,quote);const target=addBot();
+  history.push({role:'user',content:prompt});
+  const messages=[{role:'system',content:SYSTEM_PROMPT},...history];
+  if(!DEEPSEEK_API_KEY||DEEPSEEK_API_KEY.includes('REPLACE')){
+    target.innerHTML='<em style="color:var(--accent)">No API key set.</em> Open this file and paste your DeepSeek key into the <code>DEEPSEEK_API_KEY</code> line near the bottom of the source.';
+    busy=false;sendB.disabled=false;return;}
+  try{
+    const res=await fetch(DEEPSEEK_URL,{method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+DEEPSEEK_API_KEY},
+      body:JSON.stringify({model:DEEPSEEK_MODEL,messages,temperature:0.4,max_tokens:600})});
+    if(!res.ok){const err=await res.text();
+      target.innerHTML='<em style="color:var(--accent)">Request failed ('+res.status+').</em> Check your key/credits.<br><small>'+fmt(err.slice(0,200))+'</small>';
+      busy=false;sendB.disabled=false;return;}
+    const data=await res.json();
+    const answer=data.choices?.[0]?.message?.content||'No response.';
+    history.push({role:'assistant',content:answer});target.innerHTML=fmt(answer);
+  }catch(err){target.innerHTML='<em style="color:var(--accent)">Network error.</em> '+fmt(String(err));}
+  body.scrollTop=body.scrollHeight;busy=false;sendB.disabled=false;
+}
+</script>
+
+</body>
+</html>
