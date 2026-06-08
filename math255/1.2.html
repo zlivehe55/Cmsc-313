@@ -233,20 +233,33 @@
   .sim-dot.on{background:var(--accent);transform:scale(1.25)}
 
   /* echelon form examples gallery */
-  .ech-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:22px 0}
-  .ech-ex{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px;cursor:pointer;transition:.18s}
-  .ech-ex:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 20px var(--shadow)}
-  .ech-ex.sel{border:2px solid var(--accent-2)}
-  .ech-mini{display:inline-grid;gap:3px;font-family:'Spline Sans Mono',monospace;font-size:.85rem;margin:0 auto;justify-content:center}
-  .ech-mini span{width:1.5em;height:1.5em;display:flex;align-items:center;justify-content:center;border-radius:3px;background:var(--paper-2)}
-  .ech-mini .lead{background:var(--accent-2);color:#fff;font-weight:600}
-  .ech-mini .bad{background:var(--accent);color:#fff}
-  .ech-verdict{text-align:center;font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.05em;
-    margin-top:10px;padding:4px;border-radius:4px}
-  .ech-verdict.ok{background:rgba(31,94,87,.12);color:var(--accent-2)}
+  .ech-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin:22px 0}
+  .ech-ex{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:22px 18px 16px;
+    cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s;
+    display:flex;flex-direction:column;align-items:center;gap:16px}
+  .ech-ex:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 12px 26px var(--shadow)}
+  .ech-ex.sel{border-color:var(--accent-2);box-shadow:0 0 0 2px var(--accent-2),0 12px 26px var(--shadow)}
+
+  .ech-mini-wrap{position:relative;padding:6px 14px;display:inline-block}
+  .ech-mini-wrap::before,.ech-mini-wrap::after{content:"";position:absolute;top:0;bottom:0;width:8px;
+    border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+  .ech-mini-wrap::before{left:0;border-left:2px solid var(--ink);border-radius:2px 0 0 2px}
+  .ech-mini-wrap::after{right:0;border-right:2px solid var(--ink);border-radius:0 2px 2px 0}
+  .ech-mini{display:grid;gap:6px;font-family:'Spline Sans Mono',monospace;font-size:.95rem}
+  .ech-mini span{width:2.2em;height:2.2em;display:flex;align-items:center;justify-content:center;
+    border-radius:4px;background:transparent;color:var(--ink);transition:.15s}
+  .ech-mini .lead{background:var(--accent-2);color:#fff;font-weight:600;
+    box-shadow:0 2px 6px rgba(31,94,87,.35)}
+  .ech-mini .bad{background:var(--accent);color:#fff;font-weight:600;
+    box-shadow:0 2px 6px rgba(179,67,31,.35)}
+
+  .ech-verdict{width:100%;text-align:center;font-family:'Spline Sans Mono',monospace;font-size:.72rem;
+    letter-spacing:.1em;text-transform:uppercase;padding:7px 10px;border-radius:20px;font-weight:600}
+  .ech-verdict.ok{background:rgba(31,94,87,.14);color:var(--accent-2)}
   .ech-verdict.no{background:rgba(179,67,31,.12);color:var(--accent)}
-  .ech-detail{background:var(--paper-2);border-left:5px solid var(--accent-2);border-radius:0 4px 4px 0;
-    padding:16px 20px;margin-top:8px;font-size:.95rem;min-height:54px}
+  .ech-detail{background:var(--paper-2);border-left:5px solid var(--accent-2);border-radius:0 6px 6px 0;
+    padding:20px 24px;margin-top:14px;font-size:1rem;line-height:1.65;color:#4a4438;min-height:60px}
+  .ech-detail.empty{font-style:italic;color:#7a7361}
 
   /* row-operation annotation line under the player */
   .sim-op{text-align:center;font-family:'Spline Sans Mono',monospace;font-size:.85rem;color:var(--accent);
@@ -276,6 +289,147 @@
   .fv-chip{font-family:'Spline Sans Mono',monospace;font-size:.8rem;padding:5px 11px;border-radius:16px;
     background:var(--paper-2);border:1px solid var(--line);cursor:pointer;transition:.15s}
   .fv-chip:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* pivot concept demo */
+  .pivot-demo{background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:26px 22px;margin:24px 0}
+  .pivot-demo-matrix{display:flex;justify-content:center;margin:14px 0 8px}
+  .pd-grid-wrap{position:relative;padding:8px 16px;display:inline-block}
+  .pd-grid-wrap::before,.pd-grid-wrap::after{content:"";position:absolute;top:0;bottom:0;width:10px;
+    border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+  .pd-grid-wrap::before{left:0;border-left:2px solid var(--ink);border-radius:2px 0 0 2px}
+  .pd-grid-wrap::after{right:0;border-right:2px solid var(--ink);border-radius:0 2px 2px 0}
+  .pd-grid{display:grid;gap:7px;padding:6px 4px}
+  .pivot-cell{width:2.6em;height:2.6em;display:flex;align-items:center;justify-content:center;
+    font-family:'Spline Sans Mono',monospace;font-size:1.05rem;border-radius:5px;
+    background:var(--paper);border:1px solid var(--line);color:var(--ink);transition:.3s}
+  .pivot-cell.col-hl{background:rgba(200,146,42,.22);border-color:rgba(200,146,42,.55)}
+  .pivot-cell.pos-hl{background:var(--accent-2);color:#fff;font-weight:600;border-color:var(--accent-2);
+    box-shadow:0 3px 10px rgba(31,94,87,.35);transform:scale(1.05)}
+  .pivot-cell.piv-hl{background:var(--accent);color:#fff;font-weight:600;border-color:var(--accent);
+    box-shadow:0 3px 10px rgba(179,67,31,.4);transform:scale(1.05)}
+  .pivot-demo-controls{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin:14px 0 0}
+  .pivot-demo-controls button{font-family:'Spline Sans Mono',monospace;font-size:.78rem;padding:9px 16px;
+    border:1px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;
+    transition:.16s;letter-spacing:.04em}
+  .pivot-demo-controls button:hover{background:var(--ink);color:var(--paper)}
+  .pivot-demo-controls button.on[data-mode="pos"]{background:var(--accent-2);color:#fff;border-color:var(--accent-2)}
+  .pivot-demo-controls button.on[data-mode="col"]{background:#c8922a;color:var(--ink);border-color:#c8922a}
+  .pivot-demo-controls button.on[data-mode="piv"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .pd-cap{text-align:center;font-size:.97rem;color:#4a4438;margin:18px auto 0;max-width:580px;min-height:54px;line-height:1.6}
+  .pd-legend{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;font-size:.82rem;color:#5a5446;margin-top:10px}
+  .pd-legend i{display:inline-block;width:13px;height:13px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+
+  /* 6-column sim grid for the worked example */
+  .sim-grid.g6{grid-template-columns:repeat(6,52px)}
+  .sim-grid.g6 .cell{font-size:.95rem}
+
+  /* practice quiz */
+  .quiz{margin-top:48px;padding-top:46px;border-top:2px dashed var(--line)}
+  .quiz-rubric{background:var(--paper-2);border-left:5px solid var(--accent);padding:16px 22px;
+    margin:16px 0 28px;font-size:.97rem;color:#4a4438;border-radius:0 4px 4px 0}
+  .quiz-rubric strong{color:var(--accent);font-style:italic}
+  .problem{background:var(--paper);border:2px solid var(--ink);border-radius:6px;padding:26px 30px;margin:22px 0;
+    box-shadow:6px 6px 0 var(--paper-2)}
+  .problem-num{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .problem-num .pnum{width:38px;height:38px;border-radius:50%;background:var(--ink);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem}
+  .problem-num .ptitle{font-family:'Fraunces',serif;font-weight:600;font-size:1.25rem;color:var(--ink)}
+  .problem-q{font-style:italic;color:#3a352b;font-size:1.05rem;margin:8px 0 6px}
+  .statement{text-align:center;font-style:italic;font-size:1.15rem;color:var(--accent-2);margin:16px 0;
+    padding:14px 18px;border:1px dashed var(--accent-2);border-radius:4px;background:rgba(31,94,87,.04)}
+  .choices{list-style:none;margin:14px 0 4px;padding:0}
+  .choices li{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;border:1px solid var(--line);
+    border-radius:6px;margin-bottom:10px;cursor:pointer;transition:.18s;background:var(--paper)}
+  .choices li:hover{border-color:var(--accent-2);background:var(--paper-2)}
+  .choices li.selected{border-color:var(--accent-2);background:rgba(31,94,87,.06)}
+  .choices li.correct{border-color:var(--accent-2);background:rgba(31,94,87,.16);
+    box-shadow:inset 0 0 0 1px var(--accent-2)}
+  .choices li.wrong{border-color:var(--accent);background:rgba(179,67,31,.10)}
+  .choices .letter{flex:0 0 auto;width:28px;height:28px;border-radius:50%;border:2px solid var(--accent-2);
+    display:flex;align-items:center;justify-content:center;font-family:'Spline Sans Mono',monospace;font-size:.8rem;
+    color:var(--accent-2);font-weight:600;margin-top:1px}
+  .choices li.correct .letter{background:var(--accent-2);color:#fff}
+  .choices li.wrong .letter{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .choices .ctext{flex:1;font-size:.99rem;line-height:1.6;color:var(--ink)}
+  .problem-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .problem-actions button{font-family:'Spline Sans Mono',monospace;font-size:.78rem;padding:10px 18px;
+    border:1px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;
+    letter-spacing:.04em;transition:.16s}
+  .problem-actions button:hover{background:var(--ink);color:var(--paper)}
+  .problem-actions button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .problem-actions button.primary:hover{background:#9a3819}
+  .feedback{margin-top:14px;padding:16px 20px;border-radius:6px;font-size:.97rem;line-height:1.65;display:none}
+  .feedback.show{display:block;animation:fade .25s ease}
+  .feedback.ok{background:rgba(31,94,87,.10);border-left:4px solid var(--accent-2);color:#1a4640}
+  .feedback.no{background:rgba(179,67,31,.10);border-left:4px solid var(--accent);color:#7a2e15}
+  .feedback strong{color:inherit}
+  .feedback code{font-family:'Spline Sans Mono',monospace;background:var(--paper);padding:1px 6px;
+    border-radius:3px;font-size:.92rem;color:var(--accent)}
+
+  .problem-matrix{display:flex;justify-content:center;margin:20px 0}
+  .pm-wrap{position:relative;padding:10px 18px;display:inline-block}
+  .pm-wrap::before,.pm-wrap::after{content:"";position:absolute;top:0;bottom:0;width:11px;
+    border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+  .pm-wrap::before{left:0;border-left:2px solid var(--ink);border-radius:2px 0 0 2px}
+  .pm-wrap::after{right:0;border-right:2px solid var(--ink);border-radius:0 2px 2px 0}
+  .pm-grid{display:grid;gap:6px;font-family:'Spline Sans Mono',monospace;font-size:1.05rem}
+  .pm-grid span{width:2.5em;height:2.4em;display:flex;align-items:center;justify-content:center;color:var(--ink);border-radius:3px}
+  .pm-grid span.piv{background:var(--accent-2);color:#fff;font-weight:600}
+  .pm-grid span.aug{color:var(--accent);font-weight:600}
+  .pm-grid .pm-sep{width:8px;height:2.4em;justify-self:center;position:relative}
+  .pm-grid .pm-sep::before{content:"";position:absolute;top:2px;bottom:2px;left:50%;width:1px;
+    background:rgba(22,21,18,.4);transform:translateX(-50%)}
+
+  .solution-block{background:var(--paper-2);border-left:5px solid var(--gold);border-radius:0 6px 6px 0;
+    padding:22px 26px;margin-top:18px;font-size:1rem;line-height:1.7;display:none}
+  .solution-block.show{display:block;animation:fade .25s ease}
+  .solution-block h4{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.18em;
+    text-transform:uppercase;color:#8a5e10;margin:18px 0 10px;font-weight:600}
+  .solution-block h4:first-child{margin-top:0}
+  .solution-block p{margin-bottom:12px;color:#3a352b}
+  .solution-block code{font-family:'Spline Sans Mono',monospace;background:var(--paper);padding:2px 7px;
+    border-radius:3px;font-size:.93rem;color:var(--accent)}
+  .solution-block ul{margin:8px 0 14px 22px}
+  .solution-block li{margin-bottom:6px;color:#3a352b}
+  .gen-soln{background:var(--ink);color:var(--paper);border-radius:6px;padding:20px 24px;margin:16px 0;
+    font-family:'Spline Sans Mono',monospace;font-size:1rem;line-height:1.95;overflow-x:auto}
+  .gen-soln .vf{color:var(--gold);font-weight:600}
+  .gen-soln .vb{color:#a4d4ce}
+  .gen-soln .lbl{color:#8a836f;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;display:block;margin-bottom:8px}
+  .vec-form{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin:14px 0;
+    font-family:'Spline Sans Mono',monospace;color:var(--paper)}
+  .vec{display:inline-grid;gap:4px;border-left:2px solid currentColor;border-right:2px solid currentColor;padding:8px 12px}
+  .vec span{text-align:right;min-width:2em;padding:0 4px}
+  .vec-plus,.vec-eq{font-size:1.2rem}
+  .vec-coef{font-weight:600}
+
+  /* ---- per-section recap box ---- */
+  .recap{margin-top:32px;background:var(--ink);color:var(--paper);
+    border-radius:8px;padding:24px 28px 22px;position:relative;
+    box-shadow:6px 6px 0 var(--paper-2);overflow:hidden}
+  .recap::before{content:"";position:absolute;top:0;left:0;width:64px;height:4px;
+    background:var(--gold);border-radius:8px 0 0 0}
+  .recap::after{content:"";position:absolute;top:0;left:64px;width:32px;height:4px;
+    background:var(--accent)}
+  .recap-tag{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:10px;font-weight:600;display:block;padding-top:8px}
+  .recap-tag::before{content:"§ ";color:var(--accent)}
+  .recap h4{font-family:'Fraunces',serif;font-weight:600;color:var(--paper);font-size:1.12rem;
+    margin-bottom:10px;line-height:1.4}
+  .recap h4 em{font-style:italic;color:var(--gold)}
+  .recap p{color:#d8d1bf;margin:0 0 10px;font-size:.96rem;line-height:1.7}
+  .recap p:last-child{margin-bottom:0}
+  .recap ul{margin:8px 0 0 0;color:#d8d1bf;list-style:none;padding:0}
+  .recap li{margin-bottom:8px;font-size:.95rem;line-height:1.6;padding-left:22px;position:relative}
+  .recap li::before{content:"▸";position:absolute;left:0;top:0;color:var(--gold);font-weight:700}
+  .recap li:last-child{margin-bottom:0}
+  .recap strong{color:var(--gold);font-weight:600}
+  .recap em{color:#bdb6a4;font-style:italic}
+  .recap code{font-family:'Spline Sans Mono',monospace;background:rgba(244,240,230,.08);
+    color:var(--gold);padding:1px 7px;border-radius:3px;font-size:.9rem;border:1px solid rgba(244,240,230,.06)}
+  .recap .bottom{margin-top:14px;padding-top:12px;border-top:1px dashed rgba(244,240,230,.18);
+    font-family:'Spline Sans Mono',monospace;font-size:.86rem;color:var(--gold);letter-spacing:.04em}
+  .recap .bottom::before{content:"BOTTOM LINE → ";color:var(--accent);font-weight:600;letter-spacing:.12em}
 </style>
 </head>
 <body>
@@ -303,6 +457,7 @@
     <a href="#existence">Existence &amp; uniqueness</a>
     <a href="#solve">Solving a system, start to finish</a>
     <a href="#remember">Rules to remember</a>
+    <a href="#quiz">Practice quiz</a>
   </nav>
 
   <main>
@@ -336,7 +491,18 @@
       <h3>Is it in echelon form? — tap each to check</h3>
       <p>The leading entry of each row (its first nonzero number) is highlighted. Tap a matrix to see whether it obeys the staircase rules — and if not, exactly which rule it breaks.</p>
       <div class="ech-gallery" id="ech-gallery"></div>
-      <div class="ech-detail" id="ech-detail">Tap any matrix above to inspect it.</div>
+      <div class="ech-detail empty" id="ech-detail">Tap any matrix above to inspect it.</div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>Two target shapes — and only one of them is <em>unique</em></h4>
+        <ul>
+          <li><strong>REF</strong> = staircase of leading entries, zeros below each lead, any all-zero rows at the bottom.</li>
+          <li><strong>RREF</strong> adds two rules: every leading entry is a <strong>1</strong>, and each leading 1 is the <em>only</em> nonzero entry in its column.</li>
+          <li>Per <strong>Theorem 1</strong>, a matrix has many possible echelon forms but exactly one RREF — no matter which row operations you choose.</li>
+        </ul>
+        <div class="bottom">REF is what you reach; RREF is where the answer lives.</div>
+      </div>
     </section>
 
     <section id="pivots">
@@ -348,6 +514,57 @@
         <div class="def"><div class="word">Pivot</div><p>A nonzero number in a pivot position, used to create zeros in the rest of its column.</p></div>
       </div>
       <p>Pivots are the whole game in 1.2: where they land tells you which variables are determined, which are free, and whether the system is solvable at all.</p>
+
+      <h3>See all three on one matrix</h3>
+      <p>Here's a 3×5 matrix already in reduced echelon form. Tap each button to highlight what that term refers to — they overlap, but each names something subtly different.</p>
+      <div class="pivot-demo">
+        <div class="pivot-demo-matrix">
+          <div class="pd-grid-wrap"><div class="pd-grid" id="pd-grid"></div></div>
+        </div>
+        <div class="pd-legend">
+          <span><i style="background:var(--accent-2)"></i>pivot positions</span>
+          <span><i style="background:rgba(200,146,42,.55)"></i>pivot columns</span>
+          <span><i style="background:var(--accent)"></i>pivots (values)</span>
+        </div>
+        <div class="pivot-demo-controls">
+          <button data-mode="pos" class="on">Pivot positions</button>
+          <button data-mode="col">Pivot columns</button>
+          <button data-mode="piv">Pivots</button>
+          <button data-mode="off">Clear</button>
+        </div>
+        <p class="pd-cap" id="pd-cap"></p>
+      </div>
+
+      <h3>Another example — same concepts, different shape</h3>
+      <p>This one isn't in reduced echelon form (the leads aren't all 1), but the pivot <em>positions</em> are determined by where the leading entries sit. Notice column 3 has no pivot — its variable is free.</p>
+      <div class="pivot-demo">
+        <div class="pivot-demo-matrix">
+          <div class="pd-grid-wrap"><div class="pd-grid" id="pd-grid2"></div></div>
+        </div>
+        <div class="pd-legend">
+          <span><i style="background:var(--accent-2)"></i>pivot positions</span>
+          <span><i style="background:rgba(200,146,42,.55)"></i>pivot columns</span>
+          <span><i style="background:var(--accent)"></i>pivots (values)</span>
+        </div>
+        <div class="pivot-demo-controls">
+          <button data-mode="pos" class="on">Pivot positions</button>
+          <button data-mode="col">Pivot columns</button>
+          <button data-mode="piv">Pivots</button>
+          <button data-mode="off">Clear</button>
+        </div>
+        <p class="pd-cap" id="pd-cap2"></p>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>Three closely related words — <em>position</em>, <em>column</em>, <em>value</em></h4>
+        <ul>
+          <li><strong>Pivot position</strong> = a spot in the matrix that ends up holding a leading 1 in RREF.</li>
+          <li><strong>Pivot column</strong> = a column containing a pivot position; a column with <em>no</em> pivot belongs to a free variable.</li>
+          <li><strong>Pivot</strong> = the nonzero number you actually use in that position to zero out the rest of its column.</li>
+        </ul>
+        <div class="bottom">Find the pivots and you've already answered "how many solutions?"</div>
+      </div>
     </section>
 
     <section id="watch">
@@ -400,6 +617,17 @@
         <div class="sim-progress" data-progress></div>
         <p class="sim-cap" data-cap></p>
       </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>Pivots always march <em>down and to the right</em></h4>
+        <ul>
+          <li>Each pivot is the first nonzero entry of its row once you've reduced — and it sits strictly below <em>and</em> strictly right of the previous pivot.</li>
+          <li>If a column gets <strong>skipped</strong> (no pivot lands in it), its variable is <em>free</em> — and that's exactly where infinitely many solutions come from.</li>
+          <li>You'll see the staircase shape emerge column-by-column as you sweep left to right.</li>
+        </ul>
+        <div class="bottom">Watch the staircase form; a missing step is a free variable.</div>
+      </div>
     </section>
 
     <section id="algorithm">
@@ -439,32 +667,86 @@
         <div class="sim-progress" data-progress></div>
         <p class="sim-cap" data-cap></p>
       </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>Five steps, two phases — <em>forward</em> then <em>backward</em></h4>
+        <ul>
+          <li><strong>Forward phase (steps 1–4):</strong> find the leftmost nonzero column, swap a nonzero entry into the pivot position, zero out everything <em>below</em> it, then cover that row and repeat → <em>echelon form</em>.</li>
+          <li><strong>Backward phase (step 5):</strong> starting from the rightmost pivot, zero everything <em>above</em> each pivot and scale each pivot to 1 → <em>reduced echelon form</em>.</li>
+          <li>The algorithm is deterministic in its result (RREF is unique), even though the operations along the way aren't.</li>
+        </ul>
+        <div class="bottom">Forward gets you to REF; backward turns REF into the unique RREF.</div>
+      </div>
     </section>
 
     <section id="example">
       <div class="kicker">Putting it together</div>
       <h2>Worked example</h2>
-      <p>Reduce this matrix to echelon form, then to reduced echelon form (this is the textbook's Example 2):</p>
-      <div class="formula">
-        <div class="matrix c6" style="border:none;color:inherit;justify-content:center">
-          <span>0</span><span>3</span><span>-6</span><span>6</span><span>4</span><span>-5</span>
-          <span>3</span><span>-7</span><span>8</span><span>-5</span><span>8</span><span>9</span>
-          <span>3</span><span>-9</span><span>12</span><span>-9</span><span>6</span><span>15</span>
+      <p>This is Example 2 from the textbook. Step through and watch every intermediate matrix — the row operation that produced it is named under the matrix. Forward phase first (drive to echelon), then backward phase (clean to reduced echelon).</p>
+
+      <div class="sim" id="sim4">
+        <div class="sim-head">
+          <span class="sim-badge" data-badge>Start</span>
+          <span class="sim-desc" data-desc>Original matrix.</span>
+          <span class="phase-tag fwd" data-ptag>Forward phase</span>
         </div>
-      </div>
-      <div class="step"><div class="num">1</div><div class="body"><strong>Pick a pivot in column 1.</strong> The top entry is 0, so interchange rows to bring a nonzero entry up. After clearing below, the staircase begins to form.</div></div>
-      <div class="step"><div class="num">2</div><div class="body"><strong>Move to the next submatrix.</strong> Column 2 becomes the next pivot column; clear below its pivot with replacement operations.</div></div>
-      <div class="step"><div class="num">3</div><div class="body"><strong>Echelon form reached.</strong> Three pivots, arranged in a staircase. Forward phase done.</div></div>
-      <div class="step"><div class="num">4</div><div class="body"><strong>Backward phase.</strong> From the rightmost pivot upward, scale each pivot to 1 and zero out everything above it.</div></div>
-      <div class="formula">
-        <div class="matrix c6 mx-aug" style="border:none;color:inherit;justify-content:center">
-          <span class="pivot">1</span><span>0</span><span>-2</span><span>3</span><span>0</span><span>-24</span>
-          <span>0</span><span class="pivot">1</span><span>-2</span><span>2</span><span>0</span><span>-7</span>
-          <span>0</span><span>0</span><span>0</span><span>0</span><span class="pivot">1</span><span>4</span>
+        <div class="sim-matrix"><div class="sim-bracket"><div class="sim-grid g6" data-grid></div></div></div>
+        <div class="sim-op" data-op></div>
+        <div class="sim-legend">
+          <span><i style="background:var(--accent-2)"></i>pivot</span>
+          <span><i style="background:var(--gold)"></i>scaled to 1</span>
+          <span><i style="background:#e4ddca"></i>made zero</span>
+          <span><i style="border:2px solid var(--accent)"></i>active column</span>
         </div>
-        <small>the unique reduced echelon form — pivots in columns 1, 2, 5</small>
+        <div class="sim-ctrl">
+          <button data-back>← Back</button>
+          <button class="play" data-play>▶ Play</button>
+          <button data-next>Next →</button>
+          <button data-reset>Reset</button>
+        </div>
+        <div class="sim-progress" data-progress></div>
+        <p class="sim-cap" data-cap></p>
       </div>
-      <p>Three pivot columns (1, 2, 5). Columns 3 and 4 have no pivot — those correspond to <em>free</em> variables.</p>
+
+      <p style="margin-top:18px">Pivot columns are <strong>1, 2, 5</strong>, so the basic variables are x₁, x₂, x₅. Columns <strong>3 and 4</strong> have no pivot — those correspond to <em>free</em> variables x₃ and x₄. One pivot per nonzero row, no free-of-charge inconsistency row, two free variables → <strong>infinitely many solutions</strong>.</p>
+
+      <h3>A second worked example — smaller, no free variables</h3>
+      <p>Same algorithm, smaller matrix, every column gets a pivot. This is what a system with a <strong>unique solution</strong> looks like at the end of row reduction.</p>
+      <div class="sim" id="sim5">
+        <div class="sim-head">
+          <span class="sim-badge" data-badge>Start</span>
+          <span class="sim-desc" data-desc>Original augmented matrix.</span>
+          <span class="phase-tag fwd" data-ptag>Forward phase</span>
+        </div>
+        <div class="sim-matrix"><div class="sim-bracket"><div class="sim-grid g4" data-grid></div></div></div>
+        <div class="sim-op" data-op></div>
+        <div class="sim-legend">
+          <span><i style="background:var(--accent-2)"></i>pivot</span>
+          <span><i style="background:var(--gold)"></i>scaled to 1</span>
+          <span><i style="background:#e4ddca"></i>made zero</span>
+          <span><i style="border:2px solid var(--accent)"></i>active column</span>
+        </div>
+        <div class="sim-ctrl">
+          <button data-back>← Back</button>
+          <button class="play" data-play>▶ Play</button>
+          <button data-next>Next →</button>
+          <button data-reset>Reset</button>
+        </div>
+        <div class="sim-progress" data-progress></div>
+        <p class="sim-cap" data-cap></p>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>Read the answer's <em>shape</em> straight off the pivot columns</h4>
+        <ul>
+          <li>In the big example, pivot columns <strong>1, 2, 5</strong> made <code>x₁, x₂, x₅</code> basic; columns <strong>3 and 4</strong> had no pivot, so <code>x₃, x₄</code> are free → <strong>infinitely many solutions</strong>.</li>
+          <li>In the smaller example, <em>every</em> column has a pivot and no row says 0 = nonzero → <strong>unique solution</strong>.</li>
+          <li>Same algorithm in both — the count of pivots versus columns is what changes the verdict.</li>
+        </ul>
+        <div class="bottom">Pivots in every variable column = one answer; any skip = infinitely many.</div>
+      </div>
     </section>
 
     <section id="variables">
@@ -503,6 +785,17 @@
         </div>
         <p class="sim-cap" id="fv-cap"></p>
       </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>Pivot column → <em>basic</em>; no pivot → <em>free</em></h4>
+        <ul>
+          <li><strong>Basic variables</strong> live in pivot columns and are determined by the equations; <strong>free variables</strong> live in pivot-less columns and you choose them.</li>
+          <li>To write the <strong>general solution</strong>, solve each pivot row for its basic variable in terms of the free ones — e.g. <code>x₁ = 1 + 5x₃</code>, <code>x₂ = 4 − x₃</code>, <code>x₃</code> free.</li>
+          <li>Every choice of free variable produces a different valid solution — that's literally where "infinitely many" comes from.</li>
+        </ul>
+        <div class="bottom">Each free variable is one knob you can turn; turn it and the basic variables follow.</div>
+      </div>
     </section>
 
     <section id="existence">
@@ -517,6 +810,17 @@
         <div class="card"><div class="t">Consistency check</div><p style="font-size:.96rem">Is the last column a pivot column? If yes → <strong>no solution</strong>. If no → solvable.</p></div>
         <div class="card"><div class="t">Uniqueness check</div><p style="font-size:.96rem">Any free variables? None → <strong>exactly one</strong> solution. At least one → <strong>infinitely many</strong>.</p></div>
       </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4><em>Theorem 2</em> resolves the two big questions in one sweep</h4>
+        <ul>
+          <li><strong>Consistent</strong> ⇔ the rightmost (constants) column is <em>not</em> a pivot column — i.e. no echelon row of the form <code>[0 … 0 | b]</code> with b ≠ 0.</li>
+          <li>If consistent and <strong>no free variables</strong>, the solution is unique.</li>
+          <li>If consistent and <strong>≥ 1 free variable</strong>, there are infinitely many solutions.</li>
+        </ul>
+        <div class="bottom">Two glances at the pivots — last column, then every other column — settle the whole system.</div>
+      </div>
     </section>
 
     <section id="solve">
@@ -529,6 +833,17 @@
         <li>Write the system of equations that matches the reduced matrix.</li>
         <li>Solve each equation for its <strong>basic variable</strong> in terms of any free variables.</li>
       </ol>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>The whole routine in one line: <em>augment → reduce → read off</em></h4>
+        <ul>
+          <li>Build the <strong>augmented matrix</strong>, drive to REF, and check for an inconsistent row <code>[0 … 0 | b]</code> with b ≠ 0 — if you find one, stop, no solution.</li>
+          <li>Otherwise finish to <strong>RREF</strong>, rewrite the rows as equations, and solve each pivot equation for its basic variable in terms of the free ones.</li>
+          <li>The output is the <strong>general solution</strong> — one formula that captures every solution at once.</li>
+        </ul>
+        <div class="bottom">No clever algebra needed — the algorithm is the method.</div>
+      </div>
     </section>
 
     <section id="remember">
@@ -557,6 +872,111 @@
         <h3>In one breath</h3>
         <p>Section 1.2 turns row operations into a fixed algorithm that drives any matrix to echelon form and then to its one unique reduced echelon form. Pivot positions tell you the basic variables; columns without pivots are free. From there you instantly know whether a system has no solution, exactly one, or infinitely many.</p>
         <p>This is the computational backbone of the whole course — almost everything later runs row reduction underneath.</p>
+      </div>
+    </section>
+
+    <section id="quiz" class="quiz">
+      <div class="kicker">Individual Quiz · IQ 1.2</div>
+      <h2>Practice quiz</h2>
+      <div class="quiz-rubric">
+        <strong>Closed book, closed notes, no calculator / computer, no internet, no human help</strong> except by the instructor. You have to show work for credit and complete work for full credit. Make sure to read the questions carefully.
+      </div>
+
+      <div class="problem">
+        <div class="problem-num">
+          <div class="pnum">1</div>
+          <div class="ptitle">True or false — justify your answer</div>
+        </div>
+        <p class="problem-q">Determine whether the statement below is true or false.</p>
+        <p class="statement">"The echelon form of a matrix is unique."</p>
+        <p>Choose the correct answer below:</p>
+        <ul class="choices" id="q1-choices">
+          <li data-letter="A" data-correct="true">
+            <div class="letter">A</div>
+            <div class="ctext">The statement is false. The echelon form of a matrix is not unique, but the reduced echelon form is unique.</div>
+          </li>
+          <li data-letter="B" data-correct="false">
+            <div class="letter">B</div>
+            <div class="ctext">The statement is true. Both the echelon form and the reduced echelon form of a matrix are unique. They are the same regardless of the chosen row operations.</div>
+          </li>
+          <li data-letter="C" data-correct="false">
+            <div class="letter">C</div>
+            <div class="ctext">The statement is false. Neither the echelon form nor the reduced echelon form of a matrix are unique. They depend on the row operations performed.</div>
+          </li>
+          <li data-letter="D" data-correct="false">
+            <div class="letter">D</div>
+            <div class="ctext">The statement is true. The echelon form of a matrix is always unique, but the reduced echelon form of a matrix might not be unique.</div>
+          </li>
+        </ul>
+        <div class="problem-actions">
+          <button class="primary" id="q1-check">Check answer</button>
+          <button id="q1-reset">Reset</button>
+        </div>
+        <div class="feedback" id="q1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <div class="problem-num">
+          <div class="pnum">2</div>
+          <div class="ptitle">Find the general solution</div>
+        </div>
+        <p class="problem-q">Find the general solution of the system whose augmented matrix is given below.</p>
+        <div class="problem-matrix">
+          <div class="pm-wrap"><div class="pm-grid" id="q2-grid"></div></div>
+        </div>
+        <p style="text-align:center;font-size:.88rem;color:#6b6453;font-style:italic;margin-top:-6px">
+          (the orange column is the constants — variables are x₁ … x₅)
+        </p>
+        <div class="problem-actions">
+          <button class="primary" id="q2-show">Show solution</button>
+          <button id="q2-hide">Hide solution</button>
+        </div>
+        <div class="solution-block" id="q2-soln">
+          <h4>Step 1 — Is it in reduced echelon form?</h4>
+          <p>Pivots sit in columns 1, 2, 3 (the leading 1s of rows 1–3), so columns 4 and 5 have no pivot — those will be the free variables. But the matrix isn't <em>fully</em> reduced: row 1 has a <code>−3</code> in column 2, which is a pivot column. We need one more operation to clear that.</p>
+
+          <h4>Step 2 — Finish the backward phase</h4>
+          <p>Apply <code>R1 → R1 + 3·R2</code> to kill the −3 above pivot 2:</p>
+          <div class="problem-matrix">
+            <div class="pm-wrap"><div class="pm-grid" id="q2-rref"></div></div>
+          </div>
+
+          <h4>Step 3 — Read off the equations</h4>
+          <p>Each row of the RREF gives one equation:</p>
+          <ul>
+            <li>Row 1: <code>x₁ − x₄ − 6x₅ = −3</code></li>
+            <li>Row 2: <code>x₂ − 2x₅ = 1</code></li>
+            <li>Row 3: <code>x₃ + 3x₄ + 7x₅ = 0</code></li>
+            <li>Row 4: <code>0 = 0</code> (no information — system is consistent)</li>
+          </ul>
+
+          <h4>Step 4 — Solve each for its basic variable</h4>
+          <p>Basic variables are <code>x₁, x₂, x₃</code> (the pivot columns). Free variables are <code>x₄, x₅</code>.</p>
+          <div class="gen-soln">
+            <span class="lbl">General solution</span>
+            <span class="vb">x₁</span> = −3 + <span class="vf">x₄</span> + 6<span class="vf">x₅</span><br>
+            <span class="vb">x₂</span> =&nbsp; 1 + 2<span class="vf">x₅</span><br>
+            <span class="vb">x₃</span> =&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;− 3<span class="vf">x₄</span> − 7<span class="vf">x₅</span><br>
+            <span class="vf">x₄</span> = free<br>
+            <span class="vf">x₅</span> = free
+          </div>
+
+          <h4>Step 5 — In vector / parametric form</h4>
+          <div class="gen-soln">
+            <span class="lbl">x = particular + x₄·v₄ + x₅·v₅</span>
+            <div class="vec-form">
+              <span>x =</span>
+              <div class="vec"><span>−3</span><span>1</span><span>0</span><span>0</span><span>0</span></div>
+              <span class="vec-plus">+</span>
+              <span class="vec-coef vf">x₄</span>
+              <div class="vec"><span>1</span><span>0</span><span>−3</span><span>1</span><span>0</span></div>
+              <span class="vec-plus">+</span>
+              <span class="vec-coef vf">x₅</span>
+              <div class="vec"><span>6</span><span>2</span><span>−7</span><span>0</span><span>1</span></div>
+            </div>
+          </div>
+          <p style="margin:14px 0 0">Two free variables → <strong>infinitely many solutions</strong>, parametrized by any real numbers <code>x₄, x₅</code>.</p>
+        </div>
       </div>
     </section>
 
@@ -674,6 +1094,64 @@
       { m:[[1,0,0,-4],[0,1,0,2.67],[0,0,1,0.33]], pivots:[[0,0],[1,1],[2,2]], active:0, cleared:[[1,0],[2,0],[2,1],[1,2],[0,2]], one:[[0,0],[1,1],[2,2]], phase:"bwd",
         badge:"Reduced echelon \u2713", done:true, desc:"Clear column 2 in R1 \u2014 finished.", op:"R1 \u2192 R1 \u2212 2\u00b7R2",
         cap:"Every pivot is a lone 1 in its column. This is the unique reduced echelon form \u2014 read the solution straight off: x\u2081=\u22124, x\u2082\u22482.67, x\u2083\u22480.33." }
+    ]},
+    sim4: { cols:6, steps:[
+      { m:[[0,3,-6,6,4,-5],[3,-7,8,-5,8,9],[3,-9,12,-9,6,15]], pivots:[], active:null, cleared:[], one:[], phase:"fwd",
+        badge:"Start", done:false, desc:"Original 3\u00d76 augmented matrix.", op:"",
+        cap:"Five variables, three equations (the last column is the constants). We'll drive this all the way to its unique reduced echelon form." },
+      { m:[[3,-9,12,-9,6,15],[3,-7,8,-5,8,9],[0,3,-6,6,4,-5]], pivots:[[0,0]], active:0, cleared:[], one:[], phase:"fwd",
+        badge:"Swap rows", done:false, desc:"Move a nonzero entry into the (1,1) pivot slot.", op:"R1 \u27f7 R3",
+        cap:"Column 1 needs a nonzero pivot, but R1's first entry is 0. Swap R1 with R3 (which has a 3) to anchor the first pivot." },
+      { m:[[3,-9,12,-9,6,15],[0,2,-4,4,2,-6],[0,3,-6,6,4,-5]], pivots:[[0,0]], active:0, cleared:[[1,0],[2,0]], one:[], phase:"fwd",
+        badge:"Clear below", done:false, desc:"Zero out column 1 below the pivot.", op:"R2 \u2192 R2 \u2212 R1",
+        cap:"Replace R2 with R2 minus R1. R2's leading 3 vanishes \u2014 column 1 is now clean below the pivot. (R3 already had 0 there.)" },
+      { m:[[3,-9,12,-9,6,15],[0,2,-4,4,2,-6],[0,0,0,0,1,4]], pivots:[[0,0],[1,1]], active:1, cleared:[[1,0],[2,0],[2,1]], one:[], phase:"fwd",
+        badge:"Clear below", done:false, desc:"Use pivot 2 to clear the entry below it.", op:"R3 \u2192 R3 \u2212 (3/2)\u00b7R2",
+        cap:"R2's leading 2 is the second pivot. Multiply R2 by 3/2 and subtract from R3 \u2014 R3 collapses to zeros all the way until column 5." },
+      { m:[[3,-9,12,-9,6,15],[0,2,-4,4,2,-6],[0,0,0,0,1,4]], pivots:[[0,0],[1,1],[2,4]], active:4, cleared:[[1,0],[2,0],[2,1]], one:[], phase:"fwd",
+        badge:"Echelon \u2713", done:false, desc:"Third pivot lands in column 5.", op:"",
+        cap:"Pivots in columns 1, 2, 5 \u2014 forward phase done. Columns 3 and 4 got skipped, so x\u2083 and x\u2084 will be FREE variables." },
+      { m:[[1,-3,4,-3,2,5],[0,1,-2,2,1,-3],[0,0,0,0,1,4]], pivots:[[0,0],[1,1],[2,4]], active:null, cleared:[[1,0],[2,0],[2,1]], one:[[0,0],[1,1],[2,4]], phase:"bwd",
+        badge:"Scale pivots", done:false, desc:"Make every leading entry a 1.", op:"R1 \u2192 (1/3)\u00b7R1,  R2 \u2192 (1/2)\u00b7R2",
+        cap:"Backward phase begins. Divide R1 by 3 and R2 by 2 so the pivots are all 1 (R3's pivot was already 1)." },
+      { m:[[1,-3,4,-3,0,-3],[0,1,-2,2,0,-7],[0,0,0,0,1,4]], pivots:[[0,0],[1,1],[2,4]], active:4, cleared:[[1,0],[2,0],[2,1],[0,4],[1,4]], one:[[0,0],[1,1],[2,4]], phase:"bwd",
+        badge:"Clear above", done:false, desc:"Zero column 5 above the rightmost pivot.", op:"R2 \u2192 R2 \u2212 R3,  R1 \u2192 R1 \u2212 2\u00b7R3",
+        cap:"Use R3's pivot to clear column 5 above it \u2014 R1 and R2 both lose their column-5 entries." },
+      { m:[[1,0,-2,3,0,-24],[0,1,-2,2,0,-7],[0,0,0,0,1,4]], pivots:[[0,0],[1,1],[2,4]], active:1, cleared:[[1,0],[2,0],[2,1],[0,4],[1,4],[0,1]], one:[[0,0],[1,1],[2,4]], phase:"bwd",
+        badge:"Reduced echelon \u2713", done:true, desc:"Every pivot alone in its column.", op:"R1 \u2192 R1 + 3\u00b7R2",
+        cap:"Use R2's pivot to clear column 2 in R1. Done. The system reads: x\u2081 = \u221224 + 2x\u2083 \u2212 3x\u2084, x\u2082 = \u22127 + 2x\u2083 \u2212 2x\u2084, x\u2085 = 4, with x\u2083 and x\u2084 free \u2014 infinitely many solutions." }
+    ]},
+    sim5: { cols:4, steps:[
+      { m:[[1,1,1,6],[2,-1,1,3],[1,2,-1,3]], pivots:[], active:null, cleared:[], one:[], phase:"fwd",
+        badge:"Start", done:false, desc:"Augmented matrix for x+y+z=6, 2x\u2212y+z=3, x+2y\u2212z=3.", op:"",
+        cap:"Three equations in three unknowns. Watch every column get a pivot \u2014 that's what produces a unique solution." },
+      { m:[[1,1,1,6],[2,-1,1,3],[1,2,-1,3]], pivots:[[0,0]], active:0, cleared:[], one:[[0,0]], phase:"fwd",
+        badge:"Column 1", done:false, desc:"R1's leading 1 is the first pivot.", op:"",
+        cap:"Leftmost nonzero column is column 1, and its top entry is already 1 \u2014 no swap or scale needed." },
+      { m:[[1,1,1,6],[0,-3,-1,-9],[1,2,-1,3]], pivots:[[0,0]], active:0, cleared:[[1,0]], one:[[0,0]], phase:"fwd",
+        badge:"Clear below", done:false, desc:"Knock out R2's column-1 entry.", op:"R2 \u2192 R2 \u2212 2\u00b7R1",
+        cap:"Subtract twice R1 from R2 to eliminate the 2 below the pivot." },
+      { m:[[1,1,1,6],[0,-3,-1,-9],[0,1,-2,-3]], pivots:[[0,0]], active:0, cleared:[[1,0],[2,0]], one:[[0,0]], phase:"fwd",
+        badge:"Clear below", done:false, desc:"Now knock out R3's column-1 entry.", op:"R3 \u2192 R3 \u2212 R1",
+        cap:"Subtract R1 from R3. Column 1 is now fully clear below the pivot." },
+      { m:[[1,1,1,6],[0,1,-2,-3],[0,-3,-1,-9]], pivots:[[0,0]], active:1, cleared:[[1,0],[2,0]], one:[[0,0]], phase:"fwd",
+        badge:"Swap rows", done:false, desc:"Tidy: bring a simpler pivot into row 2.", op:"R2 \u27f7 R3",
+        cap:"Swap R2 and R3 so the next pivot is a small clean number (1 instead of \u22123)." },
+      { m:[[1,1,1,6],[0,1,-2,-3],[0,-3,-1,-9]], pivots:[[0,0],[1,1]], active:1, cleared:[[1,0],[2,0]], one:[[0,0],[1,1]], phase:"fwd",
+        badge:"Column 2", done:false, desc:"R2's leading 1 is the second pivot.", op:"",
+        cap:"Pivot 2 locked in. Sitting strictly to the right and below pivot 1 \u2014 staircase forming." },
+      { m:[[1,1,1,6],[0,1,-2,-3],[0,0,-7,-18]], pivots:[[0,0],[1,1]], active:1, cleared:[[1,0],[2,0],[2,1]], one:[[0,0],[1,1]], phase:"fwd",
+        badge:"Clear below", done:false, desc:"Use pivot 2 to clear R3.", op:"R3 \u2192 R3 + 3\u00b7R2",
+        cap:"Add 3 times R2 to R3 so the \u22123 below pivot 2 becomes 0." },
+      { m:[[1,1,1,6],[0,1,-2,-3],[0,0,1,2.57]], pivots:[[0,0],[1,1],[2,2]], active:2, cleared:[[1,0],[2,0],[2,1]], one:[[0,0],[1,1],[2,2]], phase:"fwd",
+        badge:"Echelon \u2713", done:false, desc:"Scale R3 to finish the forward phase.", op:"R3 \u2192 (\u22121/7)\u00b7R3",
+        cap:"Scale R3 by \u22121/7. Three pivots in a staircase \u2014 forward phase done. Every column has a pivot, so the system has a UNIQUE solution." },
+      { m:[[1,1,0,3.43],[0,1,0,2.14],[0,0,1,2.57]], pivots:[[0,0],[1,1],[2,2]], active:2, cleared:[[1,0],[2,0],[2,1],[0,2],[1,2]], one:[[0,0],[1,1],[2,2]], phase:"bwd",
+        badge:"Clear above", done:false, desc:"Backward phase: use pivot 3 to clear column 3.", op:"R1 \u2192 R1 \u2212 R3,  R2 \u2192 R2 + 2\u00b7R3",
+        cap:"Use pivot 3 to zero entries above it in column 3." },
+      { m:[[1,0,0,1.29],[0,1,0,2.14],[0,0,1,2.57]], pivots:[[0,0],[1,1],[2,2]], active:1, cleared:[[1,0],[2,0],[2,1],[0,2],[1,2],[0,1]], one:[[0,0],[1,1],[2,2]], phase:"bwd",
+        badge:"Reduced echelon \u2713", done:true, desc:"All pivots alone in their columns.", op:"R1 \u2192 R1 \u2212 R2",
+        cap:"Use pivot 2 to clear R1's column-2 entry. Done. Read the unique solution: x \u2248 1.29, y \u2248 2.14, z \u2248 2.57." }
     ]}
   };
 
@@ -727,7 +1205,134 @@
     };
     render();
   }
-  build('sim1'); build('sim2'); build('sim3');
+  build('sim1'); build('sim2'); build('sim3'); build('sim4'); build('sim5');
+
+  /* ---- pivot concept demo (two matrices) ---- */
+  function buildPivotDemo(gridId, capId, M, pivots){
+    const grid = document.getElementById(gridId);
+    if(!grid) return;
+    const cap = document.getElementById(capId);
+    const pivCols = new Set(pivots.map(p=>p[1]));
+    const cells = [];
+    grid.style.gridTemplateColumns = 'repeat('+M[0].length+', 2.6em)';
+    for(let r=0;r<M.length;r++){
+      const row = [];
+      for(let c=0;c<M[r].length;c++){
+        const el = document.createElement('div');
+        el.className = 'pivot-cell';
+        el.textContent = M[r][c];
+        grid.appendChild(el);
+        row.push(el);
+      }
+      cells.push(row);
+    }
+    const colList = [...pivCols].sort((a,b)=>a-b).map(c=>'column '+(c+1)).join(', ');
+    const posList = pivots.map(([r,c])=>'('+(r+1)+','+(c+1)+')').join(', ');
+    const vals = pivots.map(([r,c])=>M[r][c]).join(', ');
+    const caps = {
+      pos:'PIVOT POSITIONS (teal): the row–column addresses '+posList+'. These are the spots that hold the leading 1s once the matrix is in RREF.',
+      col:'PIVOT COLUMNS (gold): every column that contains a pivot position. Here: '+colList+'. A column without a pivot belongs to a FREE variable.',
+      piv:'PIVOTS (red): the nonzero numbers sitting in the pivot positions. Here the pivot values are '+vals+'. Each pivot is used to create zeros in the rest of its column.',
+      off:'Tap a button above to highlight each concept.'
+    };
+    const wrap = grid.closest('.pivot-demo');
+    const btns = wrap.querySelectorAll('.pivot-demo-controls button');
+    function apply(mode){
+      cells.forEach(row=>row.forEach(el=>el.classList.remove('col-hl','pos-hl','piv-hl')));
+      if(mode==='col'){
+        for(let c=0;c<M[0].length;c++) if(pivCols.has(c)) cells.forEach(row=>row[c].classList.add('col-hl'));
+      } else if(mode==='pos' || mode==='piv'){
+        pivots.forEach(([r,c])=>cells[r][c].classList.add(mode==='pos'?'pos-hl':'piv-hl'));
+      }
+      cap.textContent = caps[mode];
+      btns.forEach(b=>b.classList.toggle('on', b.dataset.mode===mode));
+    }
+    btns.forEach(b=>b.onclick=()=>apply(b.dataset.mode));
+    apply('pos');
+  }
+  buildPivotDemo('pd-grid','pd-cap',
+    [[1,3,0,0,-2],[0,0,1,0,4],[0,0,0,1,-1]],
+    [[0,0],[1,2],[2,3]]);
+  buildPivotDemo('pd-grid2','pd-cap2',
+    [[2,-4,1,5],[0,3,2,-1],[0,0,0,7]],
+    [[0,0],[1,1],[2,3]]);
+
+  /* ---- practice quiz ---- */
+  (function(){
+    const choices = document.getElementById('q1-choices');
+    if(!choices) return;
+    const fb = document.getElementById('q1-fb');
+    const checkBtn = document.getElementById('q1-check');
+    const resetBtn = document.getElementById('q1-reset');
+    const explanations = {
+      A: "<strong>Correct.</strong> The echelon form is <em>not</em> unique — different choices of row operations can produce different echelon forms (e.g. you can scale a row by any nonzero factor and still be in echelon form). But the <strong>reduced</strong> echelon form is unique (Theorem 1 in §1.2).",
+      B: "<strong>Not quite.</strong> The reduced echelon form is unique, but the echelon form is not — different sequences of valid row operations can yield different echelon forms for the same matrix.",
+      C: "<strong>Not quite.</strong> You're right that the echelon form isn't unique, but the reduced echelon form IS unique by Theorem 1. So neither-is-unique is too strong.",
+      D: "<strong>Backwards.</strong> The opposite is true: the reduced echelon form is unique, and the (non-reduced) echelon form is the one that isn't."
+    };
+    let selected = null;
+    choices.querySelectorAll('li').forEach(li=>{
+      li.addEventListener('click',()=>{
+        if(checkBtn.disabled) return;
+        choices.querySelectorAll('li').forEach(x=>x.classList.remove('selected'));
+        li.classList.add('selected');
+        selected = li;
+      });
+    });
+    checkBtn.addEventListener('click',()=>{
+      if(!selected){ fb.className='feedback show no'; fb.innerHTML='Pick an answer first.'; return; }
+      const letter = selected.dataset.letter;
+      const correct = selected.dataset.correct === 'true';
+      choices.querySelectorAll('li').forEach(li=>{
+        if(li.dataset.correct === 'true') li.classList.add('correct');
+        else if(li===selected) li.classList.add('wrong');
+        li.classList.remove('selected');
+      });
+      fb.className = 'feedback show ' + (correct ? 'ok':'no');
+      fb.innerHTML = (correct ? '✓ ' : '✗ ') + explanations[letter];
+      checkBtn.disabled = true;
+    });
+    resetBtn.addEventListener('click',()=>{
+      choices.querySelectorAll('li').forEach(li=>li.classList.remove('selected','correct','wrong'));
+      fb.className='feedback'; fb.innerHTML='';
+      selected = null; checkBtn.disabled = false;
+    });
+  })();
+
+  /* ---- quiz Q2: render matrices + reveal solution ---- */
+  (function(){
+    const grid = document.getElementById('q2-grid');
+    if(!grid) return;
+    function paintMatrix(el, M, pivots){
+      const cols = M[0].length, augIdx = cols - 1;
+      el.style.gridTemplateColumns = 'repeat('+(cols-1)+', 2.5em) 8px 2.5em';
+      const has = (l,r,c)=>l&&l.some(p=>p[0]===r&&p[1]===c);
+      for(let r=0;r<M.length;r++){
+        for(let c=0;c<cols;c++){
+          if(c===augIdx){
+            const sep = document.createElement('div'); sep.className='pm-sep';
+            el.appendChild(sep);
+          }
+          const sp = document.createElement('span');
+          sp.textContent = M[r][c];
+          if(c===augIdx) sp.classList.add('aug');
+          if(has(pivots,r,c)) sp.classList.add('piv');
+          el.appendChild(sp);
+        }
+      }
+    }
+    paintMatrix(grid,
+      [[1,-3,0,-1,0,-6],[0,1,0,0,-2,1],[0,0,1,3,7,0],[0,0,0,0,0,0]],
+      [[0,0],[1,1],[2,2]]);
+    const rref = document.getElementById('q2-rref');
+    if(rref) paintMatrix(rref,
+      [[1,0,0,-1,-6,-3],[0,1,0,0,-2,1],[0,0,1,3,7,0],[0,0,0,0,0,0]],
+      [[0,0],[1,1],[2,2]]);
+
+    const soln = document.getElementById('q2-soln');
+    document.getElementById('q2-show').onclick = ()=>soln.classList.add('show');
+    document.getElementById('q2-hide').onclick = ()=>soln.classList.remove('show');
+  })();
 
   /* ---- echelon-form classifier gallery ---- */
   (function(){
@@ -743,7 +1348,19 @@
         detail:"Rule broken: a leading entry must be to the RIGHT of the one in the row above. Row 3's leading entry (column 2) is to the LEFT of row 2's (column 3). The staircase goes backwards \u2014 rows need reordering." },
       { m:[[1,2,0,4],[0,0,0,0],[0,0,1,3]], leads:[[0,0],[2,2]], bad:[1,0], ok:false,
         verdict:"Not echelon",
-        detail:"Rule broken: all-zero rows must sit at the BOTTOM. Here the zero row (row 2) is above a nonzero row (row 3). Swapping them would fix it." }
+        detail:"Rule broken: all-zero rows must sit at the BOTTOM. Here the zero row (row 2) is above a nonzero row (row 3). Swapping them would fix it." },
+      { m:[[2,3,-1,5],[0,4,1,3],[0,0,0,0]], leads:[[0,0],[1,1]], bad:null, ok:true,
+        verdict:"Echelon form",
+        detail:"Two pivots and an all-zero row at the bottom — perfectly legal. Rule 1 (zero rows at bottom) is satisfied. Two pivot columns means at most two basic variables; the rest are free." },
+      { m:[[1,4,0,3,2],[0,0,1,-2,5],[0,0,0,0,0]], leads:[[0,0],[1,2]], bad:null, ok:true,
+        verdict:"Reduced echelon form",
+        detail:"Leading 1s are alone in their columns and the zero row sits at the bottom. Column 2 has NO pivot — so x₂ is a FREE variable. This is exactly what infinitely many solutions looks like." },
+      { m:[[1,2,-1,4],[3,0,1,2],[0,0,1,-1]], leads:[[0,0],[1,0],[2,2]], bad:[1,0], ok:false,
+        verdict:"Not echelon",
+        detail:"Rule broken: every entry directly below a leading entry must be ZERO. Row 2 has a 3 sitting under R1's pivot — the forward phase hasn't finished. One more replacement (R2 → R2 − 3·R1) would clear it." },
+      { m:[[2,4,0,3],[0,5,1,2],[0,0,-3,7]], leads:[[0,0],[1,1],[2,2]], bad:null, ok:true,
+        verdict:"Echelon (not reduced)",
+        detail:"A valid staircase — each lead is strictly to the right of the one above and the entries below are zero. But the leads are 2, 5, −3 (not 1) and they aren't alone in their columns. The backward phase would scale and clear to produce the RREF." }
     ];
     const gal = document.getElementById('ech-gallery');
     const det = document.getElementById('ech-detail');
@@ -751,22 +1368,25 @@
     const has = (l,r,c)=>l&&l.some(p=>p[0]===r&&p[1]===c);
     examples.forEach((ex,idx)=>{
       const card = document.createElement('div'); card.className='ech-ex';
+      const wrap = document.createElement('div'); wrap.className='ech-mini-wrap';
       const mini = document.createElement('div'); mini.className='ech-mini';
-      mini.style.gridTemplateColumns = 'repeat('+ex.m[0].length+', 1.5em)';
+      mini.style.gridTemplateColumns = 'repeat('+ex.m[0].length+', 2.2em)';
       for(let r=0;r<ex.m.length;r++) for(let c=0;c<ex.m[r].length;c++){
         const sp = document.createElement('span'); sp.textContent = ex.m[r][c];
         if(has(ex.leads,r,c)) sp.classList.add('lead');
         if(ex.bad && ex.bad[0]===r && ex.bad[1]===c) sp.classList.add('bad');
         mini.appendChild(sp);
       }
+      wrap.appendChild(mini);
       const v = document.createElement('div');
       v.className = 'ech-verdict ' + (ex.ok ? 'ok' : 'no');
       v.textContent = (ex.ok ? '\u2713 ' : '\u2717 ') + ex.verdict;
-      card.appendChild(mini); card.appendChild(v);
+      card.appendChild(wrap); card.appendChild(v);
       card.onclick = ()=>{
         gal.querySelectorAll('.ech-ex').forEach(e=>e.classList.remove('sel'));
         card.classList.add('sel');
         det.textContent = ex.detail;
+        det.classList.remove('empty');
       };
       gal.appendChild(card);
     });

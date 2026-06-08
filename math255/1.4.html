@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1.4 — The Matrix Equation Ax = b</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Spline+Sans+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#161512;--paper:#f4f0e6;--paper-2:#ece6d6;--accent:#b3431f;
+    --accent-2:#1f5e57;--gold:#c8922a;--line:#cdc4ad;--shadow:rgba(40,30,15,.16)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:'Newsreader',Georgia,serif;
+    font-size:19px;line-height:1.65;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 12% 18%, rgba(179,67,31,.05), transparent 45%),
+      radial-gradient(circle at 88% 8%, rgba(31,94,87,.06), transparent 40%)}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.4;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E")}
+  .mono{font-family:'Spline Sans Mono',monospace}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+  .grid{display:grid;grid-template-columns:230px 1fr;gap:56px;align-items:start}
+  @media(max-width:880px){.grid{grid-template-columns:1fr;gap:0}}
+
+  header.hero{position:relative;overflow:hidden;border-bottom:2px solid var(--ink);
+    background:var(--ink);color:var(--paper);padding:72px 0 64px}
+  header.hero::after{content:"";position:absolute;inset:0;opacity:.14;pointer-events:none;
+    background:repeating-linear-gradient(90deg,transparent 0 38px,rgba(244,240,230,.5) 38px 39px),
+      repeating-linear-gradient(0deg,transparent 0 38px,rgba(244,240,230,.5) 38px 39px)}
+  .hero .wrap{position:relative;z-index:2}
+  .badge{display:inline-flex;align-items:center;gap:10px;font-family:'Spline Sans Mono',monospace;
+    font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:26px}
+  .badge::before{content:"";width:34px;height:1px;background:var(--gold)}
+  h1.title{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(2.3rem,5.8vw,4.6rem);
+    line-height:.98;letter-spacing:-.02em}
+  h1.title em{font-style:italic;color:var(--accent)}
+  .sub{margin-top:22px;max-width:640px;font-size:1.15rem;color:#d8d1bf;font-style:italic}
+  .chapnum{position:absolute;top:-30px;right:-10px;font-family:'Fraunces',serif;font-weight:900;
+    font-size:clamp(8rem,26vw,20rem);line-height:1;color:rgba(200,146,42,.13);z-index:1;user-select:none}
+
+  nav.toc{position:sticky;top:24px;padding-top:48px}
+  nav.toc .label{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--accent-2);margin-bottom:18px}
+  nav.toc a{display:block;color:var(--ink);text-decoration:none;padding:7px 0 7px 16px;
+    border-left:2px solid var(--line);font-size:.96rem;transition:.18s}
+  nav.toc a:hover{border-left-color:var(--accent);color:var(--accent);padding-left:22px}
+  @media(max-width:880px){nav.toc{display:none}}
+
+  main{padding:64px 0 120px}
+  section{margin-bottom:78px;scroll-margin-top:24px}
+  .kicker{font-family:'Spline Sans Mono',monospace;font-size:.7rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+  h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.7rem,3.5vw,2.6rem);
+    line-height:1.05;letter-spacing:-.01em;margin-bottom:22px;position:relative}
+  h2::before{content:"";display:block;width:54px;height:4px;background:var(--accent);margin-bottom:16px}
+  h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.3rem;margin:26px 0 10px}
+  p{margin-bottom:16px}
+  p .term{color:var(--accent);font-weight:600;font-style:italic}
+  .lead{font-size:1.35rem;line-height:1.55;border-left:3px solid var(--gold);padding-left:24px;color:#3a352b}
+
+  .formula{background:var(--ink);color:var(--paper);border-radius:4px;padding:30px 34px;margin:24px 0;
+    font-family:'Spline Sans Mono',monospace;font-size:1.15rem;text-align:center;
+    box-shadow:8px 8px 0 var(--accent);overflow-x:auto}
+  .formula small{display:block;margin-top:14px;font-size:.7rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--gold);font-family:'Spline Sans Mono',monospace}
+
+  .defs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:24px 0}
+  .def{background:var(--paper-2);border:1px solid var(--line);border-radius:3px;padding:20px 22px;transition:.2s}
+  .def:hover{transform:translateY(-3px);box-shadow:0 10px 24px var(--shadow)}
+  .def .word{font-family:'Fraunces',serif;font-weight:600;font-size:1.18rem;color:var(--accent-2);margin-bottom:6px}
+  .def p{font-size:.96rem;margin:0;color:#4a4438}
+
+  .rules{counter-reset:r;list-style:none;margin:20px 0}
+  .rules li{position:relative;padding:16px 18px 16px 64px;border-bottom:1px dashed var(--line)}
+  .rules li::before{counter-increment:r;content:counter(r);position:absolute;left:14px;top:14px;
+    width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600}
+  .rules li strong{color:var(--accent-2)}
+
+  .callout{background:linear-gradient(180deg,var(--paper-2),var(--paper));border:1px solid var(--line);
+    border-left:5px solid var(--gold);padding:22px 26px;border-radius:0 4px 4px 0;margin:24px 0}
+  .callout .h{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+
+  .theorem{background:var(--accent-2);color:var(--paper);border-radius:4px;padding:30px 34px;margin:24px 0;
+    box-shadow:8px 8px 0 var(--ink)}
+  .theorem .lbl{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+  .theorem p{color:#e6e0d2}.theorem p:last-child{margin:0}
+  .theorem ul{margin:10px 0 0 20px;color:#e6e0d2}.theorem li{margin-bottom:7px}
+
+  .teach{background:var(--accent-2);color:var(--paper);border-radius:4px;padding:38px 40px;margin:24px 0;
+    box-shadow:8px 8px 0 var(--ink)}
+  .teach h3{color:var(--gold);margin-top:0}.teach p{color:#e4ded0}.teach p:last-child{margin-bottom:0}
+
+  footer{border-top:2px solid var(--ink);padding:34px 0;font-family:'Spline Sans Mono',monospace;
+    font-size:.78rem;color:#6b6453;letter-spacing:.04em}
+  .pill{display:inline-block;font-family:'Spline Sans Mono',monospace;font-size:.72rem;padding:3px 10px;
+    border-radius:20px;border:1px solid var(--accent-2);color:var(--accent-2);margin:0 4px 6px 0}
+
+  /* matrix display helper */
+  .mtx{display:inline-grid;gap:4px 14px;font-family:'Spline Sans Mono',monospace;font-size:1.05rem;
+    border-left:3px solid var(--ink);border-right:3px solid var(--ink);padding:10px 14px;vertical-align:middle}
+  .mtx span{text-align:right;min-width:1.8em}
+
+  /* interactive widget shell */
+  .viz{background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:24px;margin:22px 0}
+  .viz-ctrl label{font-family:'Spline Sans Mono',monospace;font-size:.76rem;color:var(--accent-2);
+    display:flex;justify-content:space-between;margin:12px 0 6px}
+  .viz-ctrl label .v{color:var(--accent);font-weight:600}
+  .viz-ctrl input[type=range]{width:100%}
+  .viz-btns{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+  .viz-btns button{font-family:'Spline Sans Mono',monospace;font-size:.76rem;padding:8px 14px;
+    border:1px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;transition:.15s}
+  .viz-btns button:hover{background:var(--ink);color:var(--paper)}
+  .viz-btns button.on{background:var(--accent-2);color:#fff;border-color:var(--accent-2)}
+  .chiprow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .chip{font-family:'Spline Sans Mono',monospace;font-size:.78rem;padding:5px 11px;border-radius:16px;
+    background:var(--paper);border:1px solid var(--line);cursor:pointer;transition:.15s}
+  .chip:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* Ax=b product widget */
+  .axb{display:grid;grid-template-columns:1fr;gap:18px}
+  .axb-stage{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;
+    font-family:'Spline Sans Mono',monospace;background:var(--paper);border:1px solid var(--line);
+    border-radius:8px;padding:24px 16px;overflow-x:auto}
+  .axb-cell{width:2.6em;height:2.6em;display:flex;align-items:center;justify-content:center;border-radius:5px;
+    font-size:1.05rem;transition:.25s}
+  .axb-mtx{display:inline-grid;gap:4px;border-left:3px solid var(--ink);border-right:3px solid var(--ink);padding:8px 10px}
+  .axb-col0 .axb-cell{background:rgba(179,67,31,.13)}
+  .axb-col1 .axb-cell{background:rgba(31,94,87,.13)}
+  .axb-col2 .axb-cell{background:rgba(200,146,42,.16)}
+  .axb-vec{display:inline-grid;gap:4px;border-left:2px solid var(--ink);border-right:2px solid var(--ink);padding:8px 10px}
+  .axb-sym{font-size:1.4rem;color:var(--accent)}
+  .axb-res .axb-cell{background:var(--ink);color:var(--paper);font-weight:600}
+  .axb-x .axb-cell{font-weight:600}
+  .axb-x .x0{color:var(--accent)}.axb-x .x1{color:var(--accent-2)}.axb-x .x2{color:#8a5e10}
+  .axb-explain{font-family:'Spline Sans Mono',monospace;font-size:.9rem;background:var(--paper);
+    border:1px solid var(--line);border-radius:6px;padding:16px;line-height:1.85}
+  .axb-explain .c0{color:var(--accent);font-weight:600}.axb-explain .c1{color:var(--accent-2);font-weight:600}
+  .axb-explain .c2{color:#8a5e10;font-weight:600}.axb-explain .res{color:var(--ink);font-weight:600}
+
+  /* span checker */
+  .spanck{font-family:'Spline Sans Mono',monospace}
+  .spanck-grid{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin:10px 0 16px}
+  .ck-mtx{display:inline-grid;gap:5px;border-left:3px solid var(--ink);border-right:3px solid var(--ink);padding:10px 12px}
+  .ck-mtx span{width:2.4em;height:2.3em;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:1rem;transition:.3s}
+  .ck-mtx span.piv{background:var(--accent-2);color:#fff;font-weight:600}
+  .ck-mtx span.zero-row{background:rgba(179,67,31,.12)}
+  .ck-verdict{text-align:center;font-family:'Spline Sans Mono',monospace;font-size:1rem;padding:14px;border-radius:6px;margin-top:8px}
+  .ck-verdict.ok{background:rgba(31,94,87,.12);color:var(--accent-2)}
+  .ck-verdict.no{background:rgba(179,67,31,.12);color:var(--accent)}
+  .viz-cap{font-size:.95rem;color:#4a4438;margin-top:12px;line-height:1.6}
+
+  /* worked examples */
+  .example{background:var(--paper);border:2px solid var(--ink);border-radius:6px;padding:26px 30px;margin:22px 0;
+    box-shadow:6px 6px 0 var(--paper-2)}
+  .example .ehead{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+  .example .enum{width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600}
+  .example .etitle{font-family:'Fraunces',serif;font-weight:600;font-size:1.2rem}
+  .example code{font-family:'Spline Sans Mono',monospace;background:var(--paper-2);padding:1px 7px;
+    border-radius:3px;font-size:.93rem;color:var(--accent)}
+  .reveal{font-family:'Spline Sans Mono',monospace;font-size:.76rem;padding:9px 16px;border:1px solid var(--ink);
+    background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;margin-top:8px;transition:.15s}
+  .reveal:hover{background:var(--ink);color:var(--paper)}
+  .ework{display:none;margin-top:16px;padding-top:16px;border-top:1px dashed var(--line)}
+  .ework.show{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .ework h4{font-family:'Spline Sans Mono',monospace;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+    color:#8a5e10;margin:14px 0 8px}.ework h4:first-child{margin-top:0}
+  .ework p{margin-bottom:10px;font-size:.98rem}
+
+  /* quiz */
+  .quiz{margin-top:48px;padding-top:46px;border-top:2px dashed var(--line)}
+  .quiz-rubric{background:var(--paper-2);border-left:5px solid var(--accent);padding:16px 22px;
+    margin:16px 0 28px;font-size:.97rem;color:#4a4438;border-radius:0 4px 4px 0}
+  .quiz-rubric strong{color:var(--accent);font-style:italic}
+  .problem{background:var(--paper);border:2px solid var(--ink);border-radius:6px;padding:26px 30px;margin:22px 0;
+    box-shadow:6px 6px 0 var(--paper-2)}
+  .problem-num{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .problem-num .pnum{width:38px;height:38px;border-radius:50%;background:var(--ink);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem}
+  .problem-num .ptitle{font-family:'Fraunces',serif;font-weight:600;font-size:1.25rem}
+  .problem-q{font-style:italic;color:#3a352b;font-size:1.05rem;margin:8px 0 6px}
+  .statement{text-align:center;font-style:italic;font-size:1.1rem;color:var(--accent-2);margin:16px 0;
+    padding:14px 18px;border:1px dashed var(--accent-2);border-radius:4px;background:rgba(31,94,87,.04)}
+  .choices{list-style:none;margin:14px 0 4px;padding:0}
+  .choices li{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;border:1px solid var(--line);
+    border-radius:6px;margin-bottom:10px;cursor:pointer;transition:.18s;background:var(--paper)}
+  .choices li:hover{border-color:var(--accent-2);background:var(--paper-2)}
+  .choices li.selected{border-color:var(--accent-2);background:rgba(31,94,87,.06)}
+  .choices li.correct{border-color:var(--accent-2);background:rgba(31,94,87,.16);box-shadow:inset 0 0 0 1px var(--accent-2)}
+  .choices li.wrong{border-color:var(--accent);background:rgba(179,67,31,.10)}
+  .choices .letter{flex:0 0 auto;width:28px;height:28px;border-radius:50%;border:2px solid var(--accent-2);
+    display:flex;align-items:center;justify-content:center;font-family:'Spline Sans Mono',monospace;font-size:.8rem;
+    color:var(--accent-2);font-weight:600;margin-top:1px}
+  .choices li.correct .letter{background:var(--accent-2);color:#fff}
+  .choices li.wrong .letter{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .choices .ctext{flex:1;font-size:.99rem;line-height:1.6}
+  .problem-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .problem-actions button{font-family:'Spline Sans Mono',monospace;font-size:.78rem;padding:10px 18px;
+    border:1px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;transition:.16s}
+  .problem-actions button:hover{background:var(--ink);color:var(--paper)}
+  .problem-actions button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .problem-actions button.primary:hover{background:#9a3819}
+  .feedback{margin-top:14px;padding:16px 20px;border-radius:6px;font-size:.97rem;line-height:1.65;display:none}
+  .feedback.show{display:block;animation:fade .25s ease}
+  .feedback.ok{background:rgba(31,94,87,.10);border-left:4px solid var(--accent-2);color:#1a4640}
+  .feedback.no{background:rgba(179,67,31,.10);border-left:4px solid var(--accent);color:#7a2e15}
+  .feedback code{font-family:'Spline Sans Mono',monospace;background:var(--paper);padding:1px 6px;border-radius:3px;color:var(--accent)}
+  .solution-block{background:var(--paper-2);border-left:5px solid var(--gold);border-radius:0 6px 6px 0;
+    padding:22px 26px;margin-top:18px;font-size:1rem;line-height:1.7;display:none}
+  .solution-block.show{display:block;animation:fade .25s ease}
+  .solution-block h4{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.18em;
+    text-transform:uppercase;color:#8a5e10;margin:18px 0 10px}.solution-block h4:first-child{margin-top:0}
+  .solution-block code{font-family:'Spline Sans Mono',monospace;background:var(--paper);padding:2px 7px;border-radius:3px;color:var(--accent)}
+  .sb-matrix{display:flex;justify-content:center;margin:14px 0}
+
+  /* AI tutor */
+  #ai-explain-btn{position:absolute;z-index:10000;display:none;font-family:'Spline Sans Mono',monospace;
+    font-size:.72rem;letter-spacing:.08em;background:var(--ink);color:var(--paper);border:none;border-radius:30px;
+    padding:9px 16px;cursor:pointer;box-shadow:0 6px 18px var(--shadow);transform:translate(-50%,-100%);
+    white-space:nowrap;animation:pop .14s ease-out}
+  #ai-explain-btn:hover{background:var(--accent)}#ai-explain-btn::before{content:"✦ ";color:var(--gold)}
+  @keyframes pop{from{opacity:0;transform:translate(-50%,-90%)}to{opacity:1;transform:translate(-50%,-100%)}}
+  #ai-tab{position:fixed;right:0;top:46%;z-index:9000;background:var(--accent-2);color:var(--paper);border:none;
+    cursor:pointer;writing-mode:vertical-rl;text-orientation:mixed;font-family:'Spline Sans Mono',monospace;
+    font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;padding:18px 10px;border-radius:8px 0 0 8px;
+    box-shadow:-4px 4px 14px var(--shadow);transition:.2s}
+  #ai-tab:hover{background:var(--accent);padding-right:16px}
+  #ai-panel{position:fixed;top:0;right:0;height:100%;width:min(420px,92vw);z-index:9500;background:var(--paper);
+    border-left:2px solid var(--ink);box-shadow:-18px 0 50px rgba(40,30,15,.22);transform:translateX(100%);
+    transition:transform .32s cubic-bezier(.6,.05,.2,1);display:flex;flex-direction:column}
+  #ai-panel.open{transform:translateX(0)}
+  .ai-head{background:var(--ink);color:var(--paper);padding:20px 22px;display:flex;align-items:center;
+    justify-content:space-between;flex:0 0 auto}
+  .ai-head .t{font-family:'Fraunces',serif;font-weight:600;font-size:1.25rem}.ai-head .t span{color:var(--gold)}
+  .ai-head .sub2{font-family:'Spline Sans Mono',monospace;font-size:.62rem;letter-spacing:.2em;
+    text-transform:uppercase;color:#bdb6a4;margin-top:3px}
+  .ai-close{background:none;border:1px solid #4a463c;color:var(--paper);width:34px;height:34px;border-radius:50%;
+    cursor:pointer;font-size:1.1rem;line-height:1;transition:.18s}
+  .ai-close:hover{background:var(--accent);border-color:var(--accent)}
+  .ai-body{flex:1 1 auto;overflow-y:auto;padding:20px 22px}
+  .ai-empty{color:#6b6453;font-style:italic;font-size:.98rem;line-height:1.6}.ai-empty b{color:var(--accent-2);font-style:normal}
+  .ai-msg{margin-bottom:20px;animation:fade .25s ease}
+  .ai-msg .who{font-family:'Spline Sans Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px}
+  .ai-msg.user .who{color:var(--accent)}.ai-msg.bot .who{color:var(--accent-2)}
+  .ai-msg .quote{border-left:3px solid var(--gold);padding:6px 12px;margin-bottom:8px;background:var(--paper-2);
+    font-size:.9rem;color:#4a4438;border-radius:0 3px 3px 0}
+  .ai-msg .txt{font-size:1rem;line-height:1.6}
+  .ai-msg .txt code{font-family:'Spline Sans Mono',monospace;background:var(--paper-2);padding:1px 6px;border-radius:3px;font-size:.9rem}
+  .ai-msg .txt strong{color:var(--accent-2)}
+  .dots span{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent-2);margin-right:5px;animation:bounce 1s infinite}
+  .dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+  @keyframes bounce{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-5px)}}
+  .ai-foot{flex:0 0 auto;border-top:1px solid var(--line);padding:14px 16px;background:var(--paper-2)}
+  .ai-foot form{display:flex;gap:8px;align-items:flex-end}
+  #ai-input{flex:1;resize:none;border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+    font-family:'Newsreader',serif;font-size:.98rem;background:var(--paper);color:var(--ink);min-height:44px;max-height:120px}
+  #ai-input:focus{outline:none;border-color:var(--accent-2)}
+  #ai-send{background:var(--ink);color:var(--paper);border:none;border-radius:8px;padding:0 16px;height:44px;
+    cursor:pointer;font-family:'Spline Sans Mono',monospace;font-size:.8rem;transition:.18s}
+  #ai-send:hover{background:var(--accent)}#ai-send:disabled{opacity:.4;cursor:not-allowed}
+  .ai-hint{font-family:'Spline Sans Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;
+    color:#8a836f;margin-top:8px;text-align:center}
+  #ai-scrim{position:fixed;inset:0;background:rgba(22,21,18,.35);z-index:9400;opacity:0;pointer-events:none;transition:opacity .3s}
+  #ai-scrim.show{opacity:1;pointer-events:auto}
+
+  /* ---- theorem visualizer blocks ---- */
+  .t-vis{position:relative;background:var(--paper);border:1.5px solid var(--accent-2);border-radius:8px;
+    padding:30px 28px 24px;margin:22px 0 28px}
+  .t-vis-tag{position:absolute;top:-11px;left:22px;background:var(--paper);padding:0 12px;
+    font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent-2);font-weight:600}
+  .t-vis-title{font-family:'Fraunces',serif;font-weight:600;font-size:1.18rem;color:var(--accent-2);margin-bottom:10px}
+  .t-vis p{margin-bottom:12px;font-size:.97rem}
+  .t-vis p:last-child{margin-bottom:0}
+
+  /* bracketed mini matrix used in t-vis blocks */
+  .mini-mat{display:inline-grid;gap:4px;padding:8px 12px;position:relative;
+    font-family:'Spline Sans Mono',monospace;font-size:.98rem;vertical-align:middle}
+  .mini-mat::before,.mini-mat::after{content:"";position:absolute;top:0;bottom:0;width:8px;
+    border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+  .mini-mat::before{left:0;border-left:2px solid var(--ink);border-radius:2px 0 0 2px}
+  .mini-mat::after{right:0;border-right:2px solid var(--ink);border-radius:0 2px 2px 0}
+  .mini-mat span{min-width:1.9em;text-align:center;padding:3px 5px;border-radius:3px;color:var(--ink)}
+  .mini-mat span.piv{background:var(--accent-2);color:#fff;font-weight:600}
+  .mini-mat span.zero{color:#a39c87}
+  .mini-mat span.c0{color:var(--accent);font-weight:600}
+  .mini-mat span.c1{color:var(--accent-2);font-weight:600}
+  .mini-mat span.c2{color:#8a5e10;font-weight:600}
+
+  /* three-forms layout (Theorem 3) */
+  .three-forms{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:stretch;margin:18px 0 8px}
+  @media(max-width:760px){.three-forms{grid-template-columns:1fr}}
+  .tf-card{background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:18px 16px;
+    text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:10px}
+  .tf-card .tag{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.18em;
+    text-transform:uppercase;color:#8a5e10;font-weight:600}
+  .tf-eq{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;
+    font-family:'Spline Sans Mono',monospace;font-size:1rem;color:var(--ink)}
+  .tf-sys{font-family:'Spline Sans Mono',monospace;font-size:1rem;line-height:2;text-align:left;color:var(--ink)}
+  .tf-sys span{color:var(--accent-2);font-weight:600}
+  .tf-final{margin-top:16px;padding:12px 14px;background:rgba(31,94,87,.10);border-radius:6px;text-align:center;
+    font-family:'Spline Sans Mono',monospace;font-size:.95rem;color:var(--accent-2)}
+  .tf-final strong{color:var(--accent);font-weight:600}
+
+  /* Theorem 4 case comparison */
+  .t4-cases{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin:20px 0 10px}
+  @media(max-width:760px){.t4-cases{grid-template-columns:1fr}}
+  .t4-case{background:var(--paper);border:2px solid var(--accent-2);border-radius:6px;padding:22px 22px 18px}
+  .t4-case.bad{border-color:var(--accent)}
+  .t4-case-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .t4-case-head .pill{margin:0;font-weight:600}
+  .t4-case-head .pill.ok{background:rgba(31,94,87,.16);color:var(--accent-2);border-color:var(--accent-2)}
+  .t4-case-head .pill.bad{background:rgba(179,67,31,.12);color:var(--accent);border-color:var(--accent)}
+  .t4-mat-row{display:flex;justify-content:center;gap:14px;align-items:center;margin:14px 0;flex-wrap:wrap}
+  .t4-arrow{font-size:1.5rem;color:var(--accent);font-family:'Spline Sans Mono',monospace}
+  .t4-mat-lbl{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.18em;
+    text-transform:uppercase;color:#8a836f;display:block;text-align:center;margin-bottom:4px}
+  .t4-checks{margin:14px 0 0;padding:14px 16px;background:var(--paper-2);border-radius:6px;font-size:.92rem}
+  .t4-check{display:grid;grid-template-columns:32px 22px 1fr;align-items:start;gap:6px;margin-bottom:7px;line-height:1.5}
+  .t4-check:last-child{margin-bottom:0}
+  .t4-check .lbl{font-family:'Spline Sans Mono',monospace;font-size:.78rem;color:#8a836f;font-weight:600;padding-top:1px}
+  .t4-check .mk{font-weight:700;font-size:1rem;line-height:1}
+  .t4-check .mk.yes{color:var(--accent-2)}.t4-check .mk.no{color:var(--accent)}
+  .t4-check .body{color:var(--ink)}
+  .t4-summary{margin:14px 0 0;padding:14px 18px;background:var(--paper-2);border-left:4px solid var(--gold);
+    border-radius:0 4px 4px 0;font-size:.95rem;font-style:italic;color:#4a4438;line-height:1.6}
+
+  /* Ax computed visual + row-rule visual */
+  .ax-compute{background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:18px 22px;
+    margin:14px 0;text-align:center}
+  .ax-compute .line{font-family:'Spline Sans Mono',monospace;font-size:1.02rem;line-height:2;color:var(--ink)}
+  .ax-compute .line .res{font-weight:600;color:var(--accent);background:var(--paper);padding:2px 9px;border-radius:4px}
+  .ax-compute .line .c0{color:var(--accent);font-weight:600}
+  .ax-compute .line .c1{color:var(--accent-2);font-weight:600}
+  .ax-compute .line .c2{color:#8a5e10;font-weight:600}
+  .row-rule-box{background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:18px 22px;
+    margin:14px 0;font-family:'Spline Sans Mono',monospace;font-size:.98rem;line-height:2.1;text-align:center}
+  .row-rule-box .lbl{display:block;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;
+    color:#8a5e10;margin-bottom:8px;font-weight:600}
+  .row-rule-box .r{color:var(--accent-2)}
+  .row-rule-box .r strong{color:var(--accent)}
+
+  /* ---- per-section recap box ---- */
+  .recap{margin-top:32px;background:var(--ink);color:var(--paper);
+    border-radius:8px;padding:24px 28px 22px;position:relative;
+    box-shadow:6px 6px 0 var(--paper-2);overflow:hidden}
+  .recap::before{content:"";position:absolute;top:0;left:0;width:64px;height:4px;
+    background:var(--gold);border-radius:8px 0 0 0}
+  .recap::after{content:"";position:absolute;top:0;left:64px;width:32px;height:4px;
+    background:var(--accent)}
+  .recap-tag{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:10px;font-weight:600;display:block;padding-top:8px}
+  .recap-tag::before{content:"§ ";color:var(--accent)}
+  .recap h4{font-family:'Fraunces',serif;font-weight:600;color:var(--paper);font-size:1.12rem;
+    margin-bottom:10px;line-height:1.4}
+  .recap h4 em{font-style:italic;color:var(--gold)}
+  .recap p{color:#d8d1bf;margin:0 0 10px;font-size:.96rem;line-height:1.7}
+  .recap p:last-child{margin-bottom:0}
+  .recap ul{margin:8px 0 0 0;color:#d8d1bf;list-style:none;padding:0}
+  .recap li{margin-bottom:8px;font-size:.95rem;line-height:1.6;padding-left:22px;position:relative}
+  .recap li::before{content:"▸";position:absolute;left:0;top:0;color:var(--gold);font-weight:700}
+  .recap li:last-child{margin-bottom:0}
+  .recap strong{color:var(--gold);font-weight:600}
+  .recap em{color:#bdb6a4;font-style:italic}
+  .recap code{font-family:'Spline Sans Mono',monospace;background:rgba(244,240,230,.08);
+    color:var(--gold);padding:1px 7px;border-radius:3px;font-size:.9rem;border:1px solid rgba(244,240,230,.06)}
+  .recap .bottom{margin-top:14px;padding-top:12px;border-top:1px dashed rgba(244,240,230,.18);
+    font-family:'Spline Sans Mono',monospace;font-size:.86rem;color:var(--gold);letter-spacing:.04em}
+  .recap .bottom::before{content:"BOTTOM LINE → ";color:var(--accent);font-weight:600;letter-spacing:.12em}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="chapnum">1.4</span>
+    <div class="badge">Linear Algebra · Chapter 1 · Section 1.4</div>
+    <h1 class="title">The Matrix Equation<br><em>Ax = b</em></h1>
+    <p class="sub">Three ways to say the same thing: a matrix equation, a vector equation, and a linear system. Multiplying a matrix by a vector is just a linear combination of the columns — and that unlocks the existence theorem.</p>
+  </div>
+</header>
+
+<div class="wrap grid">
+
+  <nav class="toc">
+    <div class="label">On this page</div>
+    <a href="#intro">What 1.4 teaches</a>
+    <a href="#product">The product Ax</a>
+    <a href="#calc">Compute Ax (interactive)</a>
+    <a href="#three">Three equivalent forms</a>
+    <a href="#rowrule">The row–vector rule</a>
+    <a href="#theorem4">Theorem 4 — the big one</a>
+    <a href="#spancheck">Do columns span Rᵐ? (checker)</a>
+    <a href="#examples">Worked examples</a>
+    <a href="#remember">Rules to remember</a>
+    <a href="#quiz">Practice quiz</a>
+  </nav>
+
+  <main>
+
+    <section id="intro">
+      <div class="kicker">The big idea</div>
+      <h2>What is Section 1.4 trying to teach?</h2>
+      <p class="lead">A matrix times a vector, <code class="mono">Ax</code>, is <em>defined</em> to be a linear combination of the columns of A, using the entries of x as weights. That single definition ties together everything from 1.3.</p>
+      <p>Once you accept that definition, three things you've seen separately collapse into one: the <span class="term">matrix equation</span> <code class="mono">Ax = b</code>, the <span class="term">vector equation</span> <code class="mono">x₁a₁ + ⋯ + xₙaₙ = b</code>, and the <span class="term">linear system</span> with augmented matrix <code class="mono">[a₁ ⋯ aₙ | b]</code> — all have the same solution set.</p>
+      <p>The payoff is <strong>Theorem 4</strong>: it lists four equivalent ways of saying "Ax = b is solvable for <em>every</em> b" — and reduces them all to one checkable condition: <strong>A has a pivot position in every row.</strong></p>
+    </section>
+
+    <section id="product">
+      <div class="kicker">The definition</div>
+      <h2>The product Ax</h2>
+      <p>If A has columns a₁, …, aₙ and x has entries x₁, …, xₙ, then</p>
+      <div class="formula">
+        Ax = x₁a₁ + x₂a₂ + ⋯ + xₙaₙ
+        <small>a linear combination of A's columns, weighted by x's entries</small>
+      </div>
+      <p>For this to be defined, the <strong>number of columns of A must equal the number of entries in x</strong>. The result is a vector with as many entries as each column (i.e. as many as A has rows).</p>
+
+      <div class="t-vis">
+        <span class="t-vis-tag">See it · concrete numbers</span>
+        <div class="t-vis-title">What "Ax = combination of columns" actually does</div>
+        <p>Let A be a 2×3 matrix (3 colored columns) and x have 3 entries (the weights):</p>
+        <div class="t4-mat-row">
+          <div>
+            <span class="t4-mat-lbl">A (3 columns)</span>
+            <div class="mini-mat" style="grid-template-columns:repeat(3,1.9em)">
+              <span class="c0">1</span><span class="c1">2</span><span class="c2">−1</span>
+              <span class="c0">0</span><span class="c1">3</span><span class="c2">4</span>
+            </div>
+          </div>
+          <div>
+            <span class="t4-mat-lbl">x (3 weights)</span>
+            <div class="mini-mat" style="grid-template-columns:1.9em">
+              <span>2</span><span>1</span><span>−1</span>
+            </div>
+          </div>
+        </div>
+        <div class="ax-compute">
+          <div class="line">Ax = 2·<span class="c0">[1, 0]</span> + 1·<span class="c1">[2, 3]</span> + (−1)·<span class="c2">[−1, 4]</span></div>
+          <div class="line">&nbsp;&nbsp;&nbsp;&nbsp;= <span class="c0">[2, 0]</span> + <span class="c1">[2, 3]</span> + <span class="c2">[1, −4]</span></div>
+          <div class="line">&nbsp;&nbsp;&nbsp;&nbsp;= <span class="res">[5, −1]</span></div>
+        </div>
+        <p style="font-size:.93rem;color:#4a4438;font-style:italic">Each column gets weighted by the matching entry of x; then add the column-vectors entrywise. The result has the same number of entries as one column (2 here, because A has 2 rows).</p>
+      </div>
+
+      <div class="callout">
+        <div class="h">Identity matrix</div>
+        <p style="margin:0">Multiplying by the identity does nothing: <code class="mono">Iₙx = x</code> for every x in ℝⁿ. Its columns are the standard basis vectors e₁, …, eₙ.</p>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4><em>Ax</em> is a <em>linear combination of A's columns</em>, weighted by the entries of x</h4>
+        <ul>
+          <li><code>Ax = x₁a₁ + x₂a₂ + ⋯ + xₙaₙ</code> — that's the <strong>definition</strong>, not a theorem.</li>
+          <li>It's only defined when <strong>#columns of A = #entries of x</strong>; the result has as many entries as A has rows.</li>
+          <li>Special case: <code>Iₙx = x</code>, because I's columns are the standard basis vectors e₁,…,eₙ.</li>
+        </ul>
+        <div class="bottom">If you can't read "Ax" as "mix A's columns with weights x," nothing else in 1.4 will click.</div>
+      </div>
+    </section>
+
+    <section id="calc">
+      <div class="kicker">See it · the calculator</div>
+      <h2>Compute Ax as a linear combination</h2>
+      <p>Set the weights x₁, x₂, x₃ and watch Ax built two ways: as a weighted sum of the colored columns (the definition), shown live. The columns of A are fixed; only x changes.</p>
+      <div class="viz">
+        <div class="axb">
+          <div class="axb-stage" id="axb-stage"></div>
+          <div class="viz-ctrl">
+            <label>x₁ <span class="v" id="x0-out">1</span></label>
+            <input type="range" id="x0" min="-3" max="3" step="1" value="1">
+            <label>x₂ <span class="v" id="x1-out">1</span></label>
+            <input type="range" id="x1" min="-3" max="3" step="1" value="1">
+            <label>x₃ <span class="v" id="x2-out">1</span></label>
+            <input type="range" id="x2" min="-3" max="3" step="1" value="1">
+          </div>
+          <div class="axb-explain" id="axb-explain"></div>
+          <div class="chiprow">
+            <span class="chip" data-x="1,0,0">e₁ → col 1</span>
+            <span class="chip" data-x="0,1,0">e₂ → col 2</span>
+            <span class="chip" data-x="0,0,1">e₃ → col 3</span>
+            <span class="chip" data-x="2,-1,1">2,−1,1</span>
+          </div>
+        </div>
+        <div class="viz-cap">Notice: when x is a standard basis vector like (1,0,0), Ax just picks out a single column of A. In general Ax mixes the columns by the weights.</div>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>Sliding x₁, x₂, x₃ literally <em>reweights the columns</em> of A</h4>
+        <ul>
+          <li>Plugging in <code>e₁ = (1,0,0)</code> returns column 1 of A unchanged — same for e₂, e₃.</li>
+          <li>Any other x is just a colored sum: <strong>x₁·(col 1) + x₂·(col 2) + x₃·(col 3)</strong>.</li>
+          <li>Every output you can produce by sliding the sliders lives in the <em>span</em> of A's columns.</li>
+        </ul>
+        <div class="bottom">x picks the recipe; A supplies the ingredients (its columns) — Ax is the dish.</div>
+      </div>
+    </section>
+
+    <section id="three">
+      <div class="kicker">The unification</div>
+      <h2>Three equivalent forms</h2>
+      <p>These three statements have <strong>identical solution sets</strong>. Solving any one solves all three.</p>
+      <div class="defs">
+        <div class="def"><div class="word">Matrix equation</div><p><code>Ax = b</code> — compact and powerful; the form used for the rest of the course.</p></div>
+        <div class="def"><div class="word">Vector equation</div><p><code>x₁a₁ + ⋯ + xₙaₙ = b</code> — the linear-combination view from §1.3.</p></div>
+        <div class="def"><div class="word">Linear system</div><p>The augmented matrix <code>[a₁ ⋯ aₙ | b]</code> — what you actually row reduce.</p></div>
+      </div>
+      <div class="theorem">
+        <div class="lbl">Theorem 3</div>
+        <p>If A is m×n with columns a₁, …, aₙ, and b is in ℝᵐ, the matrix equation <code class="mono">Ax = b</code> has the same solution set as the vector equation <code class="mono">x₁a₁ + ⋯ + xₙaₙ = b</code>, which in turn has the same solution set as the system with augmented matrix <code class="mono">[a₁ ⋯ aₙ | b]</code>.</p>
+      </div>
+
+      <div class="t-vis">
+        <span class="t-vis-tag">See it · same problem, three forms</span>
+        <div class="t-vis-title">Same equation, three ways to write it</div>
+        <p>Take <span class="mono">A = [[1, 2], [3, 4]]</span> and <span class="mono">b = [5, 6]</span>. Here is the exact same equation written in all three forms — same unknowns x₁, x₂, same solution set:</p>
+        <div class="three-forms">
+          <div class="tf-card">
+            <div class="tag">Matrix equation</div>
+            <div class="tf-eq">
+              <div class="mini-mat" style="grid-template-columns:repeat(2,1.9em)">
+                <span>1</span><span>2</span>
+                <span>3</span><span>4</span>
+              </div>
+              <div class="mini-mat" style="grid-template-columns:1.9em">
+                <span>x₁</span><span>x₂</span>
+              </div>
+              <span style="font-size:1.2rem;color:var(--accent)">=</span>
+              <div class="mini-mat" style="grid-template-columns:1.9em">
+                <span>5</span><span>6</span>
+              </div>
+            </div>
+            <div style="font-size:.85rem;color:#6b6453;font-style:italic;margin-top:6px">"Multiply matrix A by vector x; get b."</div>
+          </div>
+          <div class="tf-card">
+            <div class="tag">Vector equation</div>
+            <div class="tf-eq">
+              <span>x₁</span>
+              <div class="mini-mat" style="grid-template-columns:1.9em"><span class="c0">1</span><span class="c0">3</span></div>
+              <span style="font-size:1.1rem">+</span>
+              <span>x₂</span>
+              <div class="mini-mat" style="grid-template-columns:1.9em"><span class="c1">2</span><span class="c1">4</span></div>
+              <span style="font-size:1.2rem;color:var(--accent)">=</span>
+              <div class="mini-mat" style="grid-template-columns:1.9em"><span>5</span><span>6</span></div>
+            </div>
+            <div style="font-size:.85rem;color:#6b6453;font-style:italic;margin-top:6px">"Combine the columns of A with weights x₁, x₂ to reach b."</div>
+          </div>
+          <div class="tf-card">
+            <div class="tag">Linear system</div>
+            <div class="tf-sys">
+              <span>x₁</span> + 2<span>x₂</span> = 5<br>
+              3<span>x₁</span> + 4<span>x₂</span> = 6
+            </div>
+            <div style="font-size:.85rem;color:#6b6453;font-style:italic;margin-top:6px">"Row-by-row, what the matrix product spells out."</div>
+          </div>
+        </div>
+        <div class="tf-final">All three give the same answer: <strong>x₁ = −4, &nbsp; x₂ = 4.5</strong> &nbsp;(check: 1·(−4) + 2·(4.5) = 5 ✓, &nbsp; 3·(−4) + 4·(4.5) = 6 ✓)</div>
+        <p style="margin-top:14px;font-size:.95rem;color:#4a4438">In practice you almost always solve via the linear system (row reduce <code class="mono">[A | b]</code>). But knowing all three are the same lets you switch viewpoints depending on what you want to <em>understand</em>.</p>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4><em>Theorem 3</em>: matrix equation, vector equation, and linear system are the <em>same problem</em></h4>
+        <ul>
+          <li><code>Ax = b</code>, &nbsp;<code>x₁a₁ + ⋯ + xₙaₙ = b</code>, and the system with augmented matrix <code>[a₁ ⋯ aₙ | b]</code> all have <strong>identical solution sets</strong>.</li>
+          <li>Solving any one solves all three — you'll usually row-reduce the augmented matrix because that's what you can mechanically do.</li>
+          <li>Use the matrix form to <em>state</em> things, the vector form to <em>understand</em> things, the system form to <em>compute</em> things.</li>
+        </ul>
+        <div class="bottom">Three notations, one solution set — pick whichever view makes the question easier.</div>
+      </div>
+    </section>
+
+    <section id="rowrule">
+      <div class="kicker">The shortcut</div>
+      <h2>The row–vector rule for computing Ax</h2>
+      <p>The linear-combination definition is conceptual. For fast computation there's an equivalent recipe: the <em>i</em>-th entry of Ax is the dot product of row <em>i</em> of A with x.</p>
+      <div class="formula">
+        (Ax)ᵢ = aᵢ₁x₁ + aᵢ₂x₂ + ⋯ + aᵢₙxₙ
+        <small>row i of A, dotted with x → entry i of the result</small>
+      </div>
+
+      <div class="t-vis">
+        <span class="t-vis-tag">See it · same A, same x, row-by-row</span>
+        <div class="t-vis-title">Row-rule on the same example</div>
+        <p>Reusing <span class="mono">A = [[1, 2, −1], [0, 3, 4]]</span> and <span class="mono">x = [2, 1, −1]</span>. Take each row, multiply pairwise with x, sum it up:</p>
+        <div class="row-rule-box">
+          <span class="lbl">Row 1 of A &nbsp;·&nbsp; x &nbsp;→&nbsp; entry 1 of Ax</span>
+          <span class="r">(<strong>1</strong>, <strong>2</strong>, <strong>−1</strong>) · (2, 1, −1) &nbsp;=&nbsp; 1·2 + 2·1 + (−1)·(−1) &nbsp;=&nbsp; <strong>5</strong></span>
+        </div>
+        <div class="row-rule-box">
+          <span class="lbl">Row 2 of A &nbsp;·&nbsp; x &nbsp;→&nbsp; entry 2 of Ax</span>
+          <span class="r">(<strong>0</strong>, <strong>3</strong>, <strong>4</strong>) · (2, 1, −1) &nbsp;=&nbsp; 0·2 + 3·1 + 4·(−1) &nbsp;=&nbsp; <strong>−1</strong></span>
+        </div>
+        <p style="text-align:center;font-family:'Spline Sans Mono',monospace;font-size:1rem;color:var(--accent-2);margin-top:6px">
+          Result: Ax = <strong>[5, −1]</strong> — exactly what the column view produced. ✓
+        </p>
+        <p style="font-size:.93rem;color:#4a4438;font-style:italic">The column view <em>defines</em> Ax (and explains why it makes sense). The row view <em>computes</em> Ax (it's what you actually do on paper). Both must agree because they're the same arithmetic, just reorganized.</p>
+      </div>
+
+      <p>Both views give the same answer. Use columns to understand <em>what</em> Ax means (a combination of columns); use rows to <em>compute</em> it quickly.</p>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>The <em>row–vector rule</em>: entry i of Ax is row i of A <em>dotted</em> with x</h4>
+        <ul>
+          <li>Formula: <code>(Ax)ᵢ = aᵢ₁x₁ + aᵢ₂x₂ + ⋯ + aᵢₙxₙ</code> — one dot product per row.</li>
+          <li>It gives the <strong>same answer</strong> as the column-combination definition; it's the same arithmetic regrouped.</li>
+          <li>The example with <code>A=[[1,2,−1],[0,3,4]]</code>, <code>x=[2,1,−1]</code> gave <code>[5,−1]</code> both ways.</li>
+        </ul>
+        <div class="bottom">Columns tell you what Ax <em>means</em>; rows tell you how to <em>compute</em> it on paper.</div>
+      </div>
+    </section>
+
+    <section id="theorem4">
+      <div class="kicker">The centerpiece</div>
+      <h2>Theorem 4 — four equivalent statements</h2>
+      <p>Let A be an m×n matrix. The following are either <strong>all true or all false</strong>:</p>
+      <div class="theorem">
+        <div class="lbl">Theorem 4</div>
+        <ul>
+          <li>(a) For each b in ℝᵐ, the equation <code class="mono">Ax = b</code> has a solution.</li>
+          <li>(b) Each b in ℝᵐ is a linear combination of the columns of A.</li>
+          <li>(c) The columns of A span ℝᵐ.</li>
+          <li>(d) A has a pivot position in <strong>every row</strong>.</li>
+        </ul>
+      </div>
+
+      <div class="t-vis">
+        <span class="t-vis-tag">See it · two matrices, all four statements</span>
+        <div class="t-vis-title">One passes Theorem 4, one fails — every part visible</div>
+        <p>For each of the four statements (a)–(d), watch what happens on a matrix that <strong>does</strong> have a pivot in every row vs. one that <strong>doesn't</strong>. Theorem 4 promises they go all-true or all-false together.</p>
+
+        <div class="t4-cases">
+          <div class="t4-case">
+            <div class="t4-case-head">
+              <span class="pill ok">CASE 1 &nbsp;·&nbsp; ✓ passes</span>
+            </div>
+            <div class="t4-mat-row">
+              <div>
+                <span class="t4-mat-lbl">A (3×3)</span>
+                <div class="mini-mat" style="grid-template-columns:repeat(3,1.9em)">
+                  <span>1</span><span>2</span><span>0</span>
+                  <span>0</span><span>1</span><span>3</span>
+                  <span>2</span><span>3</span><span>1</span>
+                </div>
+              </div>
+              <div class="t4-arrow">→</div>
+              <div>
+                <span class="t4-mat-lbl">echelon form</span>
+                <div class="mini-mat" style="grid-template-columns:repeat(3,1.9em)">
+                  <span class="piv">1</span><span>2</span><span>0</span>
+                  <span class="zero">0</span><span class="piv">1</span><span>3</span>
+                  <span class="zero">0</span><span class="zero">0</span><span class="piv">4</span>
+                </div>
+              </div>
+            </div>
+            <div class="t4-checks">
+              <div class="t4-check"><span class="lbl">(a)</span><span class="mk yes">✓</span><span class="body">Ax = b has a solution for <em>every</em> b in ℝ³ — try any b you like, row reduction always succeeds.</span></div>
+              <div class="t4-check"><span class="lbl">(b)</span><span class="mk yes">✓</span><span class="body">Every b in ℝ³ can be written as a linear combination of the three columns.</span></div>
+              <div class="t4-check"><span class="lbl">(c)</span><span class="mk yes">✓</span><span class="body">The columns <strong>span</strong> ℝ³ — they reach all of 3D space.</span></div>
+              <div class="t4-check"><span class="lbl">(d)</span><span class="mk yes">✓</span><span class="body">Pivots in <strong>every</strong> row (rows 1, 2, 3 all carry one). This is what you actually check.</span></div>
+            </div>
+          </div>
+
+          <div class="t4-case bad">
+            <div class="t4-case-head">
+              <span class="pill bad">CASE 2 &nbsp;·&nbsp; ✗ fails</span>
+            </div>
+            <div class="t4-mat-row">
+              <div>
+                <span class="t4-mat-lbl">A (3×3)</span>
+                <div class="mini-mat" style="grid-template-columns:repeat(3,1.9em)">
+                  <span>1</span><span>2</span><span>3</span>
+                  <span>0</span><span>1</span><span>2</span>
+                  <span>0</span><span>2</span><span>4</span>
+                </div>
+              </div>
+              <div class="t4-arrow">→</div>
+              <div>
+                <span class="t4-mat-lbl">echelon form</span>
+                <div class="mini-mat" style="grid-template-columns:repeat(3,1.9em)">
+                  <span class="piv">1</span><span>2</span><span>3</span>
+                  <span class="zero">0</span><span class="piv">1</span><span>2</span>
+                  <span class="zero">0</span><span class="zero">0</span><span class="zero">0</span>
+                </div>
+              </div>
+            </div>
+            <div class="t4-checks">
+              <div class="t4-check"><span class="lbl">(a)</span><span class="mk no">✗</span><span class="body">For some b in ℝ³, Ax = b has NO solution (e.g., a b that's off the plane spanned by the columns).</span></div>
+              <div class="t4-check"><span class="lbl">(b)</span><span class="mk no">✗</span><span class="body">Some b cannot be written as a combination of these columns.</span></div>
+              <div class="t4-check"><span class="lbl">(c)</span><span class="mk no">✗</span><span class="body">The columns span only a <strong>plane</strong> through the origin in ℝ³ — not all of it.</span></div>
+              <div class="t4-check"><span class="lbl">(d)</span><span class="mk no">✗</span><span class="body"><strong>Row 3 has no pivot</strong> (it zeroed out). That single failure forces all four to fail.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="t4-summary">
+          <strong>Why Case 2 collapsed:</strong> in the original matrix, row 3 = 2·row 2, so <code class="mono">R3 → R3 − 2·R2</code> wipes it out. That ZERO row in echelon form is the visible signature of failing Theorem 4. <strong>Practical rule:</strong> row reduce A alone (not <code class="mono">[A | b]</code>). Pivot in every row → spans ℝᵐ → Ax = b solvable for every b. Missing a pivot in any row → fails on all four counts.
+        </div>
+      </div>
+
+      <div class="callout">
+        <div class="h">Read this carefully</div>
+        <p style="margin:0">This is about solvability for <em>every</em> b, not one specific b. The checkable condition is (d): row reduce A (just A, not [A b]) and confirm there's a pivot in every <strong>row</strong>. A pivot in every row ⟺ the columns span ℝᵐ.</p>
+      </div>
+      <p>Common trap: a pivot in every <em>column</em> is about <em>uniqueness</em> (that's later). A pivot in every <em>row</em> is about <em>existence</em> / spanning — that's Theorem 4.</p>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4><em>Theorem 4</em>: four statements that stand or fall <em>together</em></h4>
+        <ul>
+          <li>(a) Ax = b solvable for <strong>every</strong> b &nbsp;⟺&nbsp; (b) every b is a combination of A's columns &nbsp;⟺&nbsp; (c) columns <strong>span ℝᵐ</strong> &nbsp;⟺&nbsp; (d) A has a <strong>pivot in every row</strong>.</li>
+          <li>The <em>checkable</em> condition is (d): row reduce A <strong>alone</strong> (not [A | b]) and count pivots per row.</li>
+          <li>Trap: pivot in every <em>row</em> = existence/spanning; pivot in every <em>column</em> = uniqueness (a different question, coming later).</li>
+        </ul>
+        <div class="bottom">A zero row in A's echelon form is the visible signature of failing all four parts at once.</div>
+      </div>
+    </section>
+
+    <section id="spancheck">
+      <div class="kicker">See it · the checker</div>
+      <h2>Do the columns of A span Rᵐ?</h2>
+      <p>Pick a matrix; the page row-reduces it and checks Theorem 4(d) — is there a pivot in every row? Pivots are highlighted; a row with no pivot is flagged, and that's exactly when the columns fail to span ℝᵐ.</p>
+      <div class="viz">
+        <div class="spanck">
+          <div class="viz-btns">
+            <button data-case="spans" class="on">Example: spans R³</button>
+            <button data-case="nospan">Example: does NOT span R³</button>
+          </div>
+          <div class="spanck-grid">
+            <div>
+              <div style="font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:#8a836f;text-align:center;margin-bottom:6px">A</div>
+              <div class="ck-mtx" id="ck-A"></div>
+            </div>
+            <div class="axb-sym" style="font-size:1.4rem;color:var(--accent)">→</div>
+            <div>
+              <div style="font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:#8a836f;text-align:center;margin-bottom:6px">echelon form</div>
+              <div class="ck-mtx" id="ck-E"></div>
+            </div>
+          </div>
+          <div class="ck-verdict" id="ck-verdict"></div>
+          <div class="viz-cap" id="ck-cap"></div>
+        </div>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>One mechanical test: <em>count pivots, one per row</em></h4>
+        <ul>
+          <li>Row-reduce A and highlight pivots — three pivots across three rows means the columns <strong>span ℝ³</strong>.</li>
+          <li>A row that reduces to all zeros is a missing pivot, and by Theorem 4(d) the columns <strong>fail</strong> to span ℝᵐ.</li>
+          <li>When spanning fails, you'll always be able to find some b for which <code>Ax = b</code> is inconsistent.</li>
+        </ul>
+        <div class="bottom">"Spans ℝᵐ?" reduces to: "after row reduction, does every row carry a pivot?"</div>
+      </div>
+    </section>
+
+    <section id="examples">
+      <div class="kicker">Worked examples</div>
+      <h2>Focused examples</h2>
+
+      <div class="example">
+        <div class="ehead"><div class="enum">1</div><div class="etitle">Compute Ax</div></div>
+        <p>Let <code>A = [[1,2,−1],[0,−3,2]]</code> (2×3) and <code>x = [2,1,−1]</code>. Find Ax.</p>
+        <button class="reveal">Show solution</button>
+        <div class="ework">
+          <h4>Column / linear-combination view</h4>
+          <p><code>Ax = 2·[1,0] + 1·[2,−3] + (−1)·[−1,2] = [2,0] + [2,−3] + [1,−2] = [5,−5]</code>.</p>
+          <h4>Row / dot-product check</h4>
+          <p>Row 1 · x = <code>1·2 + 2·1 + (−1)(−1) = 5</code>. Row 2 · x = <code>0·2 + (−3)·1 + 2·(−1) = −5</code>. Same answer: <code>Ax = [5,−5]</code>.</p>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="ehead"><div class="enum">2</div><div class="etitle">Solve Ax = b</div></div>
+        <p>Solve <code>Ax = b</code> for <code>A = [[1,3],[2,5]]</code>, <code>b = [5,8]</code>.</p>
+        <button class="reveal">Show solution</button>
+        <div class="ework">
+          <h4>Row reduce [A | b]</h4>
+          <p><code>[1 3 | 5 ; 2 5 | 8]</code>. R2 − 2R1 → <code>[1 3 | 5 ; 0 −1 | −2]</code>, so <code>x₂ = 2</code>, then <code>x₁ = 5 − 6 = −1</code>.</p>
+          <h4>Answer</h4>
+          <p><code>x = [−1, 2]</code>. Check: <code>−1·[1,2] + 2·[3,5] = [−1,−2]+[6,10] = [5,8] = b</code>. ✓</p>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="ehead"><div class="enum">3</div><div class="etitle">Do the columns span R³?</div></div>
+        <p>Does <code>A = [[1,0,2],[0,1,−1],[2,1,3]]</code> have columns that span ℝ³?</p>
+        <button class="reveal">Show solution</button>
+        <div class="ework">
+          <h4>Row reduce A</h4>
+          <p>R3 − 2R1 → <code>[0,1,−1]</code> in row 3. Then R3 − R2 → <code>[0,0,0]</code>. Echelon form has pivots only in rows 1 and 2 — row 3 is all zeros.</p>
+          <h4>Apply Theorem 4(d)</h4>
+          <p>No pivot in row 3, so A does <strong>not</strong> have a pivot in every row. Therefore the columns do <strong>not</strong> span ℝ³ — there exist vectors b for which Ax = b has no solution.</p>
+        </div>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>The three worked problems map onto <em>the three tasks</em> 1.4 asks you to do</h4>
+        <ul>
+          <li><strong>Ex 1 — Compute Ax:</strong> use column-combination <em>or</em> row-by-row dot products; you should get <code>[5, −5]</code> both ways.</li>
+          <li><strong>Ex 2 — Solve Ax = b:</strong> row reduce <code>[A | b]</code>, back-substitute, and check by recombining the columns (<code>x = [−1, 2]</code>).</li>
+          <li><strong>Ex 3 — Span check:</strong> row reduce A alone, look for a missing pivot — here row 3 zeroed out, so columns do <strong>not</strong> span ℝ³.</li>
+        </ul>
+        <div class="bottom">If you can do these three on demand, you've operationalized everything in 1.4.</div>
+      </div>
+    </section>
+
+    <section id="remember">
+      <div class="kicker">Cheat sheet</div>
+      <h2>Rules &amp; facts to remember</h2>
+      <ol class="rules">
+        <li><code>Ax</code> is <strong>defined</strong> as a linear combination of A's columns, weighted by x's entries.</li>
+        <li>Ax is defined only when <strong>#columns of A = #entries of x</strong>.</li>
+        <li>Matrix equation = vector equation = linear system — <strong>same solution set</strong> (Theorem 3).</li>
+        <li>Compute Ax fast with the <strong>row–vector (dot product) rule</strong>: entry i = (row i)·x.</li>
+        <li><strong>Theorem 4</strong>: (a) Ax=b solvable for all b ⟺ (b) every b is a combination of columns ⟺ (c) columns span ℝᵐ ⟺ (d) pivot in every <strong>row</strong>.</li>
+        <li>Pivot in every <strong>row</strong> → existence/spanning. Pivot in every <strong>column</strong> → uniqueness (different question).</li>
+        <li>Check spanning by row reducing <strong>A alone</strong>, not [A b].</li>
+        <li><code>Ix = x</code>; the identity leaves vectors unchanged.</li>
+      </ol>
+      <div style="margin-top:14px">
+        <span class="pill">matrix equation</span><span class="pill">Ax = b</span><span class="pill">linear combination</span>
+        <span class="pill">row–vector rule</span><span class="pill">Theorem 4</span><span class="pill">span ℝᵐ</span><span class="pill">pivot in every row</span>
+      </div>
+    </section>
+
+    <section id="purpose">
+      <div class="teach">
+        <h3>In one breath</h3>
+        <p>Section 1.4 defines Ax as a linear combination of A's columns, which makes the matrix equation Ax = b, the vector equation, and a linear system three views of one problem. Theorem 4 then gives four equivalent answers to "is Ax = b solvable for every b?" — the practical one being "does A have a pivot in every row?"</p>
+        <p>This is the engine for matrix algebra, linear independence, and transformations just ahead.</p>
+      </div>
+    </section>
+
+    <section id="quiz" class="quiz">
+      <div class="kicker">Individual Quiz · IQ 1.4</div>
+      <h2>Practice quiz</h2>
+      <div class="quiz-rubric">
+        <strong>Closed book, closed notes, no calculator / computer, no internet, no human help</strong> except by the instructor. Show work for credit and complete work for full credit. Read the questions carefully.
+      </div>
+
+      <div class="problem">
+        <div class="problem-num"><div class="pnum">1</div><div class="ptitle">True or false — justify</div></div>
+        <p class="problem-q">Determine whether the statement below is true or false.</p>
+        <p class="statement">"If the columns of an m×n matrix A span ℝᵐ, then the equation Ax = b is consistent for each b in ℝᵐ."</p>
+        <p>Choose the correct answer below:</p>
+        <ul class="choices" id="q1-choices">
+          <li data-letter="A" data-correct="true"><div class="letter">A</div><div class="ctext">This statement is true. If the columns of A span ℝᵐ, then the equation Ax = b has a solution for each b in ℝᵐ.</div></li>
+          <li data-letter="B" data-correct="false"><div class="letter">B</div><div class="ctext">This statement is false. Since the columns of A span ℝᵐ, the matrix A has a pivot position in exactly m − 1 rows.</div></li>
+          <li data-letter="C" data-correct="false"><div class="letter">C</div><div class="ctext">This statement is true. Since the columns of A span ℝᵐ, the augmented matrix [A b] has a pivot position in every column.</div></li>
+          <li data-letter="D" data-correct="false"><div class="letter">D</div><div class="ctext">This statement is false. If the columns of A span ℝᵐ, then the equation Ax = b is inconsistent for each b in ℝᵐ.</div></li>
+        </ul>
+        <div class="problem-actions"><button class="primary" id="q1-check">Check answer</button><button id="q1-reset">Reset</button></div>
+        <div class="feedback" id="q1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <div class="problem-num"><div class="pnum">2</div><div class="ptitle">Do the columns span R⁴?</div></div>
+        <p class="problem-q">Do the columns of A span ℝ⁴? Does Ax = b have a solution for each b in ℝ⁴?</p>
+        <div class="sb-matrix"><div class="ck-mtx" id="q2-A"></div></div>
+        <div class="problem-actions"><button class="primary" id="q2-show">Show solution</button><button id="q2-hide">Hide solution</button></div>
+        <div class="solution-block" id="q2-soln">
+          <h4>Row reduce A</h4>
+          <p>Reducing this 4×4 matrix produces an echelon form with a pivot in only <strong>three</strong> of the four rows — the fourth row becomes all zeros.</p>
+          <div class="sb-matrix"><div class="ck-mtx" id="q2-E"></div></div>
+          <h4>Apply Theorem 4</h4>
+          <p>A does <strong>not</strong> have a pivot position in every row (row 4 has none). By Theorem 4, the columns do <strong>not</strong> span ℝ⁴, and therefore Ax = b does <strong>not</strong> have a solution for every b in ℝ⁴.</p>
+          <h4>Answer</h4>
+          <p>"No, because the reduced echelon form of A is" the matrix shown above (a pivot missing in row 4). And for the second part: <strong>B — No, because the columns of A do not span ℝ⁴.</strong></p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">LINEAR ALGEBRA &nbsp;·&nbsp; §1.4 THE MATRIX EQUATION Ax = b &nbsp;·&nbsp; STUDY REFERENCE &nbsp;·&nbsp; built from your course material</div>
+</footer>
+
+<!-- ===================== AI TUTOR ===================== -->
+<button id="ai-explain-btn">Explain with AI</button>
+<button id="ai-tab">✦ Ask AI</button>
+<div id="ai-scrim"></div>
+<aside id="ai-panel" aria-label="AI tutor">
+  <div class="ai-head">
+    <div><div class="t">AI <span>Tutor</span></div><div class="sub2">§1.4 · Linear Algebra</div></div>
+    <button class="ai-close" id="ai-close" title="Close">×</button>
+  </div>
+  <div class="ai-body" id="ai-body">
+    <p class="ai-empty"><b>Two ways to use me:</b><br><br>
+      1. <b>Highlight any text</b> on the page — an <em>“Explain with AI”</em> button pops up.<br><br>
+      2. <b>Type a question</b> below — e.g. <em>“what does Ax actually mean?”</em> or <em>“pivot in every row vs every column?”</em></p>
+  </div>
+  <div class="ai-foot">
+    <form id="ai-form">
+      <textarea id="ai-input" placeholder="Ask anything about Section 1.4…" rows="1"></textarea>
+      <button id="ai-send" type="submit">Send</button>
+    </form>
+    <div class="ai-hint">Powered by DeepSeek · press Enter to send</div>
+  </div>
+</aside>
+
+<script>
+/* ===================== 1.4 WIDGETS ===================== */
+(function(){
+  /* ---- Ax calculator ---- */
+  (function(){
+    const stage=document.getElementById('axb-stage'); if(!stage) return;
+    const A=[[1,2,-1],[0,-3,2],[2,1,1]];  /* 3x3 */
+    let x=[1,1,1];
+    const outs=[document.getElementById('x0-out'),document.getElementById('x1-out'),document.getElementById('x2-out')];
+    const ins=[document.getElementById('x0'),document.getElementById('x1'),document.getElementById('x2')];
+    const explain=document.getElementById('axb-explain');
+    function colMtx(ci){
+      let h='<div class="axb-mtx axb-col'+ci+'">';
+      for(let r=0;r<3;r++) h+='<div class="axb-cell">'+A[r][ci]+'</div>';
+      return h+'</div>';
+    }
+    function render(){
+      const res=[0,0,0];
+      for(let r=0;r<3;r++) res[r]=A[r][0]*x[0]+A[r][1]*x[1]+A[r][2]*x[2];
+      let h='';
+      h+='<div class="axb-mtx">';
+      for(let r=0;r<3;r++) for(let c=0;c<3;c++){
+        h+='<div class="axb-cell axb-col'+c+'" style="grid-column:'+(c+1)+';grid-row:'+(r+1)+'">'+A[r][c]+'</div>';
+      }
+      h+='</div>';
+      h+='<span class="axb-sym">·</span>';
+      h+='<div class="axb-vec axb-x">';
+      for(let r=0;r<3;r++) h+='<div class="axb-cell x'+r+'">'+x[r]+'</div>';
+      h+='</div>';
+      h+='<span class="axb-sym">=</span>';
+      h+='<div class="axb-vec axb-res">';
+      for(let r=0;r<3;r++) h+='<div class="axb-cell">'+res[r]+'</div>';
+      h+='</div>';
+      stage.innerHTML=h;
+      explain.innerHTML =
+        '<span class="c0">'+x[0]+'</span>·'+colMtxInline(0)+' + '+
+        '<span class="c1">'+x[1]+'</span>·'+colMtxInline(1)+' + '+
+        '<span class="c2">'+x[2]+'</span>·'+colMtxInline(2)+'<br>= <span class="res">('+res.join(', ')+')</span>';
+    }
+    function colMtxInline(ci){return '('+A[0][ci]+','+A[1][ci]+','+A[2][ci]+')';}
+    ins.forEach((inp,i)=>inp.oninput=()=>{x[i]=parseInt(inp.value,10);outs[i].textContent=x[i];render();});
+    document.querySelectorAll('#calc .chip').forEach(ch=>ch.onclick=()=>{
+      x=ch.dataset.x.split(',').map(Number);
+      ins.forEach((inp,i)=>{inp.value=x[i];outs[i].textContent=x[i];});render();});
+    render();
+  })();
+
+  /* ---- span checker ---- */
+  (function(){
+    const elA=document.getElementById('ck-A'),elE=document.getElementById('ck-E'),
+      verdict=document.getElementById('ck-verdict'),cap=document.getElementById('ck-cap');
+    if(!elA) return;
+    const cases={
+      spans:{
+        A:[[1,0,2],[0,1,1],[1,1,4]],
+        E:[[1,0,2],[0,1,1],[0,0,1]],
+        pivots:[[0,0],[1,1],[2,2]], spans:true
+      },
+      nospan:{
+        A:[[1,0,2],[0,1,-1],[2,1,3]],
+        E:[[1,0,2],[0,1,-1],[0,0,0]],
+        pivots:[[0,0],[1,1]], spans:false, zeroRow:2
+      }
+    };
+    let cur='spans';
+    function paint(el,M,pivots,zeroRow){
+      el.style.gridTemplateColumns='repeat('+M[0].length+', 2.4em)';
+      el.innerHTML='';
+      const has=(l,r,c)=>l&&l.some(p=>p[0]===r&&p[1]===c);
+      for(let r=0;r<M.length;r++) for(let c=0;c<M[r].length;c++){
+        const sp=document.createElement('span');sp.textContent=M[r][c];
+        if(has(pivots,r,c))sp.classList.add('piv');
+        if(zeroRow===r)sp.classList.add('zero-row');
+        el.appendChild(sp);
+      }
+    }
+    function draw(){
+      const c=cases[cur];
+      paint(elA,c.A,[],null);
+      paint(elE,c.E,c.pivots,c.zeroRow);
+      if(c.spans){
+        verdict.className='ck-verdict ok';
+        verdict.innerHTML='✓ Pivot in every row → columns SPAN ℝ³ → Ax = b solvable for every b';
+        cap.textContent='Three pivots, one in each of the three rows. By Theorem 4, the columns span ℝ³ and Ax = b has a solution for every b.';
+      } else {
+        verdict.className='ck-verdict no';
+        verdict.innerHTML='✗ Row 3 has no pivot → columns do NOT span ℝ³ → some b have no solution';
+        cap.textContent='The third row reduced to all zeros — no pivot there. By Theorem 4(d), the columns fail to span ℝ³, so there exist vectors b for which Ax = b is inconsistent.';
+      }
+    }
+    document.querySelectorAll('#spancheck .viz-btns button').forEach(b=>b.onclick=()=>{
+      cur=b.dataset.case;
+      document.querySelectorAll('#spancheck .viz-btns button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');draw();});
+    draw();
+  })();
+
+  /* ---- worked-example reveals ---- */
+  document.querySelectorAll('.example .reveal').forEach(btn=>{
+    btn.onclick=()=>{const w=btn.nextElementSibling;const open=w.classList.toggle('show');
+      btn.textContent=open?'Hide solution':'Show solution';};
+  });
+
+  /* ---- quiz Q1 ---- */
+  (function(){
+    const choices=document.getElementById('q1-choices'); if(!choices) return;
+    const fb=document.getElementById('q1-fb'),checkBtn=document.getElementById('q1-check'),resetBtn=document.getElementById('q1-reset');
+    const exp={
+      A:"<strong>Correct.</strong> This is exactly Theorem 4: \"columns span ℝᵐ\" and \"Ax = b is consistent for every b in ℝᵐ\" are equivalent statements. So if the columns span, the equation is consistent for each b.",
+      B:"<strong>No.</strong> Spanning ℝᵐ requires a pivot in every one of the m rows, not m−1. And the statement itself is true, not false.",
+      C:"<strong>No.</strong> The condition is a pivot in every <em>row</em> of A — not a pivot in every column of [A b]. (A pivot in the last column of [A b] would actually signal inconsistency.)",
+      D:"<strong>No.</strong> The opposite: spanning means Ax = b is <em>consistent</em> for every b, not inconsistent."
+    };
+    let selected=null;
+    choices.querySelectorAll('li').forEach(li=>li.addEventListener('click',()=>{
+      if(checkBtn.disabled)return;
+      choices.querySelectorAll('li').forEach(x=>x.classList.remove('selected'));
+      li.classList.add('selected');selected=li;}));
+    checkBtn.addEventListener('click',()=>{
+      if(!selected){fb.className='feedback show no';fb.innerHTML='Pick an answer first.';return;}
+      const letter=selected.dataset.letter,correct=selected.dataset.correct==='true';
+      choices.querySelectorAll('li').forEach(li=>{
+        if(li.dataset.correct==='true')li.classList.add('correct');
+        else if(li===selected)li.classList.add('wrong');
+        li.classList.remove('selected');});
+      fb.className='feedback show '+(correct?'ok':'no');
+      fb.innerHTML=(correct?'✓ ':'✗ ')+exp[letter];checkBtn.disabled=true;});
+    resetBtn.addEventListener('click',()=>{
+      choices.querySelectorAll('li').forEach(li=>li.classList.remove('selected','correct','wrong'));
+      fb.className='feedback';fb.innerHTML='';selected=null;checkBtn.disabled=false;});
+  })();
+
+  /* ---- quiz Q2 matrices ---- */
+  (function(){
+    const elA=document.getElementById('q2-A'); if(!elA) return;
+    function paint(el,M,pivots,zeroRow){
+      el.style.gridTemplateColumns='repeat('+M[0].length+', 2.4em)';el.innerHTML='';
+      const has=(l,r,c)=>l&&l.some(p=>p[0]===r&&p[1]===c);
+      for(let r=0;r<M.length;r++) for(let c=0;c<M[r].length;c++){
+        const sp=document.createElement('span');sp.textContent=M[r][c];
+        if(has(pivots,r,c))sp.classList.add('piv');
+        if(zeroRow===r)sp.classList.add('zero-row');el.appendChild(sp);}
+    }
+    paint(elA,[[3,1,-3,5],[2,0,-4,6],[3,2,0,1],[-2,-7,-17,25]],[],null);
+    const elE=document.getElementById('q2-E');
+    if(elE) paint(elE,[[1,0,-2,3],[0,1,3,-4],[0,0,1,-2],[0,0,0,0]],[[0,0],[1,1],[2,2]],3);
+    const soln=document.getElementById('q2-soln');
+    document.getElementById('q2-show').onclick=()=>soln.classList.add('show');
+    document.getElementById('q2-hide').onclick=()=>soln.classList.remove('show');
+  })();
+})();
+</script>
+
+<script>
+/* ============================================================
+   AI TUTOR — DeepSeek integration
+   PASTE YOUR (FRESH) KEY BELOW. A key in client-side HTML is
+   visible to anyone who opens the page — rotate it if exposed,
+   and use a backend proxy for any public deployment.
+   ============================================================ */
+const DEEPSEEK_API_KEY = "sk-3342872f6d7e45f297924e908d646eb0";   // <-- put your key here
+const DEEPSEEK_URL = "https://api.deepseek.com/chat/completions";
+const DEEPSEEK_MODEL = "deepseek-chat";
+const SYSTEM_PROMPT =
+  "You are a friendly, concise linear-algebra tutor embedded in a study website for " +
+  "Section 1.4: The Matrix Equation Ax = b (Lay, Linear Algebra and Its Applications). " +
+  "Topics in scope: the definition of the product Ax as a linear combination of the columns of A " +
+  "weighted by the entries of x, when Ax is defined (columns of A match entries of x), the " +
+  "equivalence of the matrix equation Ax=b with the vector equation and the linear system " +
+  "[a1 ... an | b] (Theorem 3), the row-vector (dot product) rule for computing Ax, the identity " +
+  "matrix, and Theorem 4 (Ax=b solvable for every b iff every b is a linear combination of the " +
+  "columns iff the columns span R^m iff A has a pivot position in every row). Emphasize the " +
+  "distinction: pivot in every ROW = existence/spanning; pivot in every COLUMN = uniqueness. " +
+  "Explain clearly for a first-time student. Keep answers short (2-5 sentences unless asked for more). " +
+  "Use plain text; wrap inline math/notation in backticks. Use **bold** for key terms.";
+
+const panel=document.getElementById('ai-panel'),scrim=document.getElementById('ai-scrim'),
+  tab=document.getElementById('ai-tab'),closeB=document.getElementById('ai-close'),
+  body=document.getElementById('ai-body'),form=document.getElementById('ai-form'),
+  input=document.getElementById('ai-input'),sendB=document.getElementById('ai-send'),
+  hlBtn=document.getElementById('ai-explain-btn');
+let history=[],busy=false;
+function openPanel(){panel.classList.add('open');scrim.classList.add('show');}
+function closePanel(){panel.classList.remove('open');scrim.classList.remove('show');}
+tab.addEventListener('click',openPanel);closeB.addEventListener('click',closePanel);
+scrim.addEventListener('click',closePanel);
+document.addEventListener('mouseup',(e)=>{
+  if(panel.contains(e.target)||e.target===hlBtn)return;
+  const sel=window.getSelection(),text=sel.toString().trim();
+  if(text.length>1){const rect=sel.getRangeAt(0).getBoundingClientRect();
+    hlBtn.style.left=(rect.left+rect.width/2+window.scrollX)+'px';
+    hlBtn.style.top=(rect.top+window.scrollY-8)+'px';
+    hlBtn.style.display='block';hlBtn.dataset.text=text;
+  }else{hlBtn.style.display='none';}});
+document.addEventListener('mousedown',(e)=>{if(e.target!==hlBtn)hlBtn.style.display='none';});
+hlBtn.addEventListener('click',()=>{const t=hlBtn.dataset.text;hlBtn.style.display='none';openPanel();
+  ask('Explain this phrase from the section: "'+t+'"',t);});
+input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,120)+'px';});
+input.addEventListener('keydown',(e)=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit();}});
+form.addEventListener('submit',(e)=>{e.preventDefault();const q=input.value.trim();if(!q)return;
+  input.value='';input.style.height='auto';ask(q,null);});
+function clearEmpty(){const e=body.querySelector('.ai-empty');if(e)e.remove();}
+function fmt(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>');}
+function addUser(q,quote){clearEmpty();const d=document.createElement('div');d.className='ai-msg user';
+  d.innerHTML='<div class="who">You</div>'+(quote?'<div class="quote">“'+fmt(quote)+'”</div>':'')+
+  '<div class="txt">'+fmt(quote?'Explain this':q)+'</div>';body.appendChild(d);body.scrollTop=body.scrollHeight;}
+function addBot(){const d=document.createElement('div');d.className='ai-msg bot';
+  d.innerHTML='<div class="who">AI Tutor</div><div class="txt"><span class="dots"><span></span><span></span><span></span></span></div>';
+  body.appendChild(d);body.scrollTop=body.scrollHeight;return d.querySelector('.txt');}
+async function ask(prompt,quote){
+  if(busy)return;busy=true;sendB.disabled=true;addUser(prompt,quote);const target=addBot();
+  history.push({role:'user',content:prompt});
+  const messages=[{role:'system',content:SYSTEM_PROMPT},...history];
+  if(!DEEPSEEK_API_KEY||DEEPSEEK_API_KEY.includes('REPLACE')){
+    target.innerHTML='<em style="color:var(--accent)">No API key set.</em> Open this file and paste your DeepSeek key into the <code>DEEPSEEK_API_KEY</code> line near the bottom of the source.';
+    busy=false;sendB.disabled=false;return;}
+  try{
+    const res=await fetch(DEEPSEEK_URL,{method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+DEEPSEEK_API_KEY},
+      body:JSON.stringify({model:DEEPSEEK_MODEL,messages,temperature:0.4,max_tokens:600})});
+    if(!res.ok){const err=await res.text();
+      target.innerHTML='<em style="color:var(--accent)">Request failed ('+res.status+').</em> Check your key/credits.<br><small>'+fmt(err.slice(0,200))+'</small>';
+      busy=false;sendB.disabled=false;return;}
+    const data=await res.json();
+    const answer=data.choices?.[0]?.message?.content||'No response.';
+    history.push({role:'assistant',content:answer});target.innerHTML=fmt(answer);
+  }catch(err){target.innerHTML='<em style="color:var(--accent)">Network error.</em> '+fmt(String(err));}
+  body.scrollTop=body.scrollHeight;busy=false;sendB.disabled=false;
+}
+</script>
+
+</body>
+</html>

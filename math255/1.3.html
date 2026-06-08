@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1.3 — Vector Equations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Spline+Sans+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#161512;--paper:#f4f0e6;--paper-2:#ece6d6;--accent:#b3431f;
+    --accent-2:#1f5e57;--gold:#c8922a;--line:#cdc4ad;--shadow:rgba(40,30,15,.16);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:'Newsreader',Georgia,serif;
+    font-size:19px;line-height:1.65;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 12% 18%, rgba(179,67,31,.05), transparent 45%),
+      radial-gradient(circle at 88% 8%, rgba(31,94,87,.06), transparent 40%)}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.4;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E")}
+  .mono{font-family:'Spline Sans Mono',monospace}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+  .grid{display:grid;grid-template-columns:230px 1fr;gap:56px;align-items:start}
+  @media(max-width:880px){.grid{grid-template-columns:1fr;gap:0}}
+
+  header.hero{position:relative;overflow:hidden;border-bottom:2px solid var(--ink);
+    background:var(--ink);color:var(--paper);padding:72px 0 64px}
+  header.hero::after{content:"";position:absolute;inset:0;opacity:.14;pointer-events:none;
+    background:repeating-linear-gradient(90deg,transparent 0 38px,rgba(244,240,230,.5) 38px 39px),
+      repeating-linear-gradient(0deg,transparent 0 38px,rgba(244,240,230,.5) 38px 39px)}
+  .hero .wrap{position:relative;z-index:2}
+  .badge{display:inline-flex;align-items:center;gap:10px;font-family:'Spline Sans Mono',monospace;
+    font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:26px}
+  .badge::before{content:"";width:34px;height:1px;background:var(--gold)}
+  h1.title{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(2.5rem,6.4vw,5rem);
+    line-height:.96;letter-spacing:-.02em}
+  h1.title em{font-style:italic;color:var(--accent)}
+  .sub{margin-top:22px;max-width:640px;font-size:1.15rem;color:#d8d1bf;font-style:italic}
+  .chapnum{position:absolute;top:-30px;right:-10px;font-family:'Fraunces',serif;font-weight:900;
+    font-size:clamp(8rem,26vw,20rem);line-height:1;color:rgba(200,146,42,.13);z-index:1;user-select:none}
+
+  nav.toc{position:sticky;top:24px;padding-top:48px}
+  nav.toc .label{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--accent-2);margin-bottom:18px}
+  nav.toc a{display:block;color:var(--ink);text-decoration:none;padding:7px 0 7px 16px;
+    border-left:2px solid var(--line);font-size:.96rem;transition:.18s}
+  nav.toc a:hover{border-left-color:var(--accent);color:var(--accent);padding-left:22px}
+  @media(max-width:880px){nav.toc{display:none}}
+
+  main{padding:64px 0 120px}
+  section{margin-bottom:78px;scroll-margin-top:24px}
+  .kicker{font-family:'Spline Sans Mono',monospace;font-size:.7rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+  h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.7rem,3.5vw,2.6rem);
+    line-height:1.05;letter-spacing:-.01em;margin-bottom:22px;position:relative}
+  h2::before{content:"";display:block;width:54px;height:4px;background:var(--accent);margin-bottom:16px}
+  h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.3rem;margin:26px 0 10px}
+  p{margin-bottom:16px}
+  p .term{color:var(--accent);font-weight:600;font-style:italic}
+  .lead{font-size:1.35rem;line-height:1.55;border-left:3px solid var(--gold);padding-left:24px;color:#3a352b}
+
+  .formula{background:var(--ink);color:var(--paper);border-radius:4px;padding:30px 34px;margin:24px 0;
+    font-family:'Spline Sans Mono',monospace;font-size:1.2rem;text-align:center;
+    box-shadow:8px 8px 0 var(--accent);overflow-x:auto}
+  .formula small{display:block;margin-top:14px;font-size:.7rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--gold);font-family:'Spline Sans Mono',monospace}
+
+  .defs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:24px 0}
+  .def{background:var(--paper-2);border:1px solid var(--line);border-radius:3px;padding:20px 22px;transition:.2s}
+  .def:hover{transform:translateY(-3px);box-shadow:0 10px 24px var(--shadow)}
+  .def .word{font-family:'Fraunces',serif;font-weight:600;font-size:1.18rem;color:var(--accent-2);margin-bottom:6px}
+  .def p{font-size:.96rem;margin:0;color:#4a4438}
+
+  .rules{counter-reset:r;list-style:none;margin:20px 0}
+  .rules li{position:relative;padding:16px 18px 16px 64px;border-bottom:1px dashed var(--line)}
+  .rules li::before{counter-increment:r;content:counter(r);position:absolute;left:14px;top:14px;
+    width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600}
+  .rules li strong{color:var(--accent-2)}
+
+  .callout{background:linear-gradient(180deg,var(--paper-2),var(--paper));border:1px solid var(--line);
+    border-left:5px solid var(--gold);padding:22px 26px;border-radius:0 4px 4px 0;margin:24px 0}
+  .callout .h{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+
+  .theorem{background:var(--accent-2);color:var(--paper);border-radius:4px;padding:30px 34px;margin:24px 0;
+    box-shadow:8px 8px 0 var(--ink)}
+  .theorem .lbl{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+  .theorem p{color:#e6e0d2}.theorem p:last-child{margin:0}
+
+  .teach{background:var(--accent-2);color:var(--paper);border-radius:4px;padding:38px 40px;margin:24px 0;
+    box-shadow:8px 8px 0 var(--ink)}
+  .teach h3{color:var(--gold);margin-top:0}.teach p{color:#e4ded0}.teach p:last-child{margin-bottom:0}
+
+  footer{border-top:2px solid var(--ink);padding:34px 0;font-family:'Spline Sans Mono',monospace;
+    font-size:.78rem;color:#6b6453;letter-spacing:.04em}
+  .pill{display:inline-block;font-family:'Spline Sans Mono',monospace;font-size:.72rem;padding:3px 10px;
+    border-radius:20px;border:1px solid var(--accent-2);color:var(--accent-2);margin:0 4px 6px 0}
+
+  /* ---- interactive widget shell ---- */
+  .viz{background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:24px;margin:22px 0}
+  .viz-row{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start}
+  @media(max-width:760px){.viz-row{grid-template-columns:1fr}}
+  .viz canvas{width:100%;height:auto;background:var(--paper);border:1px solid var(--line);border-radius:6px;
+    touch-action:none;cursor:crosshair;display:block}
+  .viz-ctrl label{font-family:'Spline Sans Mono',monospace;font-size:.76rem;color:var(--accent-2);
+    display:flex;justify-content:space-between;margin:14px 0 6px}
+  .viz-ctrl label .v{color:var(--accent);font-weight:600}
+  .viz-ctrl input[type=range]{width:100%}
+  .viz-readout{font-family:'Spline Sans Mono',monospace;font-size:.92rem;background:var(--paper);
+    border:1px solid var(--line);border-radius:6px;padding:14px 16px;margin-top:16px;line-height:1.9}
+  .viz-readout .va{color:var(--accent)}.viz-readout .vb{color:var(--accent-2)}.viz-readout .vr{color:#8a5e10;font-weight:600}
+  .viz-cap{font-size:.95rem;color:#4a4438;margin-top:14px;line-height:1.6;min-height:24px}
+  .viz-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .viz-btns button{font-family:'Spline Sans Mono',monospace;font-size:.76rem;padding:8px 14px;
+    border:1px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;transition:.15s}
+  .viz-btns button:hover{background:var(--ink);color:var(--paper)}
+  .viz-btns button.on{background:var(--accent-2);color:#fff;border-color:var(--accent-2)}
+  .chiprow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .chip{font-family:'Spline Sans Mono',monospace;font-size:.78rem;padding:5px 11px;border-radius:16px;
+    background:var(--paper);border:1px solid var(--line);cursor:pointer;transition:.15s}
+  .chip:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* worked example block */
+  .example{background:var(--paper);border:2px solid var(--ink);border-radius:6px;padding:26px 30px;margin:22px 0;
+    box-shadow:6px 6px 0 var(--paper-2)}
+  .example .ehead{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+  .example .enum{width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600}
+  .example .etitle{font-family:'Fraunces',serif;font-weight:600;font-size:1.2rem}
+  .example code{font-family:'Spline Sans Mono',monospace;background:var(--paper-2);padding:1px 7px;
+    border-radius:3px;font-size:.93rem;color:var(--accent)}
+  .reveal{font-family:'Spline Sans Mono',monospace;font-size:.76rem;padding:9px 16px;border:1px solid var(--ink);
+    background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;margin-top:8px;transition:.15s}
+  .reveal:hover{background:var(--ink);color:var(--paper)}
+  .ework{display:none;margin-top:16px;padding-top:16px;border-top:1px dashed var(--line)}
+  .ework.show{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .ework h4{font-family:'Spline Sans Mono',monospace;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+    color:#8a5e10;margin:14px 0 8px}.ework h4:first-child{margin-top:0}
+  .ework p{margin-bottom:10px;font-size:.98rem}
+
+  /* AI tutor */
+  #ai-explain-btn{position:absolute;z-index:10000;display:none;font-family:'Spline Sans Mono',monospace;
+    font-size:.72rem;letter-spacing:.08em;background:var(--ink);color:var(--paper);border:none;border-radius:30px;
+    padding:9px 16px;cursor:pointer;box-shadow:0 6px 18px var(--shadow);transform:translate(-50%,-100%);
+    white-space:nowrap;animation:pop .14s ease-out}
+  #ai-explain-btn:hover{background:var(--accent)}#ai-explain-btn::before{content:"✦ ";color:var(--gold)}
+  @keyframes pop{from{opacity:0;transform:translate(-50%,-90%)}to{opacity:1;transform:translate(-50%,-100%)}}
+  #ai-tab{position:fixed;right:0;top:46%;z-index:9000;background:var(--accent-2);color:var(--paper);border:none;
+    cursor:pointer;writing-mode:vertical-rl;text-orientation:mixed;font-family:'Spline Sans Mono',monospace;
+    font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;padding:18px 10px;border-radius:8px 0 0 8px;
+    box-shadow:-4px 4px 14px var(--shadow);transition:.2s}
+  #ai-tab:hover{background:var(--accent);padding-right:16px}
+  #ai-panel{position:fixed;top:0;right:0;height:100%;width:min(420px,92vw);z-index:9500;background:var(--paper);
+    border-left:2px solid var(--ink);box-shadow:-18px 0 50px rgba(40,30,15,.22);transform:translateX(100%);
+    transition:transform .32s cubic-bezier(.6,.05,.2,1);display:flex;flex-direction:column}
+  #ai-panel.open{transform:translateX(0)}
+  .ai-head{background:var(--ink);color:var(--paper);padding:20px 22px;display:flex;align-items:center;
+    justify-content:space-between;flex:0 0 auto}
+  .ai-head .t{font-family:'Fraunces',serif;font-weight:600;font-size:1.25rem}.ai-head .t span{color:var(--gold)}
+  .ai-head .sub2{font-family:'Spline Sans Mono',monospace;font-size:.62rem;letter-spacing:.2em;
+    text-transform:uppercase;color:#bdb6a4;margin-top:3px}
+  .ai-close{background:none;border:1px solid #4a463c;color:var(--paper);width:34px;height:34px;border-radius:50%;
+    cursor:pointer;font-size:1.1rem;line-height:1;transition:.18s}
+  .ai-close:hover{background:var(--accent);border-color:var(--accent)}
+  .ai-body{flex:1 1 auto;overflow-y:auto;padding:20px 22px}
+  .ai-empty{color:#6b6453;font-style:italic;font-size:.98rem;line-height:1.6}.ai-empty b{color:var(--accent-2);font-style:normal}
+  .ai-msg{margin-bottom:20px;animation:fade .25s ease}
+  .ai-msg .who{font-family:'Spline Sans Mono',monospace;font-size:.62rem;letter-spacing:.18em;
+    text-transform:uppercase;margin-bottom:6px}
+  .ai-msg.user .who{color:var(--accent)}.ai-msg.bot .who{color:var(--accent-2)}
+  .ai-msg .quote{border-left:3px solid var(--gold);padding:6px 12px;margin-bottom:8px;background:var(--paper-2);
+    font-size:.9rem;color:#4a4438;border-radius:0 3px 3px 0}
+  .ai-msg .txt{font-size:1rem;line-height:1.6}
+  .ai-msg .txt code{font-family:'Spline Sans Mono',monospace;background:var(--paper-2);padding:1px 6px;border-radius:3px;font-size:.9rem}
+  .ai-msg .txt strong{color:var(--accent-2)}
+  .dots span{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent-2);
+    margin-right:5px;animation:bounce 1s infinite}
+  .dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+  @keyframes bounce{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-5px)}}
+  .ai-foot{flex:0 0 auto;border-top:1px solid var(--line);padding:14px 16px;background:var(--paper-2)}
+  .ai-foot form{display:flex;gap:8px;align-items:flex-end}
+  #ai-input{flex:1;resize:none;border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+    font-family:'Newsreader',serif;font-size:.98rem;background:var(--paper);color:var(--ink);min-height:44px;max-height:120px}
+  #ai-input:focus{outline:none;border-color:var(--accent-2)}
+  #ai-send{background:var(--ink);color:var(--paper);border:none;border-radius:8px;padding:0 16px;height:44px;
+    cursor:pointer;font-family:'Spline Sans Mono',monospace;font-size:.8rem;transition:.18s}
+  #ai-send:hover{background:var(--accent)}#ai-send:disabled{opacity:.4;cursor:not-allowed}
+  .ai-hint{font-family:'Spline Sans Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;
+    color:#8a836f;margin-top:8px;text-align:center}
+  #ai-scrim{position:fixed;inset:0;background:rgba(22,21,18,.35);z-index:9400;opacity:0;pointer-events:none;transition:opacity .3s}
+  #ai-scrim.show{opacity:1;pointer-events:auto}
+
+  /* ---- practice quiz ---- */
+  .quiz{margin-top:48px;padding-top:46px;border-top:2px dashed var(--line)}
+  .quiz-rubric{background:var(--paper-2);border-left:5px solid var(--accent);padding:16px 22px;
+    margin:16px 0 28px;font-size:.97rem;color:#4a4438;border-radius:0 4px 4px 0}
+  .quiz-rubric strong{color:var(--accent);font-style:italic}
+  .problem{background:var(--paper);border:2px solid var(--ink);border-radius:6px;padding:26px 30px;margin:22px 0;
+    box-shadow:6px 6px 0 var(--paper-2)}
+  .problem-num{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .problem-num .pnum{width:38px;height:38px;border-radius:50%;background:var(--ink);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem}
+  .problem-num .ptitle{font-family:'Fraunces',serif;font-weight:600;font-size:1.25rem;color:var(--ink)}
+  .problem-q{font-style:italic;color:#3a352b;font-size:1.05rem;margin:8px 0 6px}
+  .statement{text-align:center;font-style:italic;font-size:1.1rem;color:var(--accent-2);margin:16px 0;
+    padding:14px 18px;border:1px dashed var(--accent-2);border-radius:4px;background:rgba(31,94,87,.04)}
+  .choices{list-style:none;margin:14px 0 4px;padding:0}
+  .choices li{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;border:1px solid var(--line);
+    border-radius:6px;margin-bottom:10px;cursor:pointer;transition:.18s;background:var(--paper)}
+  .choices li:hover{border-color:var(--accent-2);background:var(--paper-2)}
+  .choices li.selected{border-color:var(--accent-2);background:rgba(31,94,87,.06)}
+  .choices li.correct{border-color:var(--accent-2);background:rgba(31,94,87,.16);
+    box-shadow:inset 0 0 0 1px var(--accent-2)}
+  .choices li.wrong{border-color:var(--accent);background:rgba(179,67,31,.10)}
+  .choices .letter{flex:0 0 auto;width:28px;height:28px;border-radius:50%;border:2px solid var(--accent-2);
+    display:flex;align-items:center;justify-content:center;font-family:'Spline Sans Mono',monospace;font-size:.8rem;
+    color:var(--accent-2);font-weight:600;margin-top:1px}
+  .choices li.correct .letter{background:var(--accent-2);color:#fff}
+  .choices li.wrong .letter{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .choices .ctext{flex:1;font-size:.99rem;line-height:1.6;color:var(--ink)}
+  .problem-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .problem-actions button{font-family:'Spline Sans Mono',monospace;font-size:.78rem;padding:10px 18px;
+    border:1px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;
+    letter-spacing:.04em;transition:.16s}
+  .problem-actions button:hover{background:var(--ink);color:var(--paper)}
+  .problem-actions button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .problem-actions button.primary:hover{background:#9a3819}
+  .feedback{margin-top:14px;padding:16px 20px;border-radius:6px;font-size:.97rem;line-height:1.65;display:none}
+  .feedback.show{display:block;animation:fade .25s ease}
+  .feedback.ok{background:rgba(31,94,87,.10);border-left:4px solid var(--accent-2);color:#1a4640}
+  .feedback.no{background:rgba(179,67,31,.10);border-left:4px solid var(--accent);color:#7a2e15}
+  .feedback code{font-family:'Spline Sans Mono',monospace;background:var(--paper);padding:1px 6px;
+    border-radius:3px;font-size:.92rem;color:var(--accent)}
+
+  /* matrix display for quiz problems */
+  .ab-display{display:flex;justify-content:center;align-items:center;gap:22px;margin:22px 0;flex-wrap:wrap}
+  .mat-label{font-family:'Fraunces',serif;font-size:1.15rem;color:var(--ink);font-style:italic}
+  .mat-wrap{position:relative;padding:10px 16px;display:inline-block}
+  .mat-wrap::before,.mat-wrap::after{content:"";position:absolute;top:0;bottom:0;width:11px;
+    border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+  .mat-wrap::before{left:0;border-left:2px solid var(--ink);border-radius:2px 0 0 2px}
+  .mat-wrap::after{right:0;border-right:2px solid var(--ink);border-radius:0 2px 2px 0}
+  .mat-grid{display:grid;gap:6px;font-family:'Spline Sans Mono',monospace;font-size:1.05rem}
+  .mat-grid span{min-width:2.5em;height:2.3em;display:flex;align-items:center;justify-content:center;color:var(--ink);border-radius:3px;padding:0 6px}
+  .mat-grid span.piv{background:var(--accent-2);color:#fff;font-weight:600}
+  .mat-grid span.aug{color:var(--accent);font-weight:600}
+  .mat-grid .mat-sep{width:8px;height:2.3em;justify-self:center;position:relative}
+  .mat-grid .mat-sep::before{content:"";position:absolute;top:2px;bottom:2px;left:50%;width:1px;
+    background:rgba(22,21,18,.4);transform:translateX(-50%)}
+
+  .solution-block{background:var(--paper-2);border-left:5px solid var(--gold);border-radius:0 6px 6px 0;
+    padding:22px 26px;margin-top:18px;font-size:1rem;line-height:1.7;display:none}
+  .solution-block.show{display:block;animation:fade .25s ease}
+  .solution-block h4{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.18em;
+    text-transform:uppercase;color:#8a5e10;margin:18px 0 10px;font-weight:600}
+  .solution-block h4:first-child{margin-top:0}
+  .solution-block p{margin-bottom:12px;color:#3a352b}
+  .solution-block code{font-family:'Spline Sans Mono',monospace;background:var(--paper);padding:2px 7px;
+    border-radius:3px;font-size:.93rem;color:var(--accent)}
+  .solution-block ul{margin:8px 0 14px 22px}
+  .solution-block li{margin-bottom:6px;color:#3a352b}
+  .verdict-tag{display:inline-block;font-family:'Spline Sans Mono',monospace;font-size:.78rem;
+    padding:6px 14px;border-radius:20px;font-weight:600;letter-spacing:.04em;margin-top:8px}
+  .verdict-tag.yes{background:var(--accent-2);color:#fff}
+  .verdict-tag.no{background:var(--accent);color:#fff}
+
+  /* ---- per-section recap box ---- */
+  .recap{margin-top:32px;background:var(--ink);color:var(--paper);
+    border-radius:8px;padding:24px 28px 22px;position:relative;
+    box-shadow:6px 6px 0 var(--paper-2);overflow:hidden}
+  .recap::before{content:"";position:absolute;top:0;left:0;width:64px;height:4px;
+    background:var(--gold);border-radius:8px 0 0 0}
+  .recap::after{content:"";position:absolute;top:0;left:64px;width:32px;height:4px;
+    background:var(--accent)}
+  .recap-tag{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:10px;font-weight:600;display:block;padding-top:8px}
+  .recap-tag::before{content:"§ ";color:var(--accent)}
+  .recap h4{font-family:'Fraunces',serif;font-weight:600;color:var(--paper);font-size:1.12rem;
+    margin-bottom:10px;line-height:1.4}
+  .recap h4 em{font-style:italic;color:var(--gold)}
+  .recap p{color:#d8d1bf;margin:0 0 10px;font-size:.96rem;line-height:1.7}
+  .recap p:last-child{margin-bottom:0}
+  .recap ul{margin:8px 0 0 0;color:#d8d1bf;list-style:none;padding:0}
+  .recap li{margin-bottom:8px;font-size:.95rem;line-height:1.6;padding-left:22px;position:relative}
+  .recap li::before{content:"▸";position:absolute;left:0;top:0;color:var(--gold);font-weight:700}
+  .recap li:last-child{margin-bottom:0}
+  .recap strong{color:var(--gold);font-weight:600}
+  .recap em{color:#bdb6a4;font-style:italic}
+  .recap code{font-family:'Spline Sans Mono',monospace;background:rgba(244,240,230,.08);
+    color:var(--gold);padding:1px 7px;border-radius:3px;font-size:.9rem;border:1px solid rgba(244,240,230,.06)}
+  .recap .bottom{margin-top:14px;padding-top:12px;border-top:1px dashed rgba(244,240,230,.18);
+    font-family:'Spline Sans Mono',monospace;font-size:.86rem;color:var(--gold);letter-spacing:.04em}
+  .recap .bottom::before{content:"BOTTOM LINE → ";color:var(--accent);font-weight:600;letter-spacing:.12em}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="chapnum">1.3</span>
+    <div class="badge">Linear Algebra · Chapter 1 · Section 1.3</div>
+    <h1 class="title">Vector<br><em>Equations</em></h1>
+    <p class="sub">Numbers stacked into arrows. Add them, scale them, combine them — and discover that asking "can I build b from these vectors?" is the very same question as "does this linear system have a solution?"</p>
+  </div>
+</header>
+
+<div class="wrap grid">
+
+  <nav class="toc">
+    <div class="label">On this page</div>
+    <a href="#intro">What 1.3 teaches</a>
+    <a href="#vectors">Vectors in R²</a>
+    <a href="#ops">Add &amp; scale (interactive)</a>
+    <a href="#rn">Vectors in Rⁿ</a>
+    <a href="#lincomb">Linear combinations (builder)</a>
+    <a href="#veceq">Vector ↔ system</a>
+    <a href="#span">Span (visualizer)</a>
+    <a href="#inspan">Is b in Span? (solver)</a>
+    <a href="#examples">Worked examples</a>
+    <a href="#remember">Rules to remember</a>
+    <a href="#quiz">Practice quiz</a>
+  </nav>
+
+  <main>
+
+    <section id="intro">
+      <div class="kicker">The big idea</div>
+      <h2>What is Section 1.3 trying to teach?</h2>
+      <p class="lead">Sections 1.1–1.2 were about <em>rows</em> of a matrix — equations. Section 1.3 flips to the <em>columns</em>, and reinterprets the whole subject in terms of vectors.</p>
+      <p>You learn that a vector is just an ordered list of numbers you can <span class="term">add</span> and <span class="term">scale</span>, and that combining vectors with chosen weights — a <span class="term">linear combination</span> — is the central operation. The punchline that everything builds toward: the vector equation <code class="mono">x₁a₁ + x₂a₂ + ⋯ + xₙaₙ = b</code> has the <strong>same solution set</strong> as the linear system whose augmented matrix is <code class="mono">[a₁ a₂ ⋯ aₙ | b]</code>.</p>
+      <p>So "can I reach <strong>b</strong> by combining the columns?" and "is this system consistent?" are <em>one question asked two ways</em>. That equivalence is the bridge between the row world and the column world, and it powers the rest of the course.</p>
+    </section>
+
+    <section id="vectors">
+      <div class="kicker">The objects</div>
+      <h2>Vectors in R²</h2>
+      <p>A vector in ℝ² is a column of two numbers, like <code class="mono">[3, 1]</code>. You can picture it as a point in the plane, or as an arrow from the origin to that point. Two vectors are equal only if <em>all</em> their entries match.</p>
+      <div class="defs">
+        <div class="def"><div class="word">Addition</div><p>Add entrywise: <code>[a,b] + [c,d] = [a+c, b+d]</code>. Geometrically, the parallelogram rule.</p></div>
+        <div class="def"><div class="word">Scalar multiple</div><p>Multiply every entry by the scalar: <code>c·[a,b] = [ca, cb]</code>. Stretches, shrinks, or flips the arrow.</p></div>
+        <div class="def"><div class="word">Zero vector</div><p><code>0 = [0,0]</code> — the origin. Adding it changes nothing.</p></div>
+      </div>
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>A vector in <em>ℝ²</em> is a column of two numbers — a point, or an arrow from the origin to that point.</h4>
+        <ul>
+          <li>Two vectors are <strong>equal</strong> only if every entry matches — order and position count.</li>
+          <li>Two operations are legal: <strong>entrywise addition</strong> <code>[a,b]+[c,d]=[a+c,b+d]</code> (parallelogram rule) and <strong>scalar multiplication</strong> <code>c·[a,b]=[ca,cb]</code> (stretch / shrink / flip).</li>
+          <li>The <strong>zero vector</strong> <code>0=[0,0]</code> sits at the origin and is the identity for addition.</li>
+        </ul>
+        <div class="bottom">A vector is just data you can add and scale — the geometry comes for free.</div>
+      </div>
+    </section>
+
+    <section id="ops">
+      <div class="kicker">See it · drag the arrows</div>
+      <h2>Vector addition &amp; scalar multiples</h2>
+      <p>Drag the tips of <span style="color:#b3431f;font-weight:600">u</span> and <span style="color:#1f5e57;font-weight:600">v</span> on the grid. The dashed parallelogram shows the geometric meaning of <strong>u + v</strong>. Use the slider to scale a vector and watch it stretch or flip along its own line.</p>
+      <div class="viz">
+        <div class="viz-row">
+          <canvas id="cv-add" width="520" height="420"></canvas>
+          <div class="viz-ctrl">
+            <label>Scale factor on u &nbsp; <span class="v" id="add-c-out">1.0</span></label>
+            <input type="range" id="add-c" min="-2" max="2" step="0.1" value="1">
+            <div class="viz-btns">
+              <button id="add-show-sum" class="on">Show u + v</button>
+              <button id="add-show-scale">Show c·u</button>
+            </div>
+            <div class="viz-readout" id="add-readout"></div>
+            <div class="chiprow">
+              <span class="chip" data-u="3,1" data-v="1,2">reset</span>
+              <span class="chip" data-u="2,2" data-v="-1,2">example</span>
+              <span class="chip" data-u="3,0" data-v="0,3">axes</span>
+            </div>
+          </div>
+        </div>
+        <div class="viz-cap" id="add-cap"></div>
+      </div>
+      <div class="callout">
+        <div class="h">Parallelogram rule</div>
+        <p style="margin:0">To add u + v, slide v's tail to u's tip — the sum reaches the far corner of the parallelogram the two arrows define. Order doesn't matter: u + v = v + u.</p>
+      </div>
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>Vector arithmetic is <em>geometry you can draw</em>: addition makes a parallelogram, scaling slides along one line.</h4>
+        <ul>
+          <li><strong>u + v</strong> = the far corner of the parallelogram built from u and v — equivalently, slide v's tail onto u's tip.</li>
+          <li><strong>c·u</strong> stays on the same line through the origin: <code>c&gt;1</code> stretches, <code>0&lt;c&lt;1</code> shrinks, <code>c&lt;0</code> flips the direction.</li>
+          <li>Addition is commutative (<code>u+v = v+u</code>), so order of the two arrows never changes the sum.</li>
+        </ul>
+        <div class="bottom">If you can picture the parallelogram and the stretch, you have all of vector algebra in ℝ².</div>
+      </div>
+    </section>
+
+    <section id="rn">
+      <div class="kicker">Going general</div>
+      <h2>Vectors in Rⁿ</h2>
+      <p>Everything extends to any number of entries. ℝⁿ is the set of all columns of <em>n</em> real numbers. The same two operations — addition and scalar multiplication — work entrywise, and obey the familiar algebra rules.</p>
+      <div class="formula">
+        u + v = v + u &nbsp;·&nbsp; (u + v) + w = u + (v + w) &nbsp;·&nbsp; c(u + v) = cu + cv
+        <small>the algebraic properties of Rⁿ — same as ordinary arithmetic</small>
+      </div>
+      <p>We can't draw ℝ⁴ or ℝ⁵, but the algebra is identical to ℝ². That's the power of the vector viewpoint: geometric intuition from the plane carries over to dimensions you can't picture.</p>
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4><em>ℝⁿ</em> is just longer columns — the rules from ℝ² survive in every dimension.</h4>
+        <ul>
+          <li>A vector in ℝⁿ is an ordered column of <em>n</em> real numbers; add and scale <strong>entrywise</strong>, exactly as in ℝ².</li>
+          <li>The same algebra laws hold: <strong>commutativity</strong> <code>u+v=v+u</code>, <strong>associativity</strong> <code>(u+v)+w=u+(v+w)</code>, and <strong>distributivity</strong> <code>c(u+v)=cu+cv</code>.</li>
+          <li>You can't draw ℝ⁴⁺, but the algebra is unchanged — so 2D pictures still guide your reasoning.</li>
+        </ul>
+        <div class="bottom">Trust the algebra: whatever holds in ℝ² holds in ℝⁿ.</div>
+      </div>
+    </section>
+
+    <section id="lincomb">
+      <div class="kicker">The central operation · builder</div>
+      <h2>Linear combinations</h2>
+      <p>Given vectors v₁, v₂, … and weights (scalars) c₁, c₂, …, the vector <code class="mono">c₁v₁ + c₂v₂ + ⋯</code> is called a <span class="term">linear combination</span>. Choose the two weights below and watch the result get built: first c₁·v₁, then add c₂·v₂ tip-to-tail.</p>
+      <div class="viz">
+        <div class="viz-row">
+          <canvas id="cv-lc" width="520" height="420"></canvas>
+          <div class="viz-ctrl">
+            <label>weight c₁ on v₁ &nbsp; <span class="v" id="lc-c1-out">1</span></label>
+            <input type="range" id="lc-c1" min="-3" max="3" step="0.25" value="1">
+            <label>weight c₂ on v₂ &nbsp; <span class="v" id="lc-c2-out">1</span></label>
+            <input type="range" id="lc-c2" min="-3" max="3" step="0.25" value="1">
+            <div class="viz-readout" id="lc-readout"></div>
+            <div class="chiprow">
+              <span class="chip" data-c1="2" data-c2="0">only v₁</span>
+              <span class="chip" data-c1="0" data-c2="2">only v₂</span>
+              <span class="chip" data-c1="1" data-c2="1">1·v₁+1·v₂</span>
+              <span class="chip" data-c1="-1" data-c2="2">−1, 2</span>
+            </div>
+          </div>
+        </div>
+        <div class="viz-cap" id="lc-cap"></div>
+      </div>
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>A <em>linear combination</em> is what you get by scaling each vector and adding the results.</h4>
+        <ul>
+          <li>Form: <code>c₁v₁ + c₂v₂ + ⋯</code> where the <code>cᵢ</code> are scalar <strong>weights</strong> you choose.</li>
+          <li>Building it is tip-to-tail: walk <code>c₁·v₁</code> first, then add <code>c₂·v₂</code> from there — the gold arrow is the result.</li>
+          <li>Different weights give different results — the collection of every result is the <em>span</em> (next section).</li>
+        </ul>
+        <div class="bottom">Pick weights, scale each vector, stack tip-to-tail — that one move powers the rest of the chapter.</div>
+      </div>
+    </section>
+
+    <section id="veceq">
+      <div class="kicker">The bridge</div>
+      <h2>Vector equation ↔ linear system</h2>
+      <p>Here is the key identity of the whole section. The vector equation</p>
+      <div class="formula">
+        x₁a₁ + x₂a₂ + ⋯ + xₙaₙ = b
+        <small>asks: which weights combine the a's to make b?</small>
+      </div>
+      <p>has exactly the <strong>same solution set</strong> as the linear system whose augmented matrix is <code class="mono">[ a₁ a₂ ⋯ aₙ | b ]</code>. The columns become the vectors; the unknown weights become the variables.</p>
+      <div class="theorem">
+        <div class="lbl">The equivalence</div>
+        <p>"Is <strong>b</strong> a linear combination of a₁, …, aₙ?" &nbsp;⟺&nbsp; "Is the system <code class="mono">[a₁ ⋯ aₙ | b]</code> consistent?" These are the same question. To answer either, row reduce the augmented matrix.</p>
+      </div>
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>The <em>vector equation</em> and the <em>linear system</em> are the same problem in two outfits.</h4>
+        <ul>
+          <li>The vector equation <code>x₁a₁ + ⋯ + xₙaₙ = b</code> has the <strong>same solution set</strong> as the system with augmented matrix <code>[a₁ a₂ ⋯ aₙ | b]</code>.</li>
+          <li>Each <strong>aᵢ</strong> becomes a <em>column</em>; each unknown <strong>xᵢ</strong> becomes a <em>variable</em>; the right side <strong>b</strong> becomes the augmented column.</li>
+          <li>So "is b a linear combination of the aᵢ?" ⟺ "is <code>[a₁ ⋯ aₙ | b]</code> consistent?" — answer either by <strong>row reduction</strong>.</li>
+        </ul>
+        <div class="bottom">Row reduction now answers a geometry question — that's the bridge the whole course rides on.</div>
+      </div>
+    </section>
+
+    <section id="span">
+      <div class="kicker">See it · the reachable set</div>
+      <h2>Span — everything you can build</h2>
+      <p>The <span class="term">span</span> of a set of vectors is the collection of <em>all</em> their linear combinations — every point you can possibly reach. In ℝ², two vectors usually span the whole plane, but in special cases the span collapses to a line or a single point. Toggle below.</p>
+      <div class="viz">
+        <div class="viz-row">
+          <canvas id="cv-span" width="520" height="420"></canvas>
+          <div class="viz-ctrl">
+            <div class="viz-btns">
+              <button data-case="plane" class="on">Two independent → plane</button>
+              <button data-case="line">One multiple of other → line</button>
+              <button data-case="point">Both zero → point</button>
+            </div>
+            <div class="viz-readout" id="span-readout"></div>
+          </div>
+        </div>
+        <div class="viz-cap" id="span-cap"></div>
+      </div>
+      <div class="callout">
+        <div class="h">In R³</div>
+        <p style="margin:0">The same idea: one nonzero vector spans a line, two independent vectors span a plane through the origin, three independent vectors span all of ℝ³. Span is always a line, plane, … through the origin.</p>
+      </div>
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4><em>Span</em> = every point you can reach by linear combinations — and it always passes through <em>0</em>.</h4>
+        <ul>
+          <li>In ℝ²: two <strong>independent</strong> vectors span the whole <em>plane</em>; one a scalar multiple of the other shrinks the span to a <em>line</em>; two zero vectors give just the <em>origin</em>.</li>
+          <li>In ℝ³: one nonzero vector → line, two independent → plane, three independent → all of ℝ³ — always a flat object through the origin.</li>
+          <li>Because the zero combination <code>0·v₁ + 0·v₂ + ⋯ = 0</code> is always available, <strong>0 is in every span</strong>.</li>
+        </ul>
+        <div class="bottom">The span tells you what's reachable; if b lies outside it, no choice of weights will ever build b.</div>
+      </div>
+    </section>
+
+    <section id="inspan">
+      <div class="kicker">See it · the solver</div>
+      <h2>Is b in Span {a₁, a₂}?</h2>
+      <p>Set a target <strong>b</strong> and the page solves the vector equation <code class="mono">x₁a₁ + x₂a₂ = b</code> by finding the weights — or tells you it's impossible. Geometrically: is the orange dot reachable by combining the two arrows? Drag <strong>b</strong>'s tip or pick an example.</p>
+      <div class="viz">
+        <div class="viz-row">
+          <canvas id="cv-in" width="520" height="420"></canvas>
+          <div class="viz-ctrl">
+            <div class="viz-readout" id="in-readout"></div>
+            <div class="viz-btns">
+              <button data-case="indep">a's span the plane</button>
+              <button data-case="dep">a's only span a line</button>
+            </div>
+            <div class="chiprow">
+              <span class="chip" data-b="4,3">b = (4,3)</span>
+              <span class="chip" data-b="-2,5">b = (−2,5)</span>
+              <span class="chip" data-b="6,2">b = (6,2)</span>
+            </div>
+          </div>
+        </div>
+        <div class="viz-cap" id="in-cap"></div>
+      </div>
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>To test "<em>is b in Span{a₁, a₂}?</em>", solve <code>x₁a₁ + x₂a₂ = b</code> and see if it has any solution.</h4>
+        <ul>
+          <li>When the a's are <strong>independent</strong> (span the plane), <em>every</em> b in ℝ² is reachable — there's a unique weight pair.</li>
+          <li>When the a's are <strong>dependent</strong> (one is a multiple of the other), they only span a line — b is reachable <em>only</em> if it sits on that line.</li>
+          <li>Mechanically: row-reduce <code>[a₁ a₂ | b]</code>. A <code>[0 0 | nonzero]</code> row means inconsistent → <strong>b is NOT in the span</strong>.</li>
+        </ul>
+        <div class="bottom">Membership in a span is a consistency question — let the augmented matrix decide.</div>
+      </div>
+    </section>
+
+    <section id="examples">
+      <div class="kicker">Worked examples</div>
+      <h2>Four focused examples</h2>
+
+      <div class="example">
+        <div class="ehead"><div class="enum">1</div><div class="etitle">Compute a linear combination</div></div>
+        <p>Let <code>u = [1, −2]</code> and <code>v = [3, 1]</code>. Find <code>2u − v</code>.</p>
+        <button class="reveal">Show solution</button>
+        <div class="ework">
+          <h4>Work</h4>
+          <p><code>2u = [2, −4]</code> and <code>−v = [−3, −1]</code>.</p>
+          <p>Add entrywise: <code>2u − v = [2−3, −4−1] = [−1, −5]</code>.</p>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="ehead"><div class="enum">2</div><div class="etitle">Is b a linear combination?</div></div>
+        <p>Can <code>b = [7, 4]</code> be written as a combination of <code>a₁ = [1, 2]</code> and <code>a₂ = [3, 1]</code>?</p>
+        <button class="reveal">Show solution</button>
+        <div class="ework">
+          <h4>Set up the system</h4>
+          <p>We need <code>x₁[1,2] + x₂[3,1] = [7,4]</code>, i.e. <code>x₁ + 3x₂ = 7</code> and <code>2x₁ + x₂ = 4</code>.</p>
+          <h4>Solve</h4>
+          <p>From the augmented matrix <code>[1 3 | 7 ; 2 1 | 4]</code>, eliminate: R2 − 2R1 → <code>−5x₂ = −10</code>, so <code>x₂ = 2</code>, then <code>x₁ = 7 − 6 = 1</code>.</p>
+          <h4>Answer</h4>
+          <p>Yes — <code>b = 1·a₁ + 2·a₂</code>. The system is consistent, so b is in Span {a₁, a₂}.</p>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="ehead"><div class="enum">3</div><div class="etitle">When b is NOT in the span</div></div>
+        <p>Is <code>b = [1, 5]</code> in Span {a₁, a₂} where <code>a₁ = [2, 4]</code> and <code>a₂ = [1, 2]</code>?</p>
+        <button class="reveal">Show solution</button>
+        <div class="ework">
+          <h4>Notice the columns</h4>
+          <p><code>a₂ = [1,2]</code> and <code>a₁ = [2,4] = 2·a₂</code> — the two vectors are multiples of each other, so they only span a <strong>line</strong> (all multiples of [1,2]).</p>
+          <h4>Check b against that line</h4>
+          <p>Is <code>[1,5]</code> a multiple of <code>[1,2]</code>? That would need <code>5 = 2·1 = 2</code> — false. So b is off the line.</p>
+          <h4>Answer</h4>
+          <p>No — b is not in the span. The system <code>[2 1 | 1 ; 4 2 | 5]</code> reduces to a <code>0 = 3</code> contradiction row: inconsistent.</p>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="ehead"><div class="enum">4</div><div class="etitle">Translate a vector equation to a system</div></div>
+        <p>Write the vector equation <code>x₁[1,−1,0] + x₂[2,3,1] = [4,1,2]</code> as a system of equations.</p>
+        <button class="reveal">Show solution</button>
+        <div class="ework">
+          <h4>Match entries row by row</h4>
+          <p>Row 1: <code>x₁ + 2x₂ = 4</code></p>
+          <p>Row 2: <code>−x₁ + 3x₂ = 1</code></p>
+          <p>Row 3: <code>0·x₁ + x₂ = 2</code></p>
+          <h4>Augmented matrix</h4>
+          <p><code>[1 2 | 4 ; −1 3 | 1 ; 0 1 | 2]</code>. Each vector became a column; each entry-row became an equation. Solving it answers whether b is reachable.</p>
+        </div>
+      </div>
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>Four problem types you'll meet — each one is a small drill on the same <em>vector ↔ system</em> idea.</h4>
+        <ul>
+          <li><strong>Compute</strong> a combination (Ex 1): scale each vector by its weight, add entrywise — pure arithmetic, no system.</li>
+          <li><strong>Membership</strong> in a span (Ex 2 &amp; 3): set up <code>x₁a₁ + x₂a₂ = b</code>, row-reduce; consistent → b is in the span, contradiction → it isn't.</li>
+          <li><strong>Translate</strong> (Ex 4): a vector equation becomes a system by reading off one equation per row of the columns.</li>
+        </ul>
+        <div class="bottom">Watch for dependent columns (Ex 3): when one a is a multiple of the other, the span collapses to a line.</div>
+      </div>
+    </section>
+
+    <section id="remember">
+      <div class="kicker">Cheat sheet</div>
+      <h2>Rules &amp; facts to remember</h2>
+      <ol class="rules">
+        <li>A <strong>vector</strong> is an ordered list of numbers; equal only if all entries match.</li>
+        <li>Add <strong>entrywise</strong>; scalar-multiply <strong>every</strong> entry. Geometrically: parallelogram rule and stretch/flip.</li>
+        <li>A <strong>linear combination</strong> is c₁v₁ + c₂v₂ + ⋯ with chosen scalar weights.</li>
+        <li>The vector equation <code>x₁a₁ + ⋯ + xₙaₙ = b</code> has the <strong>same solution set</strong> as the system <code>[a₁ ⋯ aₙ | b]</code>.</li>
+        <li><strong>b is in Span{a₁,…,aₙ}</strong> ⟺ that system is <strong>consistent</strong>.</li>
+        <li><strong>Span</strong> = the set of all linear combinations = everything reachable. Always passes through 0.</li>
+        <li>In ℝ²: independent pair → whole plane; one a multiple of the other → a line; both zero → just the origin.</li>
+        <li>To test membership or find weights, <strong>row reduce</strong> the augmented matrix.</li>
+      </ol>
+      <div style="margin-top:14px">
+        <span class="pill">vector</span><span class="pill">scalar multiple</span><span class="pill">linear combination</span>
+        <span class="pill">vector equation</span><span class="pill">span</span><span class="pill">Rⁿ</span><span class="pill">consistent</span>
+      </div>
+    </section>
+
+    <section id="purpose">
+      <div class="teach">
+        <h3>In one breath</h3>
+        <p>Section 1.3 reframes linear algebra around vectors: lists of numbers you add and scale. Combining them with weights gives linear combinations, and the set of all such combinations is the span. The headline result is that a vector equation and a linear system are the same problem in different clothing — so "can I build b from these columns?" is answered by row reducing, exactly as before.</p>
+        <p>This column-view is the foundation for matrix–vector products, independence, and transformations coming up next.</p>
+      </div>
+    </section>
+
+    <section id="quiz" class="quiz">
+      <div class="kicker">Individual Quiz · IQ 1.3</div>
+      <h2>Practice quiz</h2>
+      <div class="quiz-rubric">
+        <strong>Closed book, closed notes, no calculator / computer, no internet, no human help</strong> except by the instructor. You have to show work for credit and complete work for full credit. Make sure to read the questions carefully.
+      </div>
+
+      <div class="problem">
+        <div class="problem-num">
+          <div class="pnum">1</div>
+          <div class="ptitle">True or false — justify your answer</div>
+        </div>
+        <p class="problem-q">Determine whether the statement below is true or false.</p>
+        <p class="statement">"The weights c₁, …, c<sub>p</sub> in a linear combination c₁v₁ + ⋯ + c<sub>p</sub>v<sub>p</sub> cannot all be zero."</p>
+        <p>Choose the correct answer below:</p>
+        <ul class="choices" id="q1-choices">
+          <li data-letter="A" data-correct="false">
+            <div class="letter">A</div>
+            <div class="ctext">The statement is false. Setting all the weights equal to zero does not result in the vector <strong>0</strong>.</div>
+          </li>
+          <li data-letter="B" data-correct="false">
+            <div class="letter">B</div>
+            <div class="ctext">The statement is true. Setting all the weights equal to zero does not result in the vector <strong>0</strong>.</div>
+          </li>
+          <li data-letter="C" data-correct="false">
+            <div class="letter">C</div>
+            <div class="ctext">The statement is true. Setting all the weights equal to zero results in the vector <strong>0</strong>.</div>
+          </li>
+          <li data-letter="D" data-correct="true">
+            <div class="letter">D</div>
+            <div class="ctext">The statement is false. Setting all the weights equal to zero results in the vector <strong>0</strong>.</div>
+          </li>
+        </ul>
+        <div class="problem-actions">
+          <button class="primary" id="q1-check">Check answer</button>
+          <button id="q1-reset">Reset</button>
+        </div>
+        <div class="feedback" id="q1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <div class="problem-num">
+          <div class="pnum">2</div>
+          <div class="ptitle">Is <em>b</em> a linear combination of the columns of <em>A</em>?</div>
+        </div>
+        <p class="problem-q">Determine if <strong>b</strong> is a linear combination of the vectors formed from the columns of the matrix <strong>A</strong>.</p>
+        <div class="ab-display">
+          <span class="mat-label">A =</span>
+          <div class="mat-wrap"><div class="mat-grid" id="q2-A"></div></div>
+          <span class="mat-label">b =</span>
+          <div class="mat-wrap"><div class="mat-grid" id="q2-b"></div></div>
+        </div>
+        <p>Choose the correct answer below:</p>
+        <ul class="choices" id="q2-choices">
+          <li data-letter="A" data-correct="false">
+            <div class="letter">A</div>
+            <div class="ctext">Vector <strong>b</strong> is not a linear combination of the vectors formed from the columns of <em>A</em>. There is no solution to the linear system corresponding to the matrix [A&nbsp;b].</div>
+          </li>
+          <li data-letter="B" data-correct="false">
+            <div class="letter">B</div>
+            <div class="ctext">Vector <strong>b</strong> is a linear combination of the vectors formed from the columns of <em>A</em>. The pivots in the corresponding echelon matrix are in the first entry in the first column and the second entry in the second column. There are no pivots in the third and fourth columns.</div>
+          </li>
+          <li data-letter="C" data-correct="true">
+            <div class="letter">C</div>
+            <div class="ctext">Vector <strong>b</strong> is a linear combination of the vectors formed from the columns of <em>A</em>. The pivots in the corresponding echelon matrix are in the first entry in the first column, the second entry in the second column, and the third entry in the third column.</div>
+          </li>
+          <li data-letter="D" data-correct="false">
+            <div class="letter">D</div>
+            <div class="ctext">Vector <strong>b</strong> is not a linear combination of the vectors formed from the columns of <em>A</em>. The pivots in the corresponding echelon matrix are only in the first entry in the first column and the second entry in the second column. There are no pivots in the third and fourth columns.</div>
+          </li>
+        </ul>
+        <div class="problem-actions">
+          <button class="primary" id="q2-check">Check answer</button>
+          <button id="q2-show">Show solution</button>
+          <button id="q2-reset">Reset</button>
+        </div>
+        <div class="feedback" id="q2-fb"></div>
+
+        <div class="solution-block" id="q2-soln">
+          <h4>Step 1 — Form the augmented matrix [A | b]</h4>
+          <p>The question "is <strong>b</strong> a linear combination of the columns of <em>A</em>?" is the same as "is the system <code>[A | b]</code> consistent?" Build the augmented matrix:</p>
+          <div class="ab-display">
+            <div class="mat-wrap"><div class="mat-grid" id="q2-aug"></div></div>
+          </div>
+
+          <h4>Step 2 — Row reduce to echelon form</h4>
+          <p>R1 already has a leading 1 in column 1. R2 already starts with 0 — leave it. Apply <code>R3 → R3 − 3·R1</code> to clear the 3 below the first pivot:</p>
+          <div class="ab-display">
+            <div class="mat-wrap"><div class="mat-grid" id="q2-step1"></div></div>
+          </div>
+          <p>R2's leading 4 already sits in column 2, and R3's column-2 entry is already 0. So the matrix is in echelon form:</p>
+          <div class="ab-display">
+            <div class="mat-wrap"><div class="mat-grid" id="q2-ech"></div></div>
+          </div>
+
+          <h4>Step 3 — Read off the pivot positions</h4>
+          <ul>
+            <li>Pivot in <strong>row 1, column 1</strong> (value 1)</li>
+            <li>Pivot in <strong>row 2, column 2</strong> (value 4)</li>
+            <li>Pivot in <strong>row 3, column 3</strong> (value 23)</li>
+            <li>No pivot in column 4 (the augmented column with <strong>b</strong>)</li>
+          </ul>
+
+          <h4>Step 4 — Apply the existence test</h4>
+          <p>A system is consistent <strong>iff</strong> the rightmost (augmented) column is NOT a pivot column. Here the augmented column has no pivot — no <code>[0 0 0 | nonzero]</code> row appears — so the system is consistent.</p>
+          <p><span class="verdict-tag yes">✓ b IS a linear combination of the columns of A</span></p>
+          <p style="margin-top:14px">Matches answer <strong>C</strong>: pivots in (R1,C1), (R2,C2), (R3,C3), no pivot in the augmented column.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">LINEAR ALGEBRA &nbsp;·&nbsp; §1.3 VECTOR EQUATIONS &nbsp;·&nbsp; STUDY REFERENCE &nbsp;·&nbsp; built from your course material</div>
+</footer>
+
+<!-- ===================== AI TUTOR ===================== -->
+<button id="ai-explain-btn">Explain with AI</button>
+<button id="ai-tab">✦ Ask AI</button>
+<div id="ai-scrim"></div>
+<aside id="ai-panel" aria-label="AI tutor">
+  <div class="ai-head">
+    <div><div class="t">AI <span>Tutor</span></div><div class="sub2">§1.3 · Linear Algebra</div></div>
+    <button class="ai-close" id="ai-close" title="Close">×</button>
+  </div>
+  <div class="ai-body" id="ai-body">
+    <p class="ai-empty"><b>Two ways to use me:</b><br><br>
+      1. <b>Highlight any text</b> on the page — an <em>“Explain with AI”</em> button pops up.<br><br>
+      2. <b>Type a question</b> below — e.g. <em>“what does span mean geometrically?”</em> or <em>“how do I check if b is a linear combination?”</em></p>
+  </div>
+  <div class="ai-foot">
+    <form id="ai-form">
+      <textarea id="ai-input" placeholder="Ask anything about Section 1.3…" rows="1"></textarea>
+      <button id="ai-send" type="submit">Send</button>
+    </form>
+    <div class="ai-hint">Powered by DeepSeek · press Enter to send</div>
+  </div>
+</aside>
+
+<script>
+/* ===================== VECTOR CANVAS WIDGETS ===================== */
+(function(){
+  const COL = { ink:'#161512', paper:'#f4f0e6', grid:'#d8d0bc', accent:'#b3431f',
+    accent2:'#1f5e57', gold:'#c8922a', muted:'#8a836f' };
+  const STEP = 40;  /* pixels per unit */
+
+  function mk(canvas){
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2;
+    const toPx = (x,y)=>[cx + x*STEP, cy - y*STEP];
+    const toUnit = (px,py)=>[(px-cx)/STEP, (cy-py)/STEP];
+    function clear(){
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle = COL.paper; ctx.fillRect(0,0,W,H);
+      ctx.strokeStyle = COL.grid; ctx.lineWidth = 1;
+      for(let x=cx%STEP;x<W;x+=STEP){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+      for(let y=cy%STEP;y<H;y+=STEP){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+      ctx.strokeStyle = COL.muted; ctx.lineWidth = 1.5;
+      ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,H);ctx.stroke();
+    }
+    function arrow(x,y,color,label,lw){
+      const [px,py]=toPx(x,y); ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=lw||3;
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,py);ctx.stroke();
+      const ang=Math.atan2(py-cy,px-cx),h=11;
+      ctx.beginPath();ctx.moveTo(px,py);
+      ctx.lineTo(px-h*Math.cos(ang-0.4),py-h*Math.sin(ang-0.4));
+      ctx.lineTo(px-h*Math.cos(ang+0.4),py-h*Math.sin(ang+0.4));
+      ctx.closePath();ctx.fill();
+      if(label){ctx.fillStyle=color;ctx.font='600 15px "Spline Sans Mono",monospace';
+        ctx.fillText(label,px+8,py-6);}
+    }
+    function dashed(x1,y1,x2,y2,color){
+      const [a,b]=toPx(x1,y1),[c,d]=toPx(x2,y2);
+      ctx.save();ctx.setLineDash([5,5]);ctx.strokeStyle=color;ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,d);ctx.stroke();ctx.restore();
+    }
+    function dot(x,y,color,r){const [px,py]=toPx(x,y);ctx.fillStyle=color;
+      ctx.beginPath();ctx.arc(px,py,r||5,0,7);ctx.fill();}
+    function lineThrough(x,y,color){
+      ctx.save();ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.globalAlpha=.55;
+      const t=40;const [a,b]=toPx(x*t,y*t),[c,d]=toPx(-x*t,-y*t);
+      ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,d);ctx.stroke();ctx.restore();
+    }
+    function fillPlane(color){ctx.save();ctx.fillStyle=color;ctx.globalAlpha=.13;ctx.fillRect(0,0,W,H);ctx.restore();}
+    return {ctx,W,H,cx,cy,toPx,toUnit,clear,arrow,dashed,dot,lineThrough,fillPlane};
+  }
+
+  /* ---------- 1) addition + scalar ---------- */
+  (function(){
+    const cv=document.getElementById('cv-add'); if(!cv) return;
+    const g=mk(cv);
+    let u=[3,1], v=[1,2], c=1, mode='sum', drag=null;
+    const cOut=document.getElementById('add-c-out'), cIn=document.getElementById('add-c');
+    const ro=document.getElementById('add-readout'), cap=document.getElementById('add-cap');
+    const bSum=document.getElementById('add-show-sum'), bScale=document.getElementById('add-show-scale');
+    function draw(){
+      g.clear();
+      if(mode==='sum'){
+        const s=[u[0]+v[0],u[1]+v[1]];
+        g.dashed(u[0],u[1],s[0],s[1],COL.accent2);
+        g.dashed(v[0],v[1],s[0],s[1],COL.accent);
+        g.arrow(u[0],u[1],COL.accent,'u');
+        g.arrow(v[0],v[1],COL.accent2,'v');
+        g.arrow(s[0],s[1],COL.gold,'u+v',3.5);
+        ro.innerHTML='<span class="va">u</span> = ('+u[0]+', '+u[1]+')<br>'+
+          '<span class="vb">v</span> = ('+v[0]+', '+v[1]+')<br>'+
+          '<span class="vr">u+v</span> = ('+s[0]+', '+s[1]+')';
+        cap.textContent='The gold arrow is the sum. It reaches the opposite corner of the parallelogram formed by u and v — that\u2019s the parallelogram rule.';
+      } else {
+        const su=[c*u[0],c*u[1]];
+        g.lineThrough(u[0],u[1],COL.grid);
+        g.arrow(u[0],u[1],COL.accent,'u');
+        g.arrow(su[0],su[1],COL.gold,(c).toFixed(1)+'·u',3.5);
+        ro.innerHTML='<span class="va">u</span> = ('+u[0]+', '+u[1]+')<br>'+
+          'scalar c = <span class="vr">'+c.toFixed(1)+'</span><br>'+
+          '<span class="vr">c·u</span> = ('+su[0].toFixed(1)+', '+su[1].toFixed(1)+')';
+        cap.textContent = c<0 ? 'A negative scalar flips u to point the opposite way, then scales it. It stays on the same line through the origin.'
+          : 'Scaling stretches (c>1) or shrinks (0<c<1) u along its own line through the origin.';
+      }
+    }
+    function pos(e){const r=cv.getBoundingClientRect();
+      const sx=cv.width/r.width, sy=cv.height/r.height;
+      const px=(e.clientX-r.left)*sx, py=(e.clientY-r.top)*sy; return g.toUnit(px,py);}
+    function near(p,vec){const [px,py]=g.toPx(vec[0],vec[1]);const [qx,qy]=g.toPx(p[0],p[1]);
+      return Math.hypot(px-qx,py-qy)<22;}
+    cv.addEventListener('pointerdown',e=>{const p=pos(e);
+      if(near(p,u))drag='u';else if(near(p,v)&&mode==='sum')drag='v';});
+    cv.addEventListener('pointermove',e=>{if(!drag)return;const p=pos(e);
+      const r=[Math.max(-6,Math.min(6,Math.round(p[0]))),Math.max(-5,Math.min(5,Math.round(p[1])))];
+      if(drag==='u')u=r;else v=r;draw();});
+    window.addEventListener('pointerup',()=>drag=null);
+    cIn.oninput=()=>{c=parseFloat(cIn.value);cOut.textContent=c.toFixed(1);draw();};
+    bSum.onclick=()=>{mode='sum';bSum.classList.add('on');bScale.classList.remove('on');draw();};
+    bScale.onclick=()=>{mode='scale';bScale.classList.add('on');bSum.classList.remove('on');draw();};
+    document.querySelectorAll('#ops .chip').forEach(ch=>ch.onclick=()=>{
+      u=ch.dataset.u.split(',').map(Number);v=ch.dataset.v.split(',').map(Number);draw();});
+    draw();
+  })();
+
+  /* ---------- 2) linear combination builder ---------- */
+  (function(){
+    const cv=document.getElementById('cv-lc'); if(!cv) return;
+    const g=mk(cv);
+    const v1=[2,1], v2=[-1,2]; let c1=1,c2=1;
+    const c1In=document.getElementById('lc-c1'),c2In=document.getElementById('lc-c2');
+    const c1Out=document.getElementById('lc-c1-out'),c2Out=document.getElementById('lc-c2-out');
+    const ro=document.getElementById('lc-readout'),cap=document.getElementById('lc-cap');
+    function draw(){
+      g.clear();
+      g.arrow(v1[0],v1[1],COL.accent,'v₁',2);
+      g.arrow(v2[0],v2[1],COL.accent2,'v₂',2);
+      const p1=[c1*v1[0],c1*v1[1]];
+      const res=[c1*v1[0]+c2*v2[0],c1*v1[1]+c2*v2[1]];
+      g.dashed(0,0,p1[0],p1[1],COL.accent);
+      g.dashed(p1[0],p1[1],res[0],res[1],COL.accent2);
+      g.arrow(res[0],res[1],COL.gold,'result',3.5);
+      ro.innerHTML='<span class="vr">'+c1+'</span>·<span class="va">v₁</span> + '+
+        '<span class="vr">'+c2+'</span>·<span class="vb">v₂</span><br>= ('+
+        res[0].toFixed(2)+', '+res[1].toFixed(2)+')';
+      cap.textContent='Walk c₁·v₁ first (orange dashed), then add c₂·v₂ tip-to-tail (teal dashed). The gold arrow is the linear combination. Every reachable gold tip is in Span{v₁,v₂}.';
+    }
+    function sync(){c1=parseFloat(c1In.value);c2=parseFloat(c2In.value);
+      c1Out.textContent=c1;c2Out.textContent=c2;draw();}
+    c1In.oninput=sync;c2In.oninput=sync;
+    document.querySelectorAll('#lincomb .chip').forEach(ch=>ch.onclick=()=>{
+      c1In.value=ch.dataset.c1;c2In.value=ch.dataset.c2;sync();});
+    draw();
+  })();
+
+  /* ---------- 3) span visualizer ---------- */
+  (function(){
+    const cv=document.getElementById('cv-span'); if(!cv) return;
+    const g=mk(cv);
+    const cases={
+      plane:{v1:[2,1],v2:[-1,2],kind:'plane'},
+      line:{v1:[2,1],v2:[-2,-1],kind:'line'},
+      point:{v1:[0,0],v2:[0,0],kind:'point'}
+    };
+    let cur='plane';
+    const ro=document.getElementById('span-readout'),cap=document.getElementById('span-cap');
+    function draw(){
+      g.clear();
+      const c=cases[cur];
+      if(c.kind==='plane'){
+        g.fillPlane(COL.accent2);
+        ro.innerHTML='<span class="vr">Span = all of R²</span><br>v₁,v₂ point different ways';
+        cap.textContent='Two vectors that aren\u2019t multiples of each other reach every point in the plane — their span is all of R². Any b is a linear combination.';
+      } else if(c.kind==='line'){
+        g.lineThrough(c.v1[0],c.v1[1],COL.accent);
+        ro.innerHTML='<span class="vr">Span = a line</span><br>v₂ is a multiple of v₁';
+        cap.textContent='When one vector is a multiple of the other, every combination stays on a single line through the origin. Points off that line are unreachable.';
+      } else {
+        g.dot(0,0,COL.accent,7);
+        ro.innerHTML='<span class="vr">Span = {0}</span><br>both vectors are zero';
+        cap.textContent='If both vectors are zero, the only linear combination is the zero vector — the span is just the origin.';
+      }
+      if(c.kind!=='point'){g.arrow(c.v1[0],c.v1[1],COL.accent,'v₁');g.arrow(c.v2[0],c.v2[1],COL.accent2,'v₂');}
+    }
+    document.querySelectorAll('#span .viz-btns button').forEach(b=>b.onclick=()=>{
+      cur=b.dataset.case;
+      document.querySelectorAll('#span .viz-btns button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');draw();});
+    draw();
+  })();
+
+  /* ---------- 4) is b in span solver ---------- */
+  (function(){
+    const cv=document.getElementById('cv-in'); if(!cv) return;
+    const g=mk(cv);
+    let a1=[2,1],a2=[-1,2],b=[4,3],drag=false,mode='indep';
+    const ro=document.getElementById('in-readout'),cap=document.getElementById('in-cap');
+    function solve(){
+      const det=a1[0]*a2[1]-a1[1]*a2[0];
+      if(Math.abs(det)>1e-9){
+        const x1=(b[0]*a2[1]-b[1]*a2[0])/det, x2=(a1[0]*b[1]-a1[1]*b[0])/det;
+        return {ok:true,x1,x2};
+      }
+      const cross=a1[0]*b[1]-a1[1]*b[0];
+      const onLine=Math.abs(cross)<1e-9 && !(a1[0]===0&&a1[1]===0);
+      return {ok:false,onLine};
+    }
+    function draw(){
+      g.clear();
+      const s=solve();
+      if(s.ok){
+        const p1=[s.x1*a1[0],s.x1*a1[1]];
+        g.dashed(0,0,p1[0],p1[1],COL.accent);
+        g.dashed(p1[0],p1[1],b[0],b[1],COL.accent2);
+      } else if(mode==='dep'){ g.lineThrough(a1[0],a1[1],COL.muted); }
+      g.arrow(a1[0],a1[1],COL.accent,'a₁',2);
+      g.arrow(a2[0],a2[1],COL.accent2,'a₂',2);
+      g.dot(b[0],b[1],COL.gold,7);
+      const [bx,by]=g.toPx(b[0],b[1]);
+      g.ctx.fillStyle=COL.gold;g.ctx.font='600 15px "Spline Sans Mono",monospace';g.ctx.fillText('b',bx+9,by-6);
+      if(s.ok){
+        ro.innerHTML='<span class="vr">✓ b IS in the span</span><br>'+
+          'x₁ = '+s.x1.toFixed(2)+', x₂ = '+s.x2.toFixed(2)+'<br>'+
+          '<span class="va">'+s.x1.toFixed(2)+'</span>·a₁ + <span class="vb">'+s.x2.toFixed(2)+'</span>·a₂ = b';
+        cap.textContent='The system is consistent — unique weights reach b. The dashed path shows x₁a₁ then + x₂a₂ landing exactly on b.';
+      } else {
+        ro.innerHTML='<span style="color:#b3431f;font-weight:600">✗ b is NOT in the span</span><br>'+
+          'a₁ and a₂ only span a line — b lies off it. System inconsistent.';
+        cap.textContent='Here a₁ and a₂ are multiples, so their span is just a line. Unless b sits on that line, no weights can reach it.';
+      }
+    }
+    function pos(e){const r=cv.getBoundingClientRect();
+      const sx=cv.width/r.width, sy=cv.height/r.height;
+      return g.toUnit((e.clientX-r.left)*sx,(e.clientY-r.top)*sy);}
+    function nearB(p){const [px,py]=g.toPx(b[0],b[1]);const [qx,qy]=g.toPx(p[0],p[1]);
+      return Math.hypot(px-qx,py-qy)<22;}
+    cv.addEventListener('pointerdown',e=>{if(nearB(pos(e)))drag=true;});
+    cv.addEventListener('pointermove',e=>{if(!drag)return;const p=pos(e);
+      b=[Math.max(-6,Math.min(6,Math.round(p[0]))),Math.max(-5,Math.min(5,Math.round(p[1])))];draw();});
+    window.addEventListener('pointerup',()=>drag=false);
+    document.querySelectorAll('#inspan .viz-btns button').forEach(btn=>btn.onclick=()=>{
+      mode=btn.dataset.case;
+      if(mode==='indep'){a1=[2,1];a2=[-1,2];} else {a1=[2,1];a2=[-2,-1];}
+      document.querySelectorAll('#inspan .viz-btns button').forEach(x=>x.classList.remove('on'));
+      btn.classList.add('on');draw();});
+    document.querySelectorAll('#inspan .chip').forEach(ch=>ch.onclick=()=>{
+      b=ch.dataset.b.split(',').map(Number);draw();});
+    draw();
+  })();
+
+  /* ---------- worked-example reveals ---------- */
+  document.querySelectorAll('.example .reveal').forEach(btn=>{
+    btn.onclick=()=>{
+      const w=btn.nextElementSibling;
+      const open=w.classList.toggle('show');
+      btn.textContent=open?'Hide solution':'Show solution';
+    };
+  });
+})();
+</script>
+
+<script>
+/* ============================================================
+   AI TUTOR — DeepSeek integration
+   PASTE YOUR (FRESH) KEY BELOW. A key in client-side HTML is
+   visible to anyone who opens the page — rotate it if exposed,
+   and use a backend proxy for any public deployment.
+   ============================================================ */
+const DEEPSEEK_API_KEY = "sk-3342872f6d7e45f297924e908d646eb0";   // <-- put your key here
+const DEEPSEEK_URL = "https://api.deepseek.com/chat/completions";
+const DEEPSEEK_MODEL = "deepseek-chat";
+const SYSTEM_PROMPT =
+  "You are a friendly, concise linear-algebra tutor embedded in a study website for " +
+  "Section 1.3: Vector Equations (Lay, Linear Algebra and Its Applications). " +
+  "Topics in scope: vectors in R^2 and R^n, vector addition and scalar multiplication, the " +
+  "parallelogram rule, algebraic properties of R^n, linear combinations and weights, the vector " +
+  "equation x1*a1 + ... + xn*an = b and its equivalence to the linear system [a1 ... an | b], " +
+  "when b is a linear combination of given vectors, and Span (the set of all linear combinations). " +
+  "Explain clearly for a first-time student. Keep answers short (2-5 sentences unless asked for more). " +
+  "Use plain text; wrap inline math/notation in backticks. Use **bold** for key terms.";
+
+const panel=document.getElementById('ai-panel'),scrim=document.getElementById('ai-scrim'),
+  tab=document.getElementById('ai-tab'),closeB=document.getElementById('ai-close'),
+  body=document.getElementById('ai-body'),form=document.getElementById('ai-form'),
+  input=document.getElementById('ai-input'),sendB=document.getElementById('ai-send'),
+  hlBtn=document.getElementById('ai-explain-btn');
+let history=[],busy=false;
+function openPanel(){panel.classList.add('open');scrim.classList.add('show');}
+function closePanel(){panel.classList.remove('open');scrim.classList.remove('show');}
+tab.addEventListener('click',openPanel);closeB.addEventListener('click',closePanel);
+scrim.addEventListener('click',closePanel);
+document.addEventListener('mouseup',(e)=>{
+  if(panel.contains(e.target)||e.target===hlBtn)return;
+  const sel=window.getSelection(),text=sel.toString().trim();
+  if(text.length>1){const rect=sel.getRangeAt(0).getBoundingClientRect();
+    hlBtn.style.left=(rect.left+rect.width/2+window.scrollX)+'px';
+    hlBtn.style.top=(rect.top+window.scrollY-8)+'px';
+    hlBtn.style.display='block';hlBtn.dataset.text=text;
+  }else{hlBtn.style.display='none';}});
+document.addEventListener('mousedown',(e)=>{if(e.target!==hlBtn)hlBtn.style.display='none';});
+hlBtn.addEventListener('click',()=>{const t=hlBtn.dataset.text;hlBtn.style.display='none';openPanel();
+  ask('Explain this phrase from the section: "'+t+'"',t);});
+input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,120)+'px';});
+input.addEventListener('keydown',(e)=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit();}});
+form.addEventListener('submit',(e)=>{e.preventDefault();const q=input.value.trim();if(!q)return;
+  input.value='';input.style.height='auto';ask(q,null);});
+function clearEmpty(){const e=body.querySelector('.ai-empty');if(e)e.remove();}
+function fmt(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>');}
+function addUser(q,quote){clearEmpty();const d=document.createElement('div');d.className='ai-msg user';
+  d.innerHTML='<div class="who">You</div>'+(quote?'<div class="quote">“'+fmt(quote)+'”</div>':'')+
+  '<div class="txt">'+fmt(quote?'Explain this':q)+'</div>';body.appendChild(d);body.scrollTop=body.scrollHeight;}
+function addBot(){const d=document.createElement('div');d.className='ai-msg bot';
+  d.innerHTML='<div class="who">AI Tutor</div><div class="txt"><span class="dots"><span></span><span></span><span></span></span></div>';
+  body.appendChild(d);body.scrollTop=body.scrollHeight;return d.querySelector('.txt');}
+async function ask(prompt,quote){
+  if(busy)return;busy=true;sendB.disabled=true;addUser(prompt,quote);const target=addBot();
+  history.push({role:'user',content:prompt});
+  const messages=[{role:'system',content:SYSTEM_PROMPT},...history];
+  if(!DEEPSEEK_API_KEY||DEEPSEEK_API_KEY.includes('REPLACE')){
+    target.innerHTML='<em style="color:var(--accent)">No API key set.</em> Open this file and paste your DeepSeek key into the <code>DEEPSEEK_API_KEY</code> line near the bottom of the source.';
+    busy=false;sendB.disabled=false;return;}
+  try{
+    const res=await fetch(DEEPSEEK_URL,{method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+DEEPSEEK_API_KEY},
+      body:JSON.stringify({model:DEEPSEEK_MODEL,messages,temperature:0.4,max_tokens:600})});
+    if(!res.ok){const err=await res.text();
+      target.innerHTML='<em style="color:var(--accent)">Request failed ('+res.status+').</em> Check your key/credits.<br><small>'+fmt(err.slice(0,200))+'</small>';
+      busy=false;sendB.disabled=false;return;}
+    const data=await res.json();
+    const answer=data.choices?.[0]?.message?.content||'No response.';
+    history.push({role:'assistant',content:answer});target.innerHTML=fmt(answer);
+  }catch(err){target.innerHTML='<em style="color:var(--accent)">Network error.</em> '+fmt(String(err));}
+  body.scrollTop=body.scrollHeight;busy=false;sendB.disabled=false;
+}
+</script>
+
+<script>
+/* ===================== PRACTICE QUIZ ===================== */
+(function(){
+  /* generic multiple-choice handler */
+  function setupQuiz(opts){
+    const choices = document.getElementById(opts.choicesId);
+    if(!choices) return;
+    const fb = document.getElementById(opts.fbId);
+    const checkBtn = document.getElementById(opts.checkBtnId);
+    const resetBtn = document.getElementById(opts.resetBtnId);
+    let selected = null;
+    choices.querySelectorAll('li').forEach(li=>{
+      li.addEventListener('click',()=>{
+        if(checkBtn.disabled) return;
+        choices.querySelectorAll('li').forEach(x=>x.classList.remove('selected'));
+        li.classList.add('selected');
+        selected = li;
+      });
+    });
+    checkBtn.addEventListener('click',()=>{
+      if(!selected){ fb.className='feedback show no'; fb.innerHTML='Pick an answer first.'; return; }
+      const letter = selected.dataset.letter;
+      const correct = selected.dataset.correct === 'true';
+      choices.querySelectorAll('li').forEach(li=>{
+        if(li.dataset.correct === 'true') li.classList.add('correct');
+        else if(li===selected) li.classList.add('wrong');
+        li.classList.remove('selected');
+      });
+      fb.className = 'feedback show ' + (correct ? 'ok':'no');
+      fb.innerHTML = (correct ? '✓ ' : '✗ ') + opts.explanations[letter];
+      checkBtn.disabled = true;
+    });
+    resetBtn.addEventListener('click',()=>{
+      choices.querySelectorAll('li').forEach(li=>li.classList.remove('selected','correct','wrong'));
+      fb.className='feedback'; fb.innerHTML='';
+      selected = null; checkBtn.disabled = false;
+    });
+  }
+
+  /* ---- Q1: True/False about all-zero weights ---- */
+  setupQuiz({
+    choicesId:'q1-choices', fbId:'q1-fb', checkBtnId:'q1-check', resetBtnId:'q1-reset',
+    explanations:{
+      A:"<strong>Half right, half wrong.</strong> You correctly say the statement is FALSE, but the reason is backwards. Plugging in c₁=c₂=⋯=c<sub>p</sub>=0 gives <code>0·v₁ + 0·v₂ + ⋯ = 0</code>, which IS the zero vector. So the weights CAN all be zero (yielding the zero vector), which is why the statement is false.",
+      B:"<strong>Wrong on both counts.</strong> Setting every weight to zero gives <code>0·v₁ + 0·v₂ + ⋯ = 0</code> — the zero vector. And because that's a valid (if trivial) linear combination, the statement's claim that weights can't all be zero is false.",
+      C:"<strong>Half right, half wrong.</strong> You correctly say all-zero weights produce the zero vector — but that makes the statement FALSE, not true. The statement claims the weights cannot all be zero, but they certainly can (producing <strong>0</strong>).",
+      D:"<strong>Correct.</strong> Setting every weight equal to zero gives <code>0·v₁ + 0·v₂ + ⋯ + 0·v<sub>p</sub> = 0</code> — the zero vector. That IS a valid linear combination (the so-called <em>trivial</em> combination), so the claim that the weights cannot all be zero is false."
+    }
+  });
+
+  /* ---- Q2: render matrices + setup MCQ + reveal ---- */
+  function paintMatrix(el, M, opts){
+    opts = opts || {};
+    const cols = M[0].length;
+    const augIdx = opts.augCol !== undefined ? opts.augCol : -1;
+    const colSizes = [];
+    for(let c=0;c<cols;c++){
+      if(c===augIdx) colSizes.push('8px');
+      colSizes.push('auto');
+    }
+    el.style.gridTemplateColumns = colSizes.join(' ');
+    const has = (l,r,c)=>l&&l.some(p=>p[0]===r&&p[1]===c);
+    for(let r=0;r<M.length;r++){
+      for(let c=0;c<cols;c++){
+        if(c===augIdx){
+          const sep = document.createElement('div'); sep.className='mat-sep';
+          el.appendChild(sep);
+        }
+        const sp = document.createElement('span');
+        sp.textContent = M[r][c];
+        if(c===augIdx) sp.classList.add('aug');
+        if(has(opts.pivots,r,c)) sp.classList.add('piv');
+        el.appendChild(sp);
+      }
+    }
+  }
+
+  /* the original A and b */
+  const elA = document.getElementById('q2-A');
+  const elB = document.getElementById('q2-b');
+  if(elA){
+    paintMatrix(elA, [[1,-4,-4],[0,4,3],[3,-12,11]]);
+    paintMatrix(elB, [[12],[-7],[7]]);
+
+    /* augmented matrix [A | b] */
+    paintMatrix(document.getElementById('q2-aug'),
+      [[1,-4,-4,12],[0,4,3,-7],[3,-12,11,7]],
+      {augCol:3});
+
+    /* after R3 - 3*R1 */
+    paintMatrix(document.getElementById('q2-step1'),
+      [[1,-4,-4,12],[0,4,3,-7],[0,0,23,-29]],
+      {augCol:3});
+
+    /* echelon form with pivots highlighted */
+    paintMatrix(document.getElementById('q2-ech'),
+      [[1,-4,-4,12],[0,4,3,-7],[0,0,23,-29]],
+      {augCol:3, pivots:[[0,0],[1,1],[2,2]]});
+  }
+
+  setupQuiz({
+    choicesId:'q2-choices', fbId:'q2-fb', checkBtnId:'q2-check', resetBtnId:'q2-reset',
+    explanations:{
+      A:"<strong>Incorrect.</strong> Row-reducing <code>[A | b]</code> gives an echelon form with pivots in columns 1, 2, 3 — and crucially, NO pivot in the augmented column. So the system IS consistent, and b IS a linear combination of A's columns. Hit 'Show solution' for the row reduction.",
+      B:"<strong>Wrong on pivot count.</strong> The correct conclusion (b IS a linear combination) is right, but the pivot positions are wrong. After <code>R3 → R3 − 3·R1</code>, the echelon form has pivots in all THREE first columns (1, 2, AND 3), not just the first two. Column 4 (the augmented column) has no pivot — that's what makes the system consistent.",
+      C:"<strong>Correct.</strong> After <code>R3 → R3 − 3·R1</code> the echelon form is <code>[1 −4 −4 | 12 ; 0 4 3 | −7 ; 0 0 23 | −29]</code>, with pivots at (R1,C1), (R2,C2), (R3,C3) and no pivot in the augmented column. So the system is consistent and <strong>b</strong> is a linear combination of A's columns.",
+      D:"<strong>Wrong conclusion AND wrong pivots.</strong> Row reduction gives pivots in all three of the first columns (1, 2, AND 3) — not just two. And because the augmented column (column 4) has no pivot, the system IS consistent, so b IS a linear combination."
+    }
+  });
+
+  const soln = document.getElementById('q2-soln');
+  const showBtn = document.getElementById('q2-show');
+  if(showBtn && soln){
+    showBtn.onclick = ()=>{
+      soln.classList.toggle('show');
+      showBtn.textContent = soln.classList.contains('show') ? 'Hide solution' : 'Show solution';
+    };
+  }
+})();
+</script>
+
+</body>
+</html>

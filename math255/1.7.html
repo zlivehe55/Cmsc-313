@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1.7 — Linear Independence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Spline+Sans+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#161512;--paper:#f4f0e6;--paper-2:#ece6d6;--accent:#b3431f;
+    --accent-2:#1f5e57;--gold:#c8922a;--line:#cdc4ad;--shadow:rgba(40,30,15,.16)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:'Newsreader',Georgia,serif;
+    font-size:19px;line-height:1.65;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 12% 18%, rgba(179,67,31,.05), transparent 45%),
+      radial-gradient(circle at 88% 8%, rgba(31,94,87,.06), transparent 40%)}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.4;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E")}
+  .mono{font-family:'Spline Sans Mono',monospace}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+  .grid{display:grid;grid-template-columns:230px 1fr;gap:56px;align-items:start}
+  @media(max-width:880px){.grid{grid-template-columns:1fr;gap:0}}
+
+  header.hero{position:relative;overflow:hidden;border-bottom:2px solid var(--ink);
+    background:var(--ink);color:var(--paper);padding:72px 0 64px}
+  header.hero::after{content:"";position:absolute;inset:0;opacity:.14;pointer-events:none;
+    background:repeating-linear-gradient(90deg,transparent 0 38px,rgba(244,240,230,.5) 38px 39px),
+      repeating-linear-gradient(0deg,transparent 0 38px,rgba(244,240,230,.5) 38px 39px)}
+  .hero .wrap{position:relative;z-index:2}
+  .badge{display:inline-flex;align-items:center;gap:10px;font-family:'Spline Sans Mono',monospace;
+    font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:26px}
+  .badge::before{content:"";width:34px;height:1px;background:var(--gold)}
+  h1.title{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(2.5rem,6.2vw,5rem);
+    line-height:.96;letter-spacing:-.02em}
+  h1.title em{font-style:italic;color:var(--accent)}
+  .sub{margin-top:22px;max-width:640px;font-size:1.15rem;color:#d8d1bf;font-style:italic}
+  .chapnum{position:absolute;top:-30px;right:-10px;font-family:'Fraunces',serif;font-weight:900;
+    font-size:clamp(8rem,26vw,20rem);line-height:1;color:rgba(200,146,42,.13);z-index:1;user-select:none}
+
+  nav.toc{position:sticky;top:24px;padding-top:48px}
+  nav.toc .label{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--accent-2);margin-bottom:18px}
+  nav.toc a{display:block;color:var(--ink);text-decoration:none;padding:7px 0 7px 16px;
+    border-left:2px solid var(--line);font-size:.96rem;transition:.18s}
+  nav.toc a:hover{border-left-color:var(--accent);color:var(--accent);padding-left:22px}
+  @media(max-width:880px){nav.toc{display:none}}
+
+  main{padding:64px 0 120px}
+  section{margin-bottom:78px;scroll-margin-top:24px}
+  .kicker{font-family:'Spline Sans Mono',monospace;font-size:.7rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+  h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.7rem,3.5vw,2.6rem);
+    line-height:1.05;letter-spacing:-.01em;margin-bottom:22px;position:relative}
+  h2::before{content:"";display:block;width:54px;height:4px;background:var(--accent);margin-bottom:16px}
+  h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.3rem;margin:26px 0 10px}
+  p{margin-bottom:16px}
+  p .term{color:var(--accent);font-weight:600;font-style:italic}
+  .lead{font-size:1.35rem;line-height:1.55;border-left:3px solid var(--gold);padding-left:24px;color:#3a352b}
+
+  .formula{background:var(--ink);color:var(--paper);border-radius:4px;padding:30px 34px;margin:24px 0;
+    font-family:'Spline Sans Mono',monospace;font-size:1.15rem;text-align:center;
+    box-shadow:8px 8px 0 var(--accent);overflow-x:auto}
+  .formula small{display:block;margin-top:14px;font-size:.7rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--gold);font-family:'Spline Sans Mono',monospace}
+
+  .defs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:24px 0}
+  .def{background:var(--paper-2);border:1px solid var(--line);border-radius:3px;padding:20px 22px;transition:.2s}
+  .def:hover{transform:translateY(-3px);box-shadow:0 10px 24px var(--shadow)}
+  .def .word{font-family:'Fraunces',serif;font-weight:600;font-size:1.18rem;color:var(--accent-2);margin-bottom:6px}
+  .def p{font-size:.96rem;margin:0;color:#4a4438}
+
+  .rules{counter-reset:r;list-style:none;margin:20px 0}
+  .rules li{position:relative;padding:16px 18px 16px 64px;border-bottom:1px dashed var(--line)}
+  .rules li::before{counter-increment:r;content:counter(r);position:absolute;left:14px;top:14px;
+    width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600}
+  .rules li strong{color:var(--accent-2)}
+
+  .callout{background:linear-gradient(180deg,var(--paper-2),var(--paper));border:1px solid var(--line);
+    border-left:5px solid var(--gold);padding:22px 26px;border-radius:0 4px 4px 0;margin:24px 0}
+  .callout .h{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+
+  .theorem{background:var(--accent-2);color:var(--paper);border-radius:4px;padding:30px 34px;margin:24px 0;
+    box-shadow:8px 8px 0 var(--ink)}
+  .theorem .lbl{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+  .theorem p{color:#e6e0d2}.theorem p:last-child{margin:0}
+
+  .teach{background:var(--accent-2);color:var(--paper);border-radius:4px;padding:38px 40px;margin:24px 0;
+    box-shadow:8px 8px 0 var(--ink)}
+  .teach h3{color:var(--gold);margin-top:0}.teach p{color:#e4ded0}.teach p:last-child{margin-bottom:0}
+
+  footer{border-top:2px solid var(--ink);padding:34px 0;font-family:'Spline Sans Mono',monospace;
+    font-size:.78rem;color:#6b6453;letter-spacing:.04em}
+  .pill{display:inline-block;font-family:'Spline Sans Mono',monospace;font-size:.72rem;padding:3px 10px;
+    border-radius:20px;border:1px solid var(--accent-2);color:var(--accent-2);margin:0 4px 6px 0}
+
+  /* interactive shell */
+  .viz{background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:24px;margin:22px 0}
+  .viz-row{display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start}
+  @media(max-width:760px){.viz-row{grid-template-columns:1fr}}
+  .viz canvas{width:100%;height:auto;background:var(--paper);border:1px solid var(--line);border-radius:6px;
+    touch-action:none;display:block}
+  .viz-ctrl label{font-family:'Spline Sans Mono',monospace;font-size:.76rem;color:var(--accent-2);
+    display:flex;justify-content:space-between;margin:12px 0 6px}
+  .viz-ctrl label .v{color:var(--accent);font-weight:600}
+  .viz-ctrl input[type=range]{width:100%}
+  .viz-btns{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+  .viz-btns button{font-family:'Spline Sans Mono',monospace;font-size:.76rem;padding:8px 14px;
+    border:1px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;transition:.15s}
+  .viz-btns button:hover{background:var(--ink);color:var(--paper)}
+  .viz-btns button.on{background:var(--accent-2);color:#fff;border-color:var(--accent-2)}
+  .viz-readout{font-family:'Spline Sans Mono',monospace;font-size:.9rem;background:var(--paper);
+    border:1px solid var(--line);border-radius:6px;padding:14px 16px;margin-top:14px;line-height:1.85}
+  .viz-readout .va{color:var(--accent);font-weight:600}.viz-readout .vb{color:var(--accent-2);font-weight:600}
+  .viz-readout .vc{color:#8a5e10;font-weight:600}
+  .viz-verdict{text-align:center;font-family:'Spline Sans Mono',monospace;font-size:.95rem;padding:12px;border-radius:6px;margin-top:12px;font-weight:600}
+  .viz-verdict.ind{background:rgba(31,94,87,.14);color:var(--accent-2)}
+  .viz-verdict.dep{background:rgba(179,67,31,.13);color:var(--accent)}
+  .viz-cap{font-size:.95rem;color:#4a4438;margin-top:14px;line-height:1.6;min-height:24px}
+
+  /* matrix mini for reducer */
+  .mtx-mini{display:inline-grid;gap:5px;font-family:'Spline Sans Mono',monospace;
+    border-left:3px solid var(--ink);border-right:3px solid var(--ink);padding:10px 12px}
+  .mtx-mini span{width:2.4em;height:2.3em;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:1rem;transition:.3s}
+  .mtx-mini span.piv{background:var(--accent-2);color:#fff;font-weight:600}
+  .mtx-mini span.free-col{background:rgba(200,146,42,.2)}
+  .mtx-mini span.aug{color:var(--accent)}
+  .reducer-stage{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;margin:8px 0 14px}
+  .reducer-arrow{font-family:'Spline Sans Mono',monospace;color:var(--accent);font-size:1.3rem}
+
+  /* worked examples */
+  .example{background:var(--paper);border:2px solid var(--ink);border-radius:6px;padding:26px 30px;margin:22px 0;
+    box-shadow:6px 6px 0 var(--paper-2)}
+  .example .ehead{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+  .example .enum{width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600}
+  .example .etitle{font-family:'Fraunces',serif;font-weight:600;font-size:1.2rem}
+  .example code{font-family:'Spline Sans Mono',monospace;background:var(--paper-2);padding:1px 7px;
+    border-radius:3px;font-size:.93rem;color:var(--accent)}
+  .reveal{font-family:'Spline Sans Mono',monospace;font-size:.76rem;padding:9px 16px;border:1px solid var(--ink);
+    background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;margin-top:8px;transition:.15s}
+  .reveal:hover{background:var(--ink);color:var(--paper)}
+  .ework{display:none;margin-top:16px;padding-top:16px;border-top:1px dashed var(--line)}
+  .ework.show{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .ework h4{font-family:'Spline Sans Mono',monospace;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+    color:#8a5e10;margin:14px 0 8px}.ework h4:first-child{margin-top:0}
+  .ework p{margin-bottom:10px;font-size:.98rem}
+
+  /* quiz */
+  .quiz{margin-top:48px;padding-top:46px;border-top:2px dashed var(--line)}
+  .quiz-rubric{background:var(--paper-2);border-left:5px solid var(--accent);padding:16px 22px;
+    margin:16px 0 28px;font-size:.97rem;color:#4a4438;border-radius:0 4px 4px 0}
+  .quiz-rubric strong{color:var(--accent);font-style:italic}
+  .problem{background:var(--paper);border:2px solid var(--ink);border-radius:6px;padding:26px 30px;margin:22px 0;
+    box-shadow:6px 6px 0 var(--paper-2)}
+  .problem-num{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .problem-num .pnum{width:38px;height:38px;border-radius:50%;background:var(--ink);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem}
+  .problem-num .ptitle{font-family:'Fraunces',serif;font-weight:600;font-size:1.25rem}
+  .problem-q{font-style:italic;color:#3a352b;font-size:1.05rem;margin:8px 0 6px}
+  .statement{text-align:center;font-style:italic;font-size:1.05rem;color:var(--accent-2);margin:16px 0;
+    padding:14px 18px;border:1px dashed var(--accent-2);border-radius:4px;background:rgba(31,94,87,.04)}
+  .choices{list-style:none;margin:14px 0 4px;padding:0}
+  .choices li{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;border:1px solid var(--line);
+    border-radius:6px;margin-bottom:10px;cursor:pointer;transition:.18s;background:var(--paper)}
+  .choices li:hover{border-color:var(--accent-2);background:var(--paper-2)}
+  .choices li.selected{border-color:var(--accent-2);background:rgba(31,94,87,.06)}
+  .choices li.correct{border-color:var(--accent-2);background:rgba(31,94,87,.16);box-shadow:inset 0 0 0 1px var(--accent-2)}
+  .choices li.wrong{border-color:var(--accent);background:rgba(179,67,31,.10)}
+  .choices .letter{flex:0 0 auto;width:28px;height:28px;border-radius:50%;border:2px solid var(--accent-2);
+    display:flex;align-items:center;justify-content:center;font-family:'Spline Sans Mono',monospace;font-size:.8rem;
+    color:var(--accent-2);font-weight:600;margin-top:1px}
+  .choices li.correct .letter{background:var(--accent-2);color:#fff}
+  .choices li.wrong .letter{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .choices .ctext{flex:1;font-size:.99rem;line-height:1.6}
+  .problem-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .problem-actions button{font-family:'Spline Sans Mono',monospace;font-size:.78rem;padding:10px 18px;
+    border:1px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;transition:.16s}
+  .problem-actions button:hover{background:var(--ink);color:var(--paper)}
+  .problem-actions button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .problem-actions button.primary:hover{background:#9a3819}
+  .feedback{margin-top:14px;padding:16px 20px;border-radius:6px;font-size:.97rem;line-height:1.65;display:none}
+  .feedback.show{display:block;animation:fade .25s ease}
+  .feedback.ok{background:rgba(31,94,87,.10);border-left:4px solid var(--accent-2);color:#1a4640}
+  .feedback.no{background:rgba(179,67,31,.10);border-left:4px solid var(--accent);color:#7a2e15}
+  .feedback code{font-family:'Spline Sans Mono',monospace;background:var(--paper);padding:1px 6px;border-radius:3px;color:var(--accent)}
+  .solution-block{background:var(--paper-2);border-left:5px solid var(--gold);border-radius:0 6px 6px 0;
+    padding:22px 26px;margin-top:18px;font-size:1rem;line-height:1.7;display:none}
+  .solution-block.show{display:block;animation:fade .25s ease}
+  .solution-block h4{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.18em;
+    text-transform:uppercase;color:#8a5e10;margin:18px 0 10px}.solution-block h4:first-child{margin-top:0}
+  .solution-block code{font-family:'Spline Sans Mono',monospace;background:var(--paper);padding:2px 7px;border-radius:3px;color:var(--accent)}
+  .sb-center{display:flex;justify-content:center;margin:14px 0}
+  .h-answer{font-family:'Spline Sans Mono',monospace;font-size:1.1rem;text-align:center;color:var(--accent);
+    background:var(--paper);border:1px dashed var(--accent);border-radius:6px;padding:12px;margin:10px 0}
+
+  /* AI tutor */
+  #ai-explain-btn{position:absolute;z-index:10000;display:none;font-family:'Spline Sans Mono',monospace;
+    font-size:.72rem;letter-spacing:.08em;background:var(--ink);color:var(--paper);border:none;border-radius:30px;
+    padding:9px 16px;cursor:pointer;box-shadow:0 6px 18px var(--shadow);transform:translate(-50%,-100%);
+    white-space:nowrap;animation:pop .14s ease-out}
+  #ai-explain-btn:hover{background:var(--accent)}#ai-explain-btn::before{content:"✦ ";color:var(--gold)}
+  @keyframes pop{from{opacity:0;transform:translate(-50%,-90%)}to{opacity:1;transform:translate(-50%,-100%)}}
+  #ai-tab{position:fixed;right:0;top:46%;z-index:9000;background:var(--accent-2);color:var(--paper);border:none;
+    cursor:pointer;writing-mode:vertical-rl;text-orientation:mixed;font-family:'Spline Sans Mono',monospace;
+    font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;padding:18px 10px;border-radius:8px 0 0 8px;
+    box-shadow:-4px 4px 14px var(--shadow);transition:.2s}
+  #ai-tab:hover{background:var(--accent);padding-right:16px}
+  #ai-panel{position:fixed;top:0;right:0;height:100%;width:min(420px,92vw);z-index:9500;background:var(--paper);
+    border-left:2px solid var(--ink);box-shadow:-18px 0 50px rgba(40,30,15,.22);transform:translateX(100%);
+    transition:transform .32s cubic-bezier(.6,.05,.2,1);display:flex;flex-direction:column}
+  #ai-panel.open{transform:translateX(0)}
+  .ai-head{background:var(--ink);color:var(--paper);padding:20px 22px;display:flex;align-items:center;
+    justify-content:space-between;flex:0 0 auto}
+  .ai-head .t{font-family:'Fraunces',serif;font-weight:600;font-size:1.25rem}.ai-head .t span{color:var(--gold)}
+  .ai-head .sub2{font-family:'Spline Sans Mono',monospace;font-size:.62rem;letter-spacing:.2em;
+    text-transform:uppercase;color:#bdb6a4;margin-top:3px}
+  .ai-close{background:none;border:1px solid #4a463c;color:var(--paper);width:34px;height:34px;border-radius:50%;
+    cursor:pointer;font-size:1.1rem;line-height:1;transition:.18s}
+  .ai-close:hover{background:var(--accent);border-color:var(--accent)}
+  .ai-body{flex:1 1 auto;overflow-y:auto;padding:20px 22px}
+  .ai-empty{color:#6b6453;font-style:italic;font-size:.98rem;line-height:1.6}.ai-empty b{color:var(--accent-2);font-style:normal}
+  .ai-msg{margin-bottom:20px;animation:fade .25s ease}
+  .ai-msg .who{font-family:'Spline Sans Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px}
+  .ai-msg.user .who{color:var(--accent)}.ai-msg.bot .who{color:var(--accent-2)}
+  .ai-msg .quote{border-left:3px solid var(--gold);padding:6px 12px;margin-bottom:8px;background:var(--paper-2);
+    font-size:.9rem;color:#4a4438;border-radius:0 3px 3px 0}
+  .ai-msg .txt{font-size:1rem;line-height:1.6}
+  .ai-msg .txt code{font-family:'Spline Sans Mono',monospace;background:var(--paper-2);padding:1px 6px;border-radius:3px;font-size:.9rem}
+  .ai-msg .txt strong{color:var(--accent-2)}
+  .dots span{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent-2);margin-right:5px;animation:bounce 1s infinite}
+  .dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+  @keyframes bounce{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-5px)}}
+  .ai-foot{flex:0 0 auto;border-top:1px solid var(--line);padding:14px 16px;background:var(--paper-2)}
+  .ai-foot form{display:flex;gap:8px;align-items:flex-end}
+  #ai-input{flex:1;resize:none;border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+    font-family:'Newsreader',serif;font-size:.98rem;background:var(--paper);color:var(--ink);min-height:44px;max-height:120px}
+  #ai-input:focus{outline:none;border-color:var(--accent-2)}
+  #ai-send{background:var(--ink);color:var(--paper);border:none;border-radius:8px;padding:0 16px;height:44px;
+    cursor:pointer;font-family:'Spline Sans Mono',monospace;font-size:.8rem;transition:.18s}
+  #ai-send:hover{background:var(--accent)}#ai-send:disabled{opacity:.4;cursor:not-allowed}
+  .ai-hint{font-family:'Spline Sans Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;
+    color:#8a836f;margin-top:8px;text-align:center}
+  #ai-scrim{position:fixed;inset:0;background:rgba(22,21,18,.35);z-index:9400;opacity:0;pointer-events:none;transition:opacity .3s}
+  #ai-scrim.show{opacity:1;pointer-events:auto}
+
+  /* ---- new visualization blocks ---- */
+  .ex-vis{position:relative;background:var(--paper);border:1.5px solid var(--accent-2);border-radius:8px;
+    padding:30px 28px 24px;margin:22px 0 28px}
+  .ex-vis-tag{position:absolute;top:-11px;left:22px;background:var(--paper);padding:0 12px;
+    font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent-2);font-weight:600}
+  .ex-vis-title{font-family:'Fraunces',serif;font-weight:600;font-size:1.18rem;color:var(--accent-2);margin-bottom:10px}
+  .ex-vis p{margin-bottom:12px;font-size:.97rem}
+  .ex-vis p:last-child{margin-bottom:0}
+
+  /* bracketed matrix used throughout */
+  .mat-b{display:inline-grid;gap:4px;padding:8px 12px;position:relative;
+    font-family:'Spline Sans Mono',monospace;font-size:.98rem;vertical-align:middle}
+  .mat-b::before,.mat-b::after{content:"";position:absolute;top:0;bottom:0;width:8px;
+    border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+  .mat-b::before{left:0;border-left:2px solid var(--ink);border-radius:2px 0 0 2px}
+  .mat-b::after{right:0;border-right:2px solid var(--ink);border-radius:0 2px 2px 0}
+  .mat-b span{min-width:1.9em;text-align:center;padding:3px 5px;border-radius:3px;color:var(--ink)}
+  .mat-b span.piv{background:var(--accent-2);color:#fff;font-weight:600}
+  .mat-b span.zero{color:#a39c87}
+  .mat-b span.aug{color:var(--accent);font-weight:600}
+  .mat-b span.free{background:rgba(200,146,42,.22);color:#8a5e10;font-weight:600}
+  .mat-b .sep{width:6px;height:2.1em;justify-self:center;position:relative}
+  .mat-b .sep::before{content:"";position:absolute;top:2px;bottom:2px;left:50%;width:1px;
+    background:rgba(22,21,18,.4);transform:translateX(-50%)}
+
+  /* independent vs dependent comparison */
+  .cmp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin:18px 0 8px}
+  @media(max-width:760px){.cmp-grid{grid-template-columns:1fr}}
+  .cmp-card{background:var(--paper);border:2px solid var(--accent-2);border-radius:8px;padding:22px 22px 18px}
+  .cmp-card.dep{border-color:var(--accent)}
+  .cmp-tag{display:inline-block;font-family:'Spline Sans Mono',monospace;font-size:.7rem;letter-spacing:.16em;
+    text-transform:uppercase;font-weight:600;padding:5px 12px;border-radius:14px;margin-bottom:14px}
+  .cmp-card .cmp-tag{background:rgba(31,94,87,.16);color:var(--accent-2)}
+  .cmp-card.dep .cmp-tag{background:rgba(179,67,31,.12);color:var(--accent)}
+  .cmp-row{display:flex;justify-content:center;align-items:center;gap:14px;margin:14px 0;flex-wrap:wrap}
+  .cmp-row .arrow{font-size:1.4rem;color:var(--accent);font-family:'Spline Sans Mono',monospace}
+  .cmp-row .lbl{font-family:'Spline Sans Mono',monospace;font-size:.62rem;letter-spacing:.18em;
+    text-transform:uppercase;color:#8a836f;display:block;text-align:center;margin-bottom:4px;font-weight:600}
+  .cmp-row .matcell{display:flex;flex-direction:column;align-items:center}
+  .cmp-verdict{font-family:'Spline Sans Mono',monospace;font-size:.92rem;text-align:center;
+    padding:12px 14px;border-radius:6px;margin:14px 0 8px;line-height:1.5;font-weight:600}
+  .cmp-card .cmp-verdict{background:rgba(31,94,87,.10);color:var(--accent-2)}
+  .cmp-card.dep .cmp-verdict{background:rgba(179,67,31,.10);color:var(--accent)}
+  .cmp-detail{font-size:.92rem;color:#4a4438;line-height:1.55;margin-top:8px}
+  .cmp-detail code{font-family:'Spline Sans Mono',monospace;background:var(--paper-2);
+    padding:1px 6px;border-radius:3px;color:var(--accent);font-size:.86rem}
+  .cmp-geom{margin-top:12px;padding:10px 14px;background:var(--paper-2);border-radius:6px;
+    font-size:.9rem;font-style:italic;color:#4a4438}
+  .cmp-geom strong{color:var(--accent-2);font-style:normal}
+  .cmp-card.dep .cmp-geom strong{color:var(--accent)}
+
+  /* dependence-relation animation */
+  .dep-anim{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:24px;margin:14px 0}
+  .dep-stage{min-height:280px;display:flex;align-items:center;justify-content:center;
+    background:var(--paper-2);border-radius:6px;padding:30px 20px;margin-bottom:14px;flex-wrap:wrap;gap:14px}
+  .dep-stage.fade{animation:da-fade .3s ease}
+  @keyframes da-fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .dep-progress{display:flex;gap:6px;justify-content:center;margin:0 0 12px}
+  .da-dot{width:9px;height:9px;border-radius:50%;background:var(--line);transition:.2s}
+  .da-dot.on{background:var(--accent);transform:scale(1.3)}
+  .dep-controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:8px}
+  .dep-controls button{font-family:'Spline Sans Mono',monospace;font-size:.78rem;padding:9px 16px;
+    border:1px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;transition:.15s;letter-spacing:.04em}
+  .dep-controls button:hover:not(:disabled){background:var(--ink);color:var(--paper)}
+  .dep-controls button:disabled{opacity:.32;cursor:not-allowed}
+  .dep-controls button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .dep-controls button.primary:hover:not(:disabled){background:#9a3819}
+  .dep-cap{text-align:center;font-size:.95rem;color:#4a4438;margin-top:12px;min-height:54px;
+    line-height:1.6;padding:0 18px;max-width:680px;margin-left:auto;margin-right:auto}
+  .dep-cap strong{color:var(--accent-2)}
+  .dep-cap .bad{color:var(--accent);font-weight:600}
+  .dep-cap .good{color:var(--accent-2);font-weight:600}
+
+  .da-lhs{font-family:'Spline Sans Mono',monospace;font-size:1.12rem;color:var(--ink)}
+  .da-eqs{font-family:'Spline Sans Mono',monospace;font-size:1.05rem;line-height:2.2;text-align:center}
+  .da-eqs .arr{color:var(--accent);padding:0 8px}
+  .da-stack{display:inline-flex;flex-direction:column;align-items:center;gap:6px}
+  .da-label{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.18em;
+    text-transform:uppercase;color:#8a5e10;text-align:center;font-weight:600}
+  .da-vec-row{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;
+    font-family:'Spline Sans Mono',monospace;font-size:1rem}
+  .da-vec-row .op{font-size:1.4rem;color:var(--accent);font-weight:600}
+  .da-vec-row .coef{font-weight:700;font-size:1.12rem;padding:0 3px}
+  .da-vec-row .coef.c1{color:var(--accent)}
+  .da-vec-row .coef.c2{color:var(--accent-2)}
+  .da-vec-row .coef.c3{color:#8a5e10}
+  .da-result{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:var(--paper);
+    padding:14px 22px;border-radius:6px;font-family:'Spline Sans Mono',monospace;font-size:1.05rem}
+  .da-result.ok{background:var(--accent-2)}
+  .da-result.no{background:var(--accent)}
+  .da-relation{font-family:'Spline Sans Mono',monospace;font-size:1.15rem;text-align:center;
+    background:rgba(31,94,87,.10);color:var(--accent-2);padding:14px 22px;border-radius:6px;font-weight:600}
+
+  /* §1.5 ↔ §1.7 bridge comparison */
+  .bridge-grid{display:grid;grid-template-columns:1fr 80px 1fr;gap:14px;align-items:stretch;margin:18px 0 8px}
+  @media(max-width:760px){.bridge-grid{grid-template-columns:1fr;text-align:center}}
+  .bridge-card{background:var(--paper);border:2px solid var(--line);border-radius:8px;padding:20px 22px;
+    display:flex;flex-direction:column;gap:10px}
+  .bridge-card.left{border-color:var(--gold)}
+  .bridge-card.right{border-color:var(--accent-2)}
+  .bridge-tag{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.18em;
+    text-transform:uppercase;font-weight:600}
+  .bridge-card.left .bridge-tag{color:#8a5e10}
+  .bridge-card.right .bridge-tag{color:var(--accent-2)}
+  .bridge-q{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;line-height:1.4;color:var(--ink)}
+  .bridge-eq{font-family:'Spline Sans Mono',monospace;font-size:.95rem;background:var(--paper-2);
+    padding:8px 12px;border-radius:5px;text-align:center}
+  .bridge-arrow{display:flex;align-items:center;justify-content:center;font-family:'Spline Sans Mono',monospace;
+    font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);
+    border-radius:6px;background:rgba(179,67,31,.06);padding:14px 8px;line-height:1.5;text-align:center;font-weight:600;
+    border:1px dashed var(--accent)}
+  @media(max-width:760px){.bridge-arrow{padding:10px;font-size:.78rem}.bridge-arrow::before{content:"↕ "}}
+  .bridge-answer{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  @media(max-width:680px){.bridge-answer{grid-template-columns:1fr}}
+  .bridge-row{background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+  .bridge-row .row-q{font-family:'Spline Sans Mono',monospace;font-size:.74rem;color:#8a836f;
+    letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+  .bridge-row .row-a{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;line-height:1.45}
+  .bridge-row.yes .row-a{color:var(--accent-2)}
+  .bridge-row.no .row-a{color:var(--accent)}
+  .bridge-pivots{margin:14px 0;display:flex;justify-content:center;gap:14px;align-items:center;flex-wrap:wrap}
+
+  /* ---- per-section recap box ---- */
+  .recap{margin-top:32px;background:var(--ink);color:var(--paper);
+    border-radius:8px;padding:24px 28px 22px;position:relative;
+    box-shadow:6px 6px 0 var(--paper-2);overflow:hidden}
+  .recap::before{content:"";position:absolute;top:0;left:0;width:64px;height:4px;
+    background:var(--gold);border-radius:8px 0 0 0}
+  .recap::after{content:"";position:absolute;top:0;left:64px;width:32px;height:4px;
+    background:var(--accent)}
+  .recap-tag{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:10px;font-weight:600;display:block;padding-top:8px}
+  .recap-tag::before{content:"§ ";color:var(--accent)}
+  .recap h4{font-family:'Fraunces',serif;font-weight:600;color:var(--paper);font-size:1.12rem;
+    margin-bottom:10px;line-height:1.4}
+  .recap h4 em{font-style:italic;color:var(--gold)}
+  .recap p{color:#d8d1bf;margin:0 0 10px;font-size:.96rem;line-height:1.7}
+  .recap p:last-child{margin-bottom:0}
+  .recap ul{margin:8px 0 0 0;color:#d8d1bf;list-style:none;padding:0}
+  .recap li{margin-bottom:8px;font-size:.95rem;line-height:1.6;padding-left:22px;position:relative}
+  .recap li::before{content:"▸";position:absolute;left:0;top:0;color:var(--gold);font-weight:700}
+  .recap li:last-child{margin-bottom:0}
+  .recap strong{color:var(--gold);font-weight:600}
+  .recap em{color:#bdb6a4;font-style:italic}
+  .recap code{font-family:'Spline Sans Mono',monospace;background:rgba(244,240,230,.08);
+    color:var(--gold);padding:1px 7px;border-radius:3px;font-size:.9rem;border:1px solid rgba(244,240,230,.06)}
+  .recap .bottom{margin-top:14px;padding-top:12px;border-top:1px dashed rgba(244,240,230,.18);
+    font-family:'Spline Sans Mono',monospace;font-size:.86rem;color:var(--gold);letter-spacing:.04em}
+  .recap .bottom::before{content:"BOTTOM LINE → ";color:var(--accent);font-weight:600;letter-spacing:.12em}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="chapnum">1.7</span>
+    <div class="badge">Linear Algebra · Chapter 1 · Section 1.7</div>
+    <h1 class="title">Linear<br><em>Independence</em></h1>
+    <p class="sub">Does a set of vectors carry redundant information? Independent means every vector pulls its own weight — none is a combination of the others. The test is whether Ax = 0 has only the trivial solution.</p>
+  </div>
+</header>
+
+<div class="wrap grid">
+
+  <nav class="toc">
+    <div class="label">On this page</div>
+    <a href="#intro">What 1.7 teaches</a>
+    <a href="#def">The definition</a>
+    <a href="#test">Test it (interactive)</a>
+    <a href="#columns">Independence of matrix columns</a>
+    <a href="#reducer">Ax = 0 reducer (interactive)</a>
+    <a href="#dep-anim-section">Build a dependence (animated)</a>
+    <a href="#special">One &amp; two vectors</a>
+    <a href="#thm7">Theorem 7</a>
+    <a href="#thm8">Theorem 8 — too many (interactive)</a>
+    <a href="#thm9">Theorem 9 — zero vector</a>
+    <a href="#examples">Worked examples</a>
+    <a href="#remember">Rules to remember</a>
+    <a href="#quiz">Practice quiz</a>
+  </nav>
+
+  <main>
+
+    <section id="intro">
+      <div class="kicker">The big idea</div>
+      <h2>What is Section 1.7 trying to teach?</h2>
+      <p class="lead">Linear independence asks: in a set of vectors, is any one of them redundant — buildable from the others? If none is, the set is <em>independent</em>; if at least one is, the set is <em>dependent</em>.</p>
+      <p>The whole concept reduces to a single homogeneous equation. The vectors v₁, …, vₚ are <span class="term">linearly independent</span> exactly when <code class="mono">x₁v₁ + ⋯ + xₚvₚ = 0</code> forces every weight to be zero (the trivial solution only). If some <em>nonzero</em> weights also work, that's a <span class="term">linear dependence relation</span>, and the set is dependent.</p>
+      <p>So everything you learned about Ax = 0 in §1.5 comes straight back: independence ⟺ no free variables ⟺ a pivot in every column.</p>
+    </section>
+
+    <section id="def">
+      <div class="kicker">The definition</div>
+      <h2>Linear independence &amp; dependence</h2>
+      <div class="formula">
+        x₁v₁ + x₂v₂ + ⋯ + xₚvₚ = 0
+        <small>independent ⟺ only solution is all weights zero</small>
+      </div>
+      <div class="defs">
+        <div class="def"><div class="word">Linearly independent</div><p>The equation above has <strong>only</strong> the trivial solution (all xᵢ = 0). No vector is redundant.</p></div>
+        <div class="def"><div class="word">Linearly dependent</div><p>There exist weights c₁, …, cₚ <strong>not all zero</strong> with c₁v₁ + ⋯ + cₚvₚ = 0. That's a dependence relation.</p></div>
+      </div>
+      <div class="callout">
+        <div class="h">The mental test</div>
+        <p style="margin:0">"Can I write 0 as a combination of these vectors using at least one nonzero weight?" If yes → dependent. If the only way to get 0 is to use all zeros → independent.</p>
+      </div>
+
+      <div class="ex-vis">
+        <span class="ex-vis-tag">Compare · independent vs dependent</span>
+        <div class="ex-vis-title">Two sets, side by side — same dimension, opposite verdict</div>
+        <p>Both sets live in ℝ³, both are 3 vectors. Watch how the row reduction tells you the answer and what each verdict <em>means</em> geometrically.</p>
+
+        <div class="cmp-grid">
+          <div class="cmp-card">
+            <span class="cmp-tag">✓ Linearly Independent</span>
+            <div class="cmp-detail">Set A: <code>v₁=(1,2,1)</code>, <code>v₂=(0,1,2)</code>, <code>v₃=(0,0,3)</code>. Form the matrix and reduce:</div>
+            <div class="cmp-row">
+              <div class="matcell">
+                <span class="lbl">A = [v₁ v₂ v₃]</span>
+                <div class="mat-b" style="grid-template-columns:repeat(3,1.9em)">
+                  <span>1</span><span>0</span><span>0</span>
+                  <span>2</span><span>1</span><span>0</span>
+                  <span>1</span><span>2</span><span>3</span>
+                </div>
+              </div>
+              <div class="arrow">→</div>
+              <div class="matcell">
+                <span class="lbl">RREF</span>
+                <div class="mat-b" style="grid-template-columns:repeat(3,1.9em)">
+                  <span class="piv">1</span><span class="zero">0</span><span class="zero">0</span>
+                  <span class="zero">0</span><span class="piv">1</span><span class="zero">0</span>
+                  <span class="zero">0</span><span class="zero">0</span><span class="piv">1</span>
+                </div>
+              </div>
+            </div>
+            <div class="cmp-verdict">PIVOT IN EVERY COLUMN<br>→ no free variable → only trivial solution</div>
+            <div class="cmp-detail">The equation <code>x₁v₁ + x₂v₂ + x₃v₃ = 0</code> forces <code>x₁ = x₂ = x₃ = 0</code>. No way to combine the three to get 0 except by using zero everywhere. None is redundant.</div>
+            <div class="cmp-geom"><strong>Geometry:</strong> three vectors that span ALL of ℝ³ — they reach every point in 3D space. Solution set of Ax = 0 is just the origin (a single point).</div>
+          </div>
+
+          <div class="cmp-card dep">
+            <span class="cmp-tag">✗ Linearly Dependent</span>
+            <div class="cmp-detail">Set B: <code>v₁=(1,2,3)</code>, <code>v₂=(4,5,6)</code>, <code>v₃=(2,1,0)</code>. Same setup:</div>
+            <div class="cmp-row">
+              <div class="matcell">
+                <span class="lbl">A = [v₁ v₂ v₃]</span>
+                <div class="mat-b" style="grid-template-columns:repeat(3,1.9em)">
+                  <span>1</span><span>4</span><span>2</span>
+                  <span>2</span><span>5</span><span>1</span>
+                  <span>3</span><span>6</span><span>0</span>
+                </div>
+              </div>
+              <div class="arrow">→</div>
+              <div class="matcell">
+                <span class="lbl">RREF</span>
+                <div class="mat-b" style="grid-template-columns:repeat(3,1.9em)">
+                  <span class="piv">1</span><span class="zero">0</span><span class="free">−2</span>
+                  <span class="zero">0</span><span class="piv">1</span><span class="free">1</span>
+                  <span class="zero">0</span><span class="zero">0</span><span class="zero">0</span>
+                </div>
+              </div>
+            </div>
+            <div class="cmp-verdict">PIVOT MISSING IN COL 3 (gold)<br>→ x₃ is FREE → infinite nontrivial solutions</div>
+            <div class="cmp-detail">Setting <code>x₃ = 1</code> gives <code>x₁ = 2, x₂ = −1</code>. So <code>2v₁ − v₂ + v₃ = 0</code> — a true dependence relation with NONZERO weights. Rearranging: <code>v₃ = v₂ − 2v₁</code>, so v₃ is REDUNDANT.</div>
+            <div class="cmp-geom"><strong>Geometry:</strong> the three vectors all lie in a single PLANE through the origin — they fail to span all of ℝ³. Solution set of Ax = 0 is a whole line.</div>
+          </div>
+        </div>
+
+        <div style="background:var(--paper-2);border-left:5px solid var(--gold);border-radius:0 6px 6px 0;padding:14px 18px;margin-top:14px;font-size:.95rem;line-height:1.6;color:#4a4438">
+          <strong style="color:#8a5e10">The trigger:</strong> a single missing pivot — a single free column — flips the entire set from independent to dependent. It's a binary verdict, decided by row reduction.
+        </div>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>Independence is decided by one equation: <em>x₁v₁ + ⋯ + xₚvₚ = 0</em></h4>
+        <ul>
+          <li><strong>Independent</strong> = the equation forces every weight to <code>0</code> (only the trivial solution).</li>
+          <li><strong>Dependent</strong> = there exist weights <em>not all zero</em> that produce <code>0</code> — that combination is a <strong>linear dependence relation</strong>.</li>
+          <li>The mental test: "can I write <code>0</code> using at least one nonzero weight?" Yes → dependent. No → independent.</li>
+        </ul>
+        <div class="bottom">One missing pivot flips the whole set — independence is binary, decided by row reduction.</div>
+      </div>
+    </section>
+
+    <section id="test">
+      <div class="kicker">See it · drag to test</div>
+      <h2>Independence of two vectors in R²</h2>
+      <p>Drag the tips of <span style="color:#b3431f;font-weight:600">v₁</span> and <span style="color:#1f5e57;font-weight:600">v₂</span>. Two vectors in ℝ² are <strong>dependent</strong> exactly when they lie on the same line through the origin (one is a multiple of the other) — watch the verdict flip the moment they line up.</p>
+      <div class="viz">
+        <div class="viz-row">
+          <canvas id="cv-test" width="500" height="420"></canvas>
+          <div class="viz-ctrl">
+            <div class="viz-readout" id="test-readout"></div>
+            <div class="viz-verdict" id="test-verdict"></div>
+            <div class="viz-btns">
+              <span style="font-size:.72rem;color:#8a836f;font-family:'Spline Sans Mono',monospace">try presets:</span>
+            </div>
+            <div class="viz-btns">
+              <button data-v1="3,1" data-v2="1,2">independent</button>
+              <button data-v1="2,1" data-v2="4,2">dependent (×2)</button>
+              <button data-v1="3,2" data-v2="-3,-2">dependent (flip)</button>
+            </div>
+          </div>
+        </div>
+        <div class="viz-cap" id="test-cap"></div>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>In ℝ², two vectors are dependent exactly when they share a <em>line through the origin</em></h4>
+        <ul>
+          <li>If <code>v₂</code> is a scalar multiple of <code>v₁</code>, the two lie on one line — you can build <code>0</code> from a nonzero combo, so they're <strong>dependent</strong>.</li>
+          <li>If they point in genuinely different directions, the determinant / cross is nonzero and the set is <strong>independent</strong>.</li>
+          <li>Visual shortcut: line them up on screen and the verdict flips instantly to dependent.</li>
+        </ul>
+        <div class="bottom">For two vectors in ℝ², "same line" = dependent; everything else = independent.</div>
+      </div>
+    </section>
+
+    <section id="columns">
+      <div class="kicker">From vectors to matrices</div>
+      <h2>Linear independence of matrix columns</h2>
+      <p>Stack the vectors as columns of a matrix A. Then the dependence equation is just the matrix equation:</p>
+      <div class="formula">
+        x₁a₁ + x₂a₂ + ⋯ + xₙaₙ = 0 &nbsp; ⟺ &nbsp; Ax = 0
+        <small>each dependence relation = a nontrivial solution of Ax = 0</small>
+      </div>
+      <div class="theorem">
+        <div class="lbl">The matrix test</div>
+        <p>The columns of A are <strong>linearly independent</strong> if and only if <code class="mono">Ax = 0</code> has <strong>only the trivial solution</strong> — equivalently, A has a pivot in <strong>every column</strong> (no free variables).</p>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>Stacking vectors as columns turns independence into a question about <em>Ax = 0</em></h4>
+        <ul>
+          <li>Every dependence relation among <code>a₁, …, aₙ</code> is literally a nontrivial solution of <code>Ax = 0</code>.</li>
+          <li><strong>Columns independent</strong> ⟺ <code>Ax = 0</code> has only the trivial solution ⟺ <strong>pivot in every column</strong>.</li>
+          <li>A single free variable column = a dependence relation = the columns are dependent.</li>
+        </ul>
+        <div class="bottom">You'll never test independence by hand — you'll row reduce and count pivots.</div>
+      </div>
+    </section>
+
+    <section id="reducer">
+      <div class="kicker">See it · row reduce</div>
+      <h2>The Ax = 0 reducer</h2>
+      <p>Pick a set of vectors (as columns). The page row-reduces <code class="mono">[A | 0]</code> and checks: is there a pivot in every column? A free-variable column (gold) means a nontrivial solution exists → the set is dependent. This is the textbook's Example 1 and a contrasting independent case.</p>
+      <div class="viz">
+        <div class="reducer-stage" id="red-stage"></div>
+        <div class="viz-btns" style="justify-content:center">
+          <button data-case="dep" class="on">Example: dependent</button>
+          <button data-case="ind">Example: independent</button>
+        </div>
+        <div class="viz-verdict" id="red-verdict"></div>
+        <div class="viz-cap" id="red-cap"></div>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>The reducer makes the verdict mechanical: <em>row reduce <code>[A | 0]</code> and look at the columns</em></h4>
+        <ul>
+          <li>Pivot in every column → only trivial solution → <strong>independent</strong>.</li>
+          <li>Any column without a pivot (gold) = a <strong>free variable</strong> = a nontrivial solution exists → <strong>dependent</strong>.</li>
+          <li>This is the engine behind every independence test in the section — and behind the textbook's Example 1.</li>
+        </ul>
+        <div class="bottom">No pivot in a column = a free variable = dependence. That's the whole test.</div>
+      </div>
+    </section>
+
+    <section id="dep-anim-section">
+      <div class="kicker">Watch · 8 stages</div>
+      <h2>Building the dependence relation, step by step</h2>
+      <p>Row reducing gives you "there's a free variable, so they're dependent" — but where does the actual <em>dependence relation</em> come from? This animation walks through it: from 3 vectors all the way to a verified equation <code class="mono">c₁v₁ + c₂v₂ + c₃v₃ = 0</code> with concrete nonzero weights.</p>
+
+      <div class="ex-vis">
+        <span class="ex-vis-tag">Animated · matrix → free variable → dependence relation</span>
+        <div class="ex-vis-title">How a dependence relation comes out of row reduction</div>
+
+        <div class="dep-anim">
+          <div class="dep-progress" id="dep-progress"></div>
+          <div class="dep-stage fade" id="dep-stage"></div>
+          <div class="dep-controls">
+            <button id="dep-back">← Back</button>
+            <button id="dep-play" class="primary">▶ Auto</button>
+            <button id="dep-next">Next →</button>
+            <button id="dep-reset">Reset</button>
+          </div>
+          <div class="dep-cap" id="dep-cap"></div>
+        </div>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>A free variable doesn't just <em>signal</em> dependence — it hands you the actual <em>dependence relation</em></h4>
+        <ul>
+          <li>Solve <code>Ax = 0</code> in parametric form: set the free variable to any nonzero value (e.g. <code>x₃ = 1</code>).</li>
+          <li>Back-substitute to get concrete weights <code>c₁, c₂, c₃</code> — those weights ARE the relation <code>c₁v₁ + c₂v₂ + c₃v₃ = 0</code>.</li>
+          <li>Verify by computing the combination: if it equals <code>0</code>, you've produced the proof of dependence by hand.</li>
+        </ul>
+        <div class="bottom">The free variable's column tells you which vector is redundant — and how to write it as a combo of the others.</div>
+      </div>
+    </section>
+
+    <section id="special">
+      <div class="kicker">Small cases</div>
+      <h2>Sets of one or two vectors</h2>
+      <div class="defs">
+        <div class="def"><div class="word">One vector {v}</div><p>Independent ⟺ <strong>v ≠ 0</strong>. A single nonzero vector is always independent; the zero vector alone is dependent.</p></div>
+        <div class="def"><div class="word">Two vectors {v₁, v₂}</div><p>Dependent ⟺ one is a <strong>scalar multiple</strong> of the other (they lie on one line). Otherwise independent.</p></div>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>The tiny sets have <em>no-computation rules</em> — memorize them</h4>
+        <ul>
+          <li><strong>{v}</strong>: independent ⟺ <code>v ≠ 0</code>. The zero vector alone is dependent.</li>
+          <li><strong>{v₁, v₂}</strong>: dependent ⟺ one is a scalar multiple of the other (same line through origin).</li>
+          <li>For three or more vectors you must row reduce — these shortcuts only work for sizes 1 and 2.</li>
+        </ul>
+        <div class="bottom">Sets of size 1 or 2 you answer by inspection; size ≥ 3 needs row reduction (or Thm 7/8/9).</div>
+      </div>
+    </section>
+
+    <section id="thm7">
+      <div class="kicker">The characterization</div>
+      <h2>Theorem 7 — what dependence really means</h2>
+      <div class="theorem">
+        <div class="lbl">Theorem 7</div>
+        <p>An indexed set S = {v₁, …, vₚ} of <strong>two or more</strong> vectors is linearly dependent if and only if <strong>at least one</strong> of the vectors is a linear combination of the others. In fact, if S is dependent and v₁ ≠ 0, then some vⱼ (j &gt; 1) is a combination of the <em>preceding</em> vectors.</p>
+      </div>
+      <div class="callout">
+        <div class="h">Careful</div>
+        <p style="margin:0">Theorem 7 does <strong>not</strong> say <em>every</em> vector in a dependent set is a combination of the others — only that <em>at least one</em> is. Some vector may fail to be expressible in terms of the rest.</p>
+      </div>
+
+      <div class="ex-vis">
+        <span class="ex-vis-tag">Bridge · §1.5 ↔ §1.7</span>
+        <div class="ex-vis-title">Same matrix, two questions, same row reduction</div>
+        <p>Section 1.5 taught you to ask: "<em>Does <code class="mono">Ax = 0</code> have nontrivial solutions?</em>" Section 1.7 asks: "<em>Are the columns of A linearly dependent?</em>" These look like different questions, but they are <strong>literally the same question</strong> with different vocabulary. Same matrix, same row reduction, same answer.</p>
+
+        <div class="bridge-grid">
+          <div class="bridge-card left">
+            <span class="bridge-tag">§1.5 framing</span>
+            <div class="bridge-q">"Does Ax = 0 have a nontrivial solution?"</div>
+            <div class="bridge-eq">x₁v₁ + x₂v₂ + x₃v₃ = 0,&nbsp; some xᵢ ≠ 0?</div>
+            <div style="font-size:.9rem;color:#4a4438;font-style:italic;line-height:1.5">You're asking about the solution set of the homogeneous equation. If it's bigger than just {0}, you have nontrivial solutions.</div>
+          </div>
+
+          <div class="bridge-arrow">SAME<br>QUESTION</div>
+
+          <div class="bridge-card right">
+            <span class="bridge-tag">§1.7 framing</span>
+            <div class="bridge-q">"Are {v₁, v₂, v₃} linearly dependent?"</div>
+            <div class="bridge-eq">Some nonzero combination of v's = 0?</div>
+            <div style="font-size:.9rem;color:#4a4438;font-style:italic;line-height:1.5">You're asking whether one vector is redundant — buildable from the others. If yes, the set is dependent.</div>
+          </div>
+        </div>
+
+        <div class="bridge-pivots">
+          <span style="font-family:'Spline Sans Mono',monospace;font-size:.9rem;color:#4a4438">Both sides reduce to the same row reduction:</span>
+          <div class="mat-b" style="grid-template-columns:repeat(3,1.9em)">
+            <span class="piv">1</span><span class="zero">0</span><span class="free">−2</span>
+            <span class="zero">0</span><span class="piv">1</span><span class="free">1</span>
+            <span class="zero">0</span><span class="zero">0</span><span class="zero">0</span>
+          </div>
+          <span style="font-family:'Spline Sans Mono',monospace;font-size:.9rem;color:#4a4438">→ free column (gold)</span>
+        </div>
+
+        <div class="bridge-answer">
+          <div class="bridge-row yes">
+            <div class="row-q">§1.5 answer</div>
+            <div class="row-a">YES — there's a nontrivial solution (because x₃ is free)</div>
+          </div>
+          <div class="bridge-row no">
+            <div class="row-q">§1.7 answer</div>
+            <div class="row-a">YES — the columns are linearly dependent</div>
+          </div>
+        </div>
+
+        <div style="background:var(--paper-2);border-left:5px solid var(--gold);border-radius:0 6px 6px 0;padding:14px 18px;margin-top:14px;font-size:.95rem;line-height:1.6;color:#4a4438">
+          <strong style="color:#8a5e10">The mapping is exact:</strong><br>
+          • "<em>only trivial solution</em>" (§1.5) ⟺ "<em>linearly independent</em>" (§1.7) ⟺ <em>pivot in every column</em><br>
+          • "<em>nontrivial solution exists</em>" (§1.5) ⟺ "<em>linearly dependent</em>" (§1.7) ⟺ <em>free column exists</em><br>
+          The actual <em>weights</em> from any nontrivial solution of §1.5 ARE the coefficients of the dependence relation in §1.7. Different language, identical math.
+        </div>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4><em>Theorem 7</em>: dependence means at <em>least one</em> vector is a combination of the others — not necessarily all</h4>
+        <ul>
+          <li>For a set of ≥ 2 vectors: <strong>dependent</strong> ⟺ some <code>vⱼ</code> can be written as a linear combination of the others.</li>
+          <li>Sharper version: if <code>v₁ ≠ 0</code>, then some <code>vⱼ (j &gt; 1)</code> is a combination of the <em>preceding</em> vectors.</li>
+          <li>Common trap: don't claim every vector is redundant — only at least one is.</li>
+        </ul>
+        <div class="bottom">Dependent = "at least one is redundant." The §1.5 question and the §1.7 question are the same row reduction.</div>
+      </div>
+    </section>
+
+    <section id="thm8">
+      <div class="kicker">See it · the counting shortcut</div>
+      <h2>Theorem 8 — too many vectors</h2>
+      <div class="theorem">
+        <div class="lbl">Theorem 8</div>
+        <p>If a set contains <strong>more vectors than there are entries</strong> in each vector, the set is automatically linearly dependent. That is, any set {v₁, …, vₚ} in ℝⁿ is dependent whenever <code class="mono">p &gt; n</code>.</p>
+      </div>
+      <p>Why? Stacking p vectors from ℝⁿ gives an n×p matrix. The equation Ax = 0 is then n equations in p unknowns — more unknowns than equations means a free variable is forced, so a nontrivial solution exists. Try it: bump the counts and watch.</p>
+      <div class="viz">
+        <div class="viz-ctrl">
+          <label>entries per vector (n = dimension) &nbsp; <span class="v" id="t8-n-out">2</span></label>
+          <input type="range" id="t8-n" min="1" max="5" step="1" value="2">
+          <label>number of vectors (p) &nbsp; <span class="v" id="t8-p-out">3</span></label>
+          <input type="range" id="t8-p" min="1" max="6" step="1" value="3">
+        </div>
+        <div class="viz-verdict" id="t8-verdict"></div>
+        <div class="viz-cap" id="t8-cap"></div>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4><em>Theorem 8</em>: if you have <em>more vectors than entries</em>, the set is automatically dependent</h4>
+        <ul>
+          <li>Any set <code>{v₁, …, vₚ}</code> in ℝⁿ with <code>p &gt; n</code> is <strong>linearly dependent</strong> — no row reduction needed.</li>
+          <li>Reason: the matrix is <code>n × p</code>, giving more unknowns than equations → forced free variable → nontrivial solution.</li>
+          <li>Theorem 8 says nothing when <code>p ≤ n</code> — in that case you still have to row reduce to decide.</li>
+        </ul>
+        <div class="bottom">Count first. If <code>p &gt; n</code>, you're done — declare dependent and move on.</div>
+      </div>
+    </section>
+
+    <section id="thm9">
+      <div class="kicker">The instant red flag</div>
+      <h2>Theorem 9 — a set with the zero vector</h2>
+      <div class="theorem">
+        <div class="lbl">Theorem 9</div>
+        <p>If a set S = {v₁, …, vₚ} contains the <strong>zero vector</strong>, then S is linearly dependent — no computation needed.</p>
+      </div>
+      <p>Why instantly? If v₁ = 0, then <code class="mono">1·v₁ + 0·v₂ + ⋯ + 0·vₚ = 0</code> is a dependence relation with a nonzero weight (the 1). So any set containing 0 fails the independence test on sight.</p>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4><em>Theorem 9</em>: any set containing the <em>zero vector</em> is dependent on sight</h4>
+        <ul>
+          <li>If <code>0</code> is in the set, put weight <code>1</code> on it and <code>0</code> on everything else — instant nontrivial relation summing to <code>0</code>.</li>
+          <li>No row reduction, no counting — just scan for the zero vector.</li>
+          <li>Pairs with Theorem 8 as the two "look-first" shortcuts before you ever touch a matrix.</li>
+        </ul>
+        <div class="bottom">Spot a zero vector → set is dependent. End of computation.</div>
+      </div>
+    </section>
+
+    <section id="examples">
+      <div class="kicker">Worked examples</div>
+      <h2>Focused examples</h2>
+
+      <div class="example">
+        <div class="ehead"><div class="enum">1</div><div class="etitle">Test three vectors in R³</div></div>
+        <p>Are <code>v₁ = (1,2,3)</code>, <code>v₂ = (4,5,6)</code>, <code>v₃ = (2,1,0)</code> independent?</p>
+        <button class="reveal">Show solution</button>
+        <div class="ework">
+          <h4>Row reduce [v₁ v₂ v₃ | 0]</h4>
+          <p><code>[1 4 2 ; 2 5 1 ; 3 6 0]</code> reduces to <code>[1 4 2 ; 0 −3 −3 ; 0 0 0]</code>.</p>
+          <h4>Read the pivots</h4>
+          <p>Pivots in columns 1 and 2 only; column 3 has no pivot → x₃ is free. A free variable means a nontrivial solution exists.</p>
+          <h4>Answer</h4>
+          <p><strong>Linearly dependent.</strong> Each nonzero value of x₃ gives a dependence relation among the three vectors.</p>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="ehead"><div class="enum">2</div><div class="etitle">Use Theorem 8 (just count)</div></div>
+        <p>Are four vectors in ℝ³ independent or dependent — without any computation?</p>
+        <button class="reveal">Show solution</button>
+        <div class="ework">
+          <h4>Count entries vs vectors</h4>
+          <p>Each vector lives in ℝ³ (3 entries), but there are 4 vectors. So p = 4 &gt; n = 3.</p>
+          <h4>Apply Theorem 8</h4>
+          <p>More vectors than entries ⇒ automatically <strong>linearly dependent</strong>. No row reduction required.</p>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="ehead"><div class="enum">3</div><div class="etitle">Spot the zero vector</div></div>
+        <p>Is <code>{(2,1), (0,0), (3,5)}</code> independent?</p>
+        <button class="reveal">Show solution</button>
+        <div class="ework">
+          <h4>Look for 0</h4>
+          <p>The set contains the zero vector (0,0).</p>
+          <h4>Apply Theorem 9</h4>
+          <p>Any set containing 0 is <strong>linearly dependent</strong>: take weight 1 on (0,0) and 0 on the rest — that's a nontrivial relation giving 0.</p>
+        </div>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>Three examples, three tools — <em>match the shortcut to what you see</em></h4>
+        <ul>
+          <li><strong>Example 1</strong> (three vectors in ℝ³): no shortcut — row reduce, find a free column, declare dependent.</li>
+          <li><strong>Example 2</strong> (4 vectors in ℝ³): <code>p &gt; n</code>, so <strong>Theorem 8</strong> finishes it in one line — dependent.</li>
+          <li><strong>Example 3</strong> (set with <code>(0,0)</code>): zero vector spotted, <strong>Theorem 9</strong> closes it instantly — dependent.</li>
+        </ul>
+        <div class="bottom">Before row reducing, check Thm 8 (count) and Thm 9 (look for 0). Only then commit to the matrix.</div>
+      </div>
+    </section>
+
+    <section id="remember">
+      <div class="kicker">Cheat sheet</div>
+      <h2>Rules &amp; facts to remember</h2>
+      <ol class="rules">
+        <li><strong>Independent</strong> ⟺ <code>x₁v₁ + ⋯ + xₚvₚ = 0</code> has <strong>only</strong> the trivial solution.</li>
+        <li><strong>Dependent</strong> ⟺ some nonzero weights give 0 (a dependence relation).</li>
+        <li>Columns of A independent ⟺ <code>Ax = 0</code> has only the trivial solution ⟺ <strong>pivot in every column</strong>.</li>
+        <li>One vector: independent ⟺ <strong>v ≠ 0</strong>.</li>
+        <li>Two vectors: dependent ⟺ one is a <strong>scalar multiple</strong> of the other.</li>
+        <li><strong>Theorem 7</strong>: dependent (≥2 vectors) ⟺ at least one is a combination of the others (not necessarily all).</li>
+        <li><strong>Theorem 8</strong>: more vectors than entries (<code>p &gt; n</code>) ⇒ automatically dependent.</li>
+        <li><strong>Theorem 9</strong>: any set containing the <strong>zero vector</strong> is dependent.</li>
+        <li>A free variable in <code>Ax = 0</code> is the signature of dependence.</li>
+      </ol>
+      <div style="margin-top:14px">
+        <span class="pill">linear independence</span><span class="pill">dependence relation</span><span class="pill">trivial solution</span>
+        <span class="pill">pivot in every column</span><span class="pill">Theorem 7</span><span class="pill">Theorem 8</span><span class="pill">Theorem 9</span>
+      </div>
+    </section>
+
+    <section id="purpose">
+      <div class="teach">
+        <h3>In one breath</h3>
+        <p>Section 1.7 defines linear independence through one homogeneous equation: vectors are independent when the only way to combine them into 0 is with all-zero weights, and dependent when some nonzero weights work. For matrix columns that's "Ax = 0 has only the trivial solution," i.e. a pivot in every column. Three shortcuts speed up the test: a set is dependent if it has more vectors than entries (Thm 8), or contains the zero vector (Thm 9), and dependence always means one vector is a combination of the others (Thm 7).</p>
+        <p>Independence is the backbone of bases, dimension, and rank coming up.</p>
+      </div>
+    </section>
+
+    <section id="quiz" class="quiz">
+      <div class="kicker">Individual Quiz · IQ 1.7</div>
+      <h2>Practice quiz</h2>
+      <div class="quiz-rubric">
+        <strong>Closed book, closed notes, no calculator / computer, no internet, no human help</strong> except by the instructor. Show work for credit and complete work for full credit. Read the questions carefully.
+      </div>
+
+      <div class="problem">
+        <div class="problem-num"><div class="pnum">1</div><div class="ptitle">Pivot columns for independence</div></div>
+        <p class="problem-q">Suppose A is a 7×5 matrix. How many pivot columns must A have if its columns are linearly independent? Why?</p>
+        <ul class="choices" id="q1-choices">
+          <li data-letter="A" data-correct="true"><div class="letter">A</div><div class="ctext">The matrix must have <strong>5</strong> pivot columns. Otherwise, the equation Ax = 0 would have a free variable, in which case the columns of A would be linearly dependent.</div></li>
+          <li data-letter="B" data-correct="false"><div class="letter">B</div><div class="ctext">The matrix must have 5 pivot columns. The statements "A has a pivot position in every row" and "the columns of A are linearly independent" are logically equivalent.</div></li>
+          <li data-letter="C" data-correct="false"><div class="letter">C</div><div class="ctext">The matrix must have 5 pivot columns. If A had fewer pivot columns, then the equation Ax = 0 would have only the trivial solution.</div></li>
+          <li data-letter="D" data-correct="false"><div class="letter">D</div><div class="ctext">None of the columns of A are pivot columns. Any column of A that is a pivot column is linearly dependent with the other pivot columns.</div></li>
+        </ul>
+        <div class="problem-actions"><button class="primary" id="q1-check">Check answer</button><button id="q1-reset">Reset</button></div>
+        <div class="feedback" id="q1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <div class="problem-num"><div class="pnum">2</div><div class="ptitle">Find h for dependence</div></div>
+        <p class="problem-q">Find the value(s) of h for which the vectors are linearly dependent. Justify your answer.</p>
+        <div class="statement" style="font-family:'Spline Sans Mono',monospace;font-style:normal;color:var(--ink)">
+          v₁ = (3, −3, 6) &nbsp;&nbsp; v₂ = (6, −9, 11) &nbsp;&nbsp; v₃ = (−2, 2, h)
+        </div>
+        <div class="problem-actions"><button class="primary" id="q2-show">Show solution</button><button id="q2-hide">Hide solution</button></div>
+        <div class="solution-block" id="q2-soln">
+          <h4>Step 1 — Stack as columns &amp; row reduce</h4>
+          <p>Matrix <code>[3 6 −2 ; −3 −9 2 ; 6 11 h]</code>. The vectors are dependent when Ax = 0 has a free variable, i.e. when the third column has no pivot.</p>
+          <h4>Step 2 — Eliminate column 1</h4>
+          <p>R2 → R2 + R1: <code>[0 −3 0]</code>. R3 → R3 − 2R1: <code>[0 −1 h+4]</code>. Matrix becomes <code>[3 6 −2 ; 0 −3 0 ; 0 −1 h+4]</code>.</p>
+          <h4>Step 3 — Eliminate column 2</h4>
+          <p>R3 → R3 − (1/3)R2: the column-2 entry clears, leaving R3 = <code>[0 0 h+4]</code>.</p>
+          <h4>Step 4 — When is there no third pivot?</h4>
+          <p>The (3,3) entry is <code>h + 4</code>. If <code>h + 4 = 0</code>, row 3 becomes all zeros → no pivot in column 3 → a free variable → dependent. If <code>h + 4 ≠ 0</code>, there's a pivot in every column → independent.</p>
+          <div class="h-answer">The vectors are linearly dependent ⟺ h = −4</div>
+          <p style="margin-top:12px;font-size:.92rem;color:#6b6453">(Note: column 2 already lost its "−3 vs −1" independence cleanly; the deciding entry is h + 4, so h = −4 is the single value that forces dependence.)</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">LINEAR ALGEBRA &nbsp;·&nbsp; §1.7 LINEAR INDEPENDENCE &nbsp;·&nbsp; STUDY REFERENCE &nbsp;·&nbsp; built from your course material</div>
+</footer>
+
+<!-- ===================== AI TUTOR ===================== -->
+<button id="ai-explain-btn">Explain with AI</button>
+<button id="ai-tab">✦ Ask AI</button>
+<div id="ai-scrim"></div>
+<aside id="ai-panel" aria-label="AI tutor">
+  <div class="ai-head">
+    <div><div class="t">AI <span>Tutor</span></div><div class="sub2">§1.7 · Linear Algebra</div></div>
+    <button class="ai-close" id="ai-close" title="Close">×</button>
+  </div>
+  <div class="ai-body" id="ai-body">
+    <p class="ai-empty"><b>Two ways to use me:</b><br><br>
+      1. <b>Highlight any text</b> on the page — an <em>“Explain with AI”</em> button pops up.<br><br>
+      2. <b>Type a question</b> below — e.g. <em>“why does a free variable mean dependent?”</em> or <em>“when is one vector independent?”</em></p>
+  </div>
+  <div class="ai-foot">
+    <form id="ai-form">
+      <textarea id="ai-input" placeholder="Ask anything about Section 1.7…" rows="1"></textarea>
+      <button id="ai-send" type="submit">Send</button>
+    </form>
+    <div class="ai-hint">Powered by DeepSeek · press Enter to send</div>
+  </div>
+</aside>
+
+<script>
+/* ===================== 1.7 WIDGETS ===================== */
+(function(){
+  const COL={ink:'#161512',paper:'#f4f0e6',grid:'#d8d0bc',accent:'#b3431f',accent2:'#1f5e57',gold:'#c8922a',muted:'#8a836f'};
+  const STEP=42;
+  function mk(canvas){
+    const ctx=canvas.getContext('2d');const W=canvas.width,H=canvas.height,cx=W/2,cy=H/2;
+    const toPx=(x,y)=>[cx+x*STEP,cy-y*STEP];
+    const toUnit=(px,py)=>[(px-cx)/STEP,(cy-py)/STEP];
+    const clear=()=>{
+      ctx.clearRect(0,0,W,H);ctx.fillStyle=COL.paper;ctx.fillRect(0,0,W,H);
+      ctx.strokeStyle=COL.grid;ctx.lineWidth=1;
+      for(let x=cx%STEP;x<W;x+=STEP){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+      for(let y=cy%STEP;y<H;y+=STEP){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+      ctx.strokeStyle=COL.muted;ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,H);ctx.stroke();
+    };
+    const arrow=(x,y,color,label,lw)=>{
+      const [px,py]=toPx(x,y);ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=lw||3;
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,py);ctx.stroke();
+      const ang=Math.atan2(py-cy,px-cx),h=11;ctx.beginPath();ctx.moveTo(px,py);
+      ctx.lineTo(px-h*Math.cos(ang-0.4),py-h*Math.sin(ang-0.4));
+      ctx.lineTo(px-h*Math.cos(ang+0.4),py-h*Math.sin(ang+0.4));ctx.closePath();ctx.fill();
+      if(label){ctx.fillStyle=color;ctx.font='600 15px "Spline Sans Mono",monospace';ctx.fillText(label,px+8,py-6);}
+    };
+    const lineThrough=(x,y,color)=>{
+      ctx.save();ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.globalAlpha=.5;ctx.setLineDash([6,5]);
+      const t=40;const [a,b]=toPx(x*t,y*t),[c,d]=toPx(-x*t,-y*t);
+      ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,d);ctx.stroke();ctx.restore();
+    };
+    const dot=(x,y,color,r)=>{const [px,py]=toPx(x,y);ctx.fillStyle=color;ctx.beginPath();ctx.arc(px,py,r||5,0,7);ctx.fill();};
+    return {ctx,W,H,cx,cy,toPx,toUnit,clear,arrow,lineThrough,dot};
+  }
+
+  /* ---- independence tester (drag two vectors) ---- */
+  (function(){
+    const cv=document.getElementById('cv-test'); if(!cv) return;
+    const g=mk(cv);
+    let v1=[3,1], v2=[1,2], drag=null;
+    const ro=document.getElementById('test-readout'),verd=document.getElementById('test-verdict'),cap=document.getElementById('test-cap');
+    function draw(){
+      g.clear();
+      const cross=v1[0]*v2[1]-v1[1]*v2[0];
+      const dep=Math.abs(cross)<1e-9;
+      if(dep){ g.lineThrough(v1[0]||v2[0],v1[1]||v2[1],COL.muted); }
+      g.arrow(v1[0],v1[1],COL.accent,'v₁');
+      g.arrow(v2[0],v2[1],COL.accent2,'v₂');
+      ro.innerHTML='<span class="va">v₁</span> = ('+v1[0]+', '+v1[1]+')<br>'+
+        '<span class="vb">v₂</span> = ('+v2[0]+', '+v2[1]+')<br>'+
+        'det / cross = '+cross.toFixed(0);
+      if(dep){
+        verd.className='viz-verdict dep';verd.textContent='✗ Linearly DEPENDENT';
+        cap.textContent='The two vectors lie on the same line through the origin — one is a scalar multiple of the other. A nonzero combination gives 0, so they are dependent.';
+      } else {
+        verd.className='viz-verdict ind';verd.textContent='✓ Linearly INDEPENDENT';
+        cap.textContent='The vectors point in genuinely different directions (cross product ≠ 0). The only way to combine them into 0 is with both weights zero — independent.';
+      }
+    }
+    function pos(e){const r=cv.getBoundingClientRect();const sx=cv.width/r.width,sy=cv.height/r.height;
+      return g.toUnit((e.clientX-r.left)*sx,(e.clientY-r.top)*sy);}
+    function near(p,vec){const [px,py]=g.toPx(vec[0],vec[1]);const [qx,qy]=g.toPx(p[0],p[1]);return Math.hypot(px-qx,py-qy)<24;}
+    cv.addEventListener('pointerdown',e=>{const p=pos(e);if(near(p,v1))drag='v1';else if(near(p,v2))drag='v2';});
+    cv.addEventListener('pointermove',e=>{if(!drag)return;const p=pos(e);
+      const r=[Math.max(-6,Math.min(6,Math.round(p[0]))),Math.max(-5,Math.min(5,Math.round(p[1])))];
+      if(drag==='v1')v1=r;else v2=r;draw();});
+    window.addEventListener('pointerup',()=>drag=null);
+    document.querySelectorAll('#test .viz-btns button').forEach(b=>b.onclick=()=>{
+      v1=b.dataset.v1.split(',').map(Number);v2=b.dataset.v2.split(',').map(Number);draw();});
+    draw();
+  })();
+
+  /* ---- Ax=0 reducer ---- */
+  (function(){
+    const stage=document.getElementById('red-stage'); if(!stage) return;
+    const verd=document.getElementById('red-verdict'),cap=document.getElementById('red-cap');
+    const cases={
+      dep:{
+        A:[[1,4,2],[2,5,1],[3,6,0]],
+        E:[[1,4,2],[0,-3,-3],[0,0,0]],
+        pivots:[[0,0],[1,1]], freeCol:2, dep:true
+      },
+      ind:{
+        A:[[1,4,2],[2,5,1],[3,6,1]],
+        E:[[1,4,2],[0,-3,-3],[0,0,1]],
+        pivots:[[0,0],[1,1],[2,2]], freeCol:null, dep:false
+      }
+    };
+    let cur='dep';
+    function paint(M,pivots,freeCol){
+      let h='<div class="mtx-mini" style="grid-template-columns:repeat('+(M[0].length+1)+',2.4em)">';
+      const has=(l,r,c)=>l&&l.some(p=>p[0]===r&&p[1]===c);
+      for(let r=0;r<M.length;r++){
+        for(let c=0;c<M[r].length;c++){
+          let cls='';if(has(pivots,r,c))cls=' class="piv"';else if(freeCol===c)cls=' class="free-col"';
+          h+='<span'+cls+'>'+M[r][c]+'</span>';
+        }
+        h+='<span class="aug">0</span>';
+      }
+      return h+'</div>';
+    }
+    function draw(){
+      const c=cases[cur];
+      stage.innerHTML = paint(c.A,[],null) + '<span class="reducer-arrow">→</span>' + paint(c.E,c.pivots,c.freeCol);
+      if(c.dep){
+        verd.className='viz-verdict dep';verd.textContent='✗ Free variable in column 3 → DEPENDENT';
+        cap.textContent='Pivots only in columns 1 and 2; column 3 (gold) has no pivot, so x₃ is free. Each nonzero x₃ gives a nontrivial solution of Ax = 0 — a dependence relation. The columns are linearly dependent.';
+      } else {
+        verd.className='viz-verdict ind';verd.textContent='✓ Pivot in every column → INDEPENDENT';
+        cap.textContent='Every column has a pivot, so Ax = 0 has no free variable — only the trivial solution. The columns are linearly independent.';
+      }
+    }
+    document.querySelectorAll('#reducer .viz-btns button').forEach(b=>b.onclick=()=>{
+      cur=b.dataset.case;
+      document.querySelectorAll('#reducer .viz-btns button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');draw();});
+    draw();
+  })();
+
+  /* ---- Theorem 8 counter ---- */
+  (function(){
+    const nIn=document.getElementById('t8-n'); if(!nIn) return;
+    const pIn=document.getElementById('t8-p'),nOut=document.getElementById('t8-n-out'),pOut=document.getElementById('t8-p-out'),
+      verd=document.getElementById('t8-verdict'),cap=document.getElementById('t8-cap');
+    function draw(){
+      const n=parseInt(nIn.value,10),p=parseInt(pIn.value,10);
+      nOut.textContent=n;pOut.textContent=p;
+      if(p>n){
+        verd.className='viz-verdict dep';verd.textContent='✗ p > n → AUTOMATICALLY DEPENDENT (Theorem 8)';
+        cap.textContent=p+' vectors in ℝ'+n+': stacking them gives a '+n+'×'+p+' matrix, so Ax = 0 is '+n+' equations in '+p+' unknowns. More unknowns than equations forces a free variable → a nontrivial solution → dependent. Guaranteed, no computation needed.';
+      } else {
+        verd.className='viz-verdict ind';verd.textContent='? p ≤ n → Theorem 8 says nothing';
+        cap.textContent=p+' vectors in ℝ'+n+': here p ≤ n, so Theorem 8 gives no guarantee either way. The set might be independent or dependent — you have to row reduce to find out.';
+      }
+    }
+    nIn.oninput=draw;pIn.oninput=draw;draw();
+  })();
+
+  /* ---- worked-example reveals ---- */
+  document.querySelectorAll('.example .reveal').forEach(btn=>{
+    btn.onclick=()=>{const w=btn.nextElementSibling;const open=w.classList.toggle('show');
+      btn.textContent=open?'Hide solution':'Show solution';};
+  });
+
+  /* ---- quiz Q1 ---- */
+  (function(){
+    const choices=document.getElementById('q1-choices'); if(!choices) return;
+    const fb=document.getElementById('q1-fb'),checkBtn=document.getElementById('q1-check'),resetBtn=document.getElementById('q1-reset');
+    const exp={
+      A:"<strong>Correct.</strong> The 5 columns are independent ⟺ Ax = 0 has only the trivial solution ⟺ every one of the 5 columns is a pivot column. If even one column lacked a pivot, that variable would be free → a nontrivial solution → dependent. So all 5 columns must be pivot columns.",
+      B:"<strong>Wrong reason.</strong> The right count is 5, but independence is about a pivot in every <em>column</em>, not every <em>row</em>. \"Pivot in every row\" is the spanning condition (Theorem 4), a different statement.",
+      C:"<strong>Backwards logic.</strong> Fewer pivot columns would give a free variable, making Ax = 0 have <em>nontrivial</em> solutions (dependent) — not \"only the trivial solution.\"",
+      D:"<strong>No.</strong> For independence you need the maximum number of pivot columns (all 5), not none. Pivot columns aren't \"dependent with\" each other."
+    };
+    let selected=null;
+    choices.querySelectorAll('li').forEach(li=>li.addEventListener('click',()=>{
+      if(checkBtn.disabled)return;choices.querySelectorAll('li').forEach(x=>x.classList.remove('selected'));
+      li.classList.add('selected');selected=li;}));
+    checkBtn.addEventListener('click',()=>{
+      if(!selected){fb.className='feedback show no';fb.innerHTML='Pick an answer first.';return;}
+      const letter=selected.dataset.letter,correct=selected.dataset.correct==='true';
+      choices.querySelectorAll('li').forEach(li=>{
+        if(li.dataset.correct==='true')li.classList.add('correct');
+        else if(li===selected)li.classList.add('wrong');li.classList.remove('selected');});
+      fb.className='feedback show '+(correct?'ok':'no');
+      fb.innerHTML=(correct?'✓ ':'✗ ')+exp[letter];checkBtn.disabled=true;});
+    resetBtn.addEventListener('click',()=>{
+      choices.querySelectorAll('li').forEach(li=>li.classList.remove('selected','correct','wrong'));
+      fb.className='feedback';fb.innerHTML='';selected=null;checkBtn.disabled=false;});
+  })();
+
+  /* ---- quiz Q2 reveal ---- */
+  (function(){
+    const soln=document.getElementById('q2-soln'); if(!soln) return;
+    document.getElementById('q2-show').onclick=()=>soln.classList.add('show');
+    document.getElementById('q2-hide').onclick=()=>soln.classList.remove('show');
+  })();
+})();
+</script>
+
+<script>
+/* ============================================================
+   AI TUTOR — DeepSeek integration
+   PASTE YOUR (FRESH) KEY BELOW. A key in client-side HTML is
+   visible to anyone who opens the page — rotate it if exposed,
+   and use a backend proxy for any public deployment.
+   ============================================================ */
+const DEEPSEEK_API_KEY = "sk-3342872f6d7e45f297924e908d646eb0";   // <-- put your key here
+const DEEPSEEK_URL = "https://api.deepseek.com/chat/completions";
+const DEEPSEEK_MODEL = "deepseek-chat";
+const SYSTEM_PROMPT =
+  "You are a friendly, concise linear-algebra tutor embedded in a study website for " +
+  "Section 1.7: Linear Independence (Lay, Linear Algebra and Its Applications). " +
+  "Topics in scope: the definition of linear independence and dependence via the homogeneous " +
+  "equation x1*v1 + ... + xp*vp = 0 having only the trivial solution, linear dependence relations, " +
+  "linear independence of matrix columns (columns independent iff Ax=0 has only the trivial " +
+  "solution iff a pivot in every column), sets of one vector (independent iff nonzero) and two " +
+  "vectors (dependent iff one is a scalar multiple of the other), Theorem 7 (a set of two or more " +
+  "is dependent iff at least one vector is a linear combination of the others), Theorem 8 (more " +
+  "vectors than entries, p>n, forces dependence), and Theorem 9 (any set containing the zero " +
+  "vector is dependent). Explain clearly for a first-time student. Keep answers short (2-5 " +
+  "sentences unless asked for more). Use plain text; wrap inline math/notation in backticks. " +
+  "Use **bold** for key terms.";
+
+const panel=document.getElementById('ai-panel'),scrim=document.getElementById('ai-scrim'),
+  tab=document.getElementById('ai-tab'),closeB=document.getElementById('ai-close'),
+  body=document.getElementById('ai-body'),form=document.getElementById('ai-form'),
+  input=document.getElementById('ai-input'),sendB=document.getElementById('ai-send'),
+  hlBtn=document.getElementById('ai-explain-btn');
+let history=[],busy=false;
+function openPanel(){panel.classList.add('open');scrim.classList.add('show');}
+function closePanel(){panel.classList.remove('open');scrim.classList.remove('show');}
+tab.addEventListener('click',openPanel);closeB.addEventListener('click',closePanel);
+scrim.addEventListener('click',closePanel);
+document.addEventListener('mouseup',(e)=>{
+  if(panel.contains(e.target)||e.target===hlBtn)return;
+  const sel=window.getSelection(),text=sel.toString().trim();
+  if(text.length>1){const rect=sel.getRangeAt(0).getBoundingClientRect();
+    hlBtn.style.left=(rect.left+rect.width/2+window.scrollX)+'px';
+    hlBtn.style.top=(rect.top+window.scrollY-8)+'px';
+    hlBtn.style.display='block';hlBtn.dataset.text=text;
+  }else{hlBtn.style.display='none';}});
+document.addEventListener('mousedown',(e)=>{if(e.target!==hlBtn)hlBtn.style.display='none';});
+hlBtn.addEventListener('click',()=>{const t=hlBtn.dataset.text;hlBtn.style.display='none';openPanel();
+  ask('Explain this phrase from the section: "'+t+'"',t);});
+input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,120)+'px';});
+input.addEventListener('keydown',(e)=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit();}});
+form.addEventListener('submit',(e)=>{e.preventDefault();const q=input.value.trim();if(!q)return;
+  input.value='';input.style.height='auto';ask(q,null);});
+function clearEmpty(){const e=body.querySelector('.ai-empty');if(e)e.remove();}
+function fmt(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>');}
+function addUser(q,quote){clearEmpty();const d=document.createElement('div');d.className='ai-msg user';
+  d.innerHTML='<div class="who">You</div>'+(quote?'<div class="quote">“'+fmt(quote)+'”</div>':'')+
+  '<div class="txt">'+fmt(quote?'Explain this':q)+'</div>';body.appendChild(d);body.scrollTop=body.scrollHeight;}
+function addBot(){const d=document.createElement('div');d.className='ai-msg bot';
+  d.innerHTML='<div class="who">AI Tutor</div><div class="txt"><span class="dots"><span></span><span></span><span></span></span></div>';
+  body.appendChild(d);body.scrollTop=body.scrollHeight;return d.querySelector('.txt');}
+async function ask(prompt,quote){
+  if(busy)return;busy=true;sendB.disabled=true;addUser(prompt,quote);const target=addBot();
+  history.push({role:'user',content:prompt});
+  const messages=[{role:'system',content:SYSTEM_PROMPT},...history];
+  if(!DEEPSEEK_API_KEY||DEEPSEEK_API_KEY.includes('REPLACE')){
+    target.innerHTML='<em style="color:var(--accent)">No API key set.</em> Open this file and paste your DeepSeek key into the <code>DEEPSEEK_API_KEY</code> line near the bottom of the source.';
+    busy=false;sendB.disabled=false;return;}
+  try{
+    const res=await fetch(DEEPSEEK_URL,{method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+DEEPSEEK_API_KEY},
+      body:JSON.stringify({model:DEEPSEEK_MODEL,messages,temperature:0.4,max_tokens:600})});
+    if(!res.ok){const err=await res.text();
+      target.innerHTML='<em style="color:var(--accent)">Request failed ('+res.status+').</em> Check your key/credits.<br><small>'+fmt(err.slice(0,200))+'</small>';
+      busy=false;sendB.disabled=false;return;}
+    const data=await res.json();
+    const answer=data.choices?.[0]?.message?.content||'No response.';
+    history.push({role:'assistant',content:answer});target.innerHTML=fmt(answer);
+  }catch(err){target.innerHTML='<em style="color:var(--accent)">Network error.</em> '+fmt(String(err));}
+  body.scrollTop=body.scrollHeight;busy=false;sendB.disabled=false;
+}
+</script>
+
+<script>
+/* ===================== DEPENDENCE-RELATION ANIMATION =====================
+   8 stages: vectors → matrix → row reduce → free variable → solve → relation → verify → conclusion
+   Same example as the dependent comparison card: v₁=(1,2,3), v₂=(4,5,6), v₃=(2,1,0)
+*/
+(function(){
+  const stage   = document.getElementById('dep-stage');
+  if(!stage) return;
+  const cap     = document.getElementById('dep-cap');
+  const prog    = document.getElementById('dep-progress');
+  const backBtn = document.getElementById('dep-back');
+  const nextBtn = document.getElementById('dep-next');
+  const playBtn = document.getElementById('dep-play');
+  const resetBtn= document.getElementById('dep-reset');
+
+  const stages = [
+    {
+      html: `
+        <div class="da-stack" style="gap:18px;align-items:center">
+          <div style="font-family:'Fraunces',serif;font-size:1.1rem;color:var(--ink)">Three vectors in ℝ³ — independent or dependent?</div>
+          <div class="da-vec-row" style="gap:18px">
+            <div class="da-stack">
+              <span class="da-label" style="color:var(--accent)">v₁</span>
+              <div class="mat-b" style="grid-template-columns:1.9em">
+                <span style="color:var(--accent);font-weight:600">1</span>
+                <span style="color:var(--accent);font-weight:600">2</span>
+                <span style="color:var(--accent);font-weight:600">3</span>
+              </div>
+            </div>
+            <div class="da-stack">
+              <span class="da-label" style="color:var(--accent-2)">v₂</span>
+              <div class="mat-b" style="grid-template-columns:1.9em">
+                <span style="color:var(--accent-2);font-weight:600">4</span>
+                <span style="color:var(--accent-2);font-weight:600">5</span>
+                <span style="color:var(--accent-2);font-weight:600">6</span>
+              </div>
+            </div>
+            <div class="da-stack">
+              <span class="da-label" style="color:#8a5e10">v₃</span>
+              <div class="mat-b" style="grid-template-columns:1.9em">
+                <span style="color:#8a5e10;font-weight:600">2</span>
+                <span style="color:#8a5e10;font-weight:600">1</span>
+                <span style="color:#8a5e10;font-weight:600">0</span>
+              </div>
+            </div>
+          </div>
+        </div>`,
+      cap: "<strong>Stage 1 of 8.</strong> Three vectors. By eye it's not obvious whether one can be built from the others. The test: stack them as columns and check if Ax = 0 has nontrivial solutions."
+    },
+    {
+      html: `
+        <div class="da-stack" style="gap:14px;align-items:center">
+          <div class="da-label" style="color:#8a5e10">Stack as columns of A, augment with 0</div>
+          <div class="mat-b" style="grid-template-columns:repeat(3,1.9em) 6px 1.9em">
+            <span style="color:var(--accent);font-weight:600">1</span><span style="color:var(--accent-2);font-weight:600">4</span><span style="color:#8a5e10;font-weight:600">2</span><div class="sep"></div><span class="aug">0</span>
+            <span style="color:var(--accent);font-weight:600">2</span><span style="color:var(--accent-2);font-weight:600">5</span><span style="color:#8a5e10;font-weight:600">1</span><div class="sep"></div><span class="aug">0</span>
+            <span style="color:var(--accent);font-weight:600">3</span><span style="color:var(--accent-2);font-weight:600">6</span><span style="color:#8a5e10;font-weight:600">0</span><div class="sep"></div><span class="aug">0</span>
+          </div>
+          <div style="font-family:'Spline Sans Mono',monospace;font-size:.95rem;color:#4a4438;margin-top:6px">
+            Question: does <span style="color:var(--accent)">x₁</span>v₁ + <span style="color:var(--accent-2)">x₂</span>v₂ + <span style="color:#8a5e10">x₃</span>v₃ = 0 have any NONTRIVIAL solution?
+          </div>
+        </div>`,
+      cap: "<strong>Stage 2 of 8.</strong> Build the augmented matrix [v₁ v₂ v₃ | 0]. The column of zeros stays zero through any row operation, so we really just row-reduce A."
+    },
+    {
+      html: `
+        <div class="da-stack" style="gap:14px;align-items:center">
+          <div class="da-label">After R2 → R2 − 2R1,&nbsp; R3 → R3 − 3R1</div>
+          <div class="mat-b" style="grid-template-columns:repeat(3,1.9em) 6px 1.9em">
+            <span>1</span><span>4</span><span>2</span><div class="sep"></div><span class="aug">0</span>
+            <span class="zero">0</span><span>−3</span><span>−3</span><div class="sep"></div><span class="aug">0</span>
+            <span class="zero">0</span><span>−6</span><span>−6</span><div class="sep"></div><span class="aug">0</span>
+          </div>
+          <div style="font-family:'Spline Sans Mono',monospace;font-size:.95rem;color:#4a4438">
+            Notice R3 = 2·R2 — one more replacement will zero out R3.
+          </div>
+        </div>`,
+      cap: "<strong>Stage 3 of 8.</strong> Clear column 1 below the pivot. Already we can see R3 is a multiple of R2 — a signal the matrix has dependent rows."
+    },
+    {
+      html: `
+        <div class="da-stack" style="gap:14px;align-items:center">
+          <div class="da-label">Continue → R3 → R3 − 2R2,&nbsp; then scale/clear → RREF</div>
+          <div class="mat-b" style="grid-template-columns:repeat(3,1.9em) 6px 1.9em">
+            <span class="piv">1</span><span class="zero">0</span><span class="free">−2</span><div class="sep"></div><span class="aug">0</span>
+            <span class="zero">0</span><span class="piv">1</span><span class="free">1</span><div class="sep"></div><span class="aug">0</span>
+            <span class="zero">0</span><span class="zero">0</span><span class="zero">0</span><div class="sep"></div><span class="aug">0</span>
+          </div>
+          <div style="font-family:'Spline Sans Mono',monospace;font-size:.95rem;color:#4a4438">
+            Pivots in cols 1 and 2. <span style="color:#8a5e10;font-weight:600">Column 3 has NO pivot</span> — that's the free column.
+          </div>
+        </div>`,
+      cap: "<strong>Stage 4 of 8.</strong> Reduced echelon form. Two pivots (teal), one free column (gold). The free column means there's at least one free variable — guaranteeing a nontrivial solution exists."
+    },
+    {
+      html: `
+        <div class="da-stack" style="gap:14px;align-items:center">
+          <div class="da-label" style="color:var(--accent)">Read the equations from RREF</div>
+          <div class="da-eqs">
+            Row 1: <span style="color:var(--accent)">x₁</span> − 2<span style="color:#8a5e10">x₃</span> = 0 &nbsp;<span class="arr">→</span>&nbsp; <span style="color:var(--accent)">x₁</span> = 2<span style="color:#8a5e10">x₃</span><br>
+            Row 2: <span style="color:var(--accent-2)">x₂</span> + <span style="color:#8a5e10">x₃</span> = 0 &nbsp;<span class="arr">→</span>&nbsp; <span style="color:var(--accent-2)">x₂</span> = −<span style="color:#8a5e10">x₃</span><br>
+            <span style="color:#8a5e10;font-weight:600">x₃ is free</span>
+          </div>
+        </div>`,
+      cap: "<strong>Stage 5 of 8.</strong> Each pivot row gives one equation. Solve x₁ and x₂ (basic) in terms of x₃ (free). Now we can choose any value for x₃ and get a valid solution."
+    },
+    {
+      html: `
+        <div class="da-stack" style="gap:14px;align-items:center">
+          <div class="da-label">Pick the simplest nontrivial value: x₃ = 1</div>
+          <div class="da-eqs">
+            <span style="color:var(--accent)">x₁</span> = 2·1 = <span style="color:var(--accent);font-weight:700">2</span><br>
+            <span style="color:var(--accent-2)">x₂</span> = −1 = <span style="color:var(--accent-2);font-weight:700">−1</span><br>
+            <span style="color:#8a5e10">x₃</span> = <span style="color:#8a5e10;font-weight:700">1</span>
+          </div>
+          <div style="font-family:'Spline Sans Mono',monospace;font-size:1.05rem">
+            One nontrivial solution: x = (<span style="color:var(--accent);font-weight:600">2</span>, <span style="color:var(--accent-2);font-weight:600">−1</span>, <span style="color:#8a5e10;font-weight:600">1</span>)
+          </div>
+        </div>`,
+      cap: "<strong>Stage 6 of 8.</strong> Any value of x₃ works; x₃=1 gives the cleanest numbers. These three values <em>are</em> the weights of a dependence relation among v₁, v₂, v₃."
+    },
+    {
+      html: `
+        <div class="da-stack" style="gap:16px;align-items:center">
+          <div class="da-label" style="color:var(--accent)">Verify: plug the weights back in</div>
+          <div class="da-vec-row">
+            <span class="coef c1">2</span>·v₁ <span class="op">+</span>
+            <span class="coef c2">(−1)</span>·v₂ <span class="op">+</span>
+            <span class="coef c3">1</span>·v₃ <span class="op">=</span>
+          </div>
+          <div class="da-vec-row" style="gap:10px">
+            <div class="mat-b" style="grid-template-columns:1.9em">
+              <span style="color:var(--accent);font-weight:600">2</span>
+              <span style="color:var(--accent);font-weight:600">4</span>
+              <span style="color:var(--accent);font-weight:600">6</span>
+            </div>
+            <span class="op">−</span>
+            <div class="mat-b" style="grid-template-columns:1.9em">
+              <span style="color:var(--accent-2);font-weight:600">4</span>
+              <span style="color:var(--accent-2);font-weight:600">5</span>
+              <span style="color:var(--accent-2);font-weight:600">6</span>
+            </div>
+            <span class="op">+</span>
+            <div class="mat-b" style="grid-template-columns:1.9em">
+              <span style="color:#8a5e10;font-weight:600">2</span>
+              <span style="color:#8a5e10;font-weight:600">1</span>
+              <span style="color:#8a5e10;font-weight:600">0</span>
+            </div>
+            <span class="op">=</span>
+            <div class="mat-b" style="grid-template-columns:1.9em">
+              <span style="color:#fff;background:var(--accent-2);font-weight:700">0</span>
+              <span style="color:#fff;background:var(--accent-2);font-weight:700">0</span>
+              <span style="color:#fff;background:var(--accent-2);font-weight:700">0</span>
+            </div>
+          </div>
+          <div style="font-family:'Spline Sans Mono',monospace;font-size:.92rem;color:#4a4438;text-align:center;max-width:480px">
+            entry-by-entry: (2−4+2, 4−5+1, 6−6+0) = (0, 0, 0) &nbsp;✓
+          </div>
+        </div>`,
+      cap: "<strong>Stage 7 of 8.</strong> Plug the weights back in and compute: 2v₁ − v₂ + v₃ actually equals 0. The dependence relation is verified with concrete numbers."
+    },
+    {
+      html: `
+        <div class="da-stack" style="gap:16px;align-items:center">
+          <div class="da-result no">✗ Linearly DEPENDENT</div>
+          <div class="da-relation">
+            2v₁ − v₂ + v₃ = 0
+          </div>
+          <div class="da-relation" style="background:rgba(200,146,42,.18);color:#8a5e10">
+            ⇒ &nbsp; v₃ = v₂ − 2v₁
+          </div>
+          <div style="font-family:'Spline Sans Mono',monospace;font-size:.95rem;color:#4a4438;text-align:center;max-width:540px;line-height:1.6">
+            v₃ was redundant — it's already built into v₁ and v₂. Adding v₃ to the set doesn't reach any new direction; removing it loses nothing.
+          </div>
+        </div>`,
+      cap: "<strong>Stage 8 of 8. Done.</strong> The whole point: a single free variable in the row reduction produces an explicit, verifiable dependence relation. And rearranging it shows EXACTLY which vector is redundant (Theorem 7 in action)."
+    }
+  ];
+
+  let i = 0, timer = null;
+
+  function renderProgress(){
+    prog.innerHTML = stages.map((_,k)=>'<span class="da-dot'+(k===i?' on':'')+'"></span>').join('');
+  }
+  function render(){
+    stage.classList.remove('fade');
+    void stage.offsetWidth;
+    stage.classList.add('fade');
+    stage.innerHTML = stages[i].html;
+    cap.innerHTML = stages[i].cap;
+    backBtn.disabled = i === 0;
+    nextBtn.disabled = i === stages.length - 1;
+    renderProgress();
+  }
+  function stopAuto(){
+    if(timer){ clearInterval(timer); timer = null; playBtn.textContent = '▶ Auto'; }
+  }
+  backBtn.onclick  = ()=>{ stopAuto(); if(i>0){ i--; render(); } };
+  nextBtn.onclick  = ()=>{ stopAuto(); if(i<stages.length-1){ i++; render(); } };
+  resetBtn.onclick = ()=>{ stopAuto(); i = 0; render(); };
+  playBtn.onclick  = ()=>{
+    if(timer){ stopAuto(); return; }
+    if(i === stages.length - 1){ i = 0; render(); }
+    playBtn.textContent = '❚❚ Pause';
+    timer = setInterval(()=>{
+      if(i < stages.length - 1){ i++; render(); }
+      else { stopAuto(); }
+    }, 2800);
+  };
+
+  render();
+})();
+</script>
+
+</body>
+</html>

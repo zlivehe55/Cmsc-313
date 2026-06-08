@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1.5 — Solution Sets of Linear Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Spline+Sans+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#161512;--paper:#f4f0e6;--paper-2:#ece6d6;--accent:#b3431f;
+    --accent-2:#1f5e57;--gold:#c8922a;--line:#cdc4ad;--shadow:rgba(40,30,15,.16)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:'Newsreader',Georgia,serif;
+    font-size:19px;line-height:1.65;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 12% 18%, rgba(179,67,31,.05), transparent 45%),
+      radial-gradient(circle at 88% 8%, rgba(31,94,87,.06), transparent 40%)}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.4;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E")}
+  .mono{font-family:'Spline Sans Mono',monospace}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+  .grid{display:grid;grid-template-columns:230px 1fr;gap:56px;align-items:start}
+  @media(max-width:880px){.grid{grid-template-columns:1fr;gap:0}}
+
+  header.hero{position:relative;overflow:hidden;border-bottom:2px solid var(--ink);
+    background:var(--ink);color:var(--paper);padding:72px 0 64px}
+  header.hero::after{content:"";position:absolute;inset:0;opacity:.14;pointer-events:none;
+    background:repeating-linear-gradient(90deg,transparent 0 38px,rgba(244,240,230,.5) 38px 39px),
+      repeating-linear-gradient(0deg,transparent 0 38px,rgba(244,240,230,.5) 38px 39px)}
+  .hero .wrap{position:relative;z-index:2}
+  .badge{display:inline-flex;align-items:center;gap:10px;font-family:'Spline Sans Mono',monospace;
+    font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:26px}
+  .badge::before{content:"";width:34px;height:1px;background:var(--gold)}
+  h1.title{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(2.3rem,5.6vw,4.4rem);
+    line-height:.98;letter-spacing:-.02em}
+  h1.title em{font-style:italic;color:var(--accent)}
+  .sub{margin-top:22px;max-width:640px;font-size:1.15rem;color:#d8d1bf;font-style:italic}
+  .chapnum{position:absolute;top:-30px;right:-10px;font-family:'Fraunces',serif;font-weight:900;
+    font-size:clamp(8rem,26vw,20rem);line-height:1;color:rgba(200,146,42,.13);z-index:1;user-select:none}
+
+  nav.toc{position:sticky;top:24px;padding-top:48px}
+  nav.toc .label{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--accent-2);margin-bottom:18px}
+  nav.toc a{display:block;color:var(--ink);text-decoration:none;padding:7px 0 7px 16px;
+    border-left:2px solid var(--line);font-size:.96rem;transition:.18s}
+  nav.toc a:hover{border-left-color:var(--accent);color:var(--accent);padding-left:22px}
+  @media(max-width:880px){nav.toc{display:none}}
+
+  main{padding:64px 0 120px}
+  section{margin-bottom:78px;scroll-margin-top:24px}
+  .kicker{font-family:'Spline Sans Mono',monospace;font-size:.7rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+  h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.7rem,3.5vw,2.6rem);
+    line-height:1.05;letter-spacing:-.01em;margin-bottom:22px;position:relative}
+  h2::before{content:"";display:block;width:54px;height:4px;background:var(--accent);margin-bottom:16px}
+  h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.3rem;margin:26px 0 10px}
+  p{margin-bottom:16px}
+  p .term{color:var(--accent);font-weight:600;font-style:italic}
+  .lead{font-size:1.35rem;line-height:1.55;border-left:3px solid var(--gold);padding-left:24px;color:#3a352b}
+
+  .formula{background:var(--ink);color:var(--paper);border-radius:4px;padding:30px 34px;margin:24px 0;
+    font-family:'Spline Sans Mono',monospace;font-size:1.15rem;text-align:center;
+    box-shadow:8px 8px 0 var(--accent);overflow-x:auto}
+  .formula small{display:block;margin-top:14px;font-size:.7rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--gold);font-family:'Spline Sans Mono',monospace}
+
+  .defs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:24px 0}
+  .def{background:var(--paper-2);border:1px solid var(--line);border-radius:3px;padding:20px 22px;transition:.2s}
+  .def:hover{transform:translateY(-3px);box-shadow:0 10px 24px var(--shadow)}
+  .def .word{font-family:'Fraunces',serif;font-weight:600;font-size:1.18rem;color:var(--accent-2);margin-bottom:6px}
+  .def p{font-size:.96rem;margin:0;color:#4a4438}
+
+  .rules{counter-reset:r;list-style:none;margin:20px 0}
+  .rules li{position:relative;padding:16px 18px 16px 64px;border-bottom:1px dashed var(--line)}
+  .rules li::before{counter-increment:r;content:counter(r);position:absolute;left:14px;top:14px;
+    width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600}
+  .rules li strong{color:var(--accent-2)}
+
+  .callout{background:linear-gradient(180deg,var(--paper-2),var(--paper));border:1px solid var(--line);
+    border-left:5px solid var(--gold);padding:22px 26px;border-radius:0 4px 4px 0;margin:24px 0}
+  .callout .h{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+
+  .theorem{background:var(--accent-2);color:var(--paper);border-radius:4px;padding:30px 34px;margin:24px 0;
+    box-shadow:8px 8px 0 var(--ink)}
+  .theorem .lbl{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+  .theorem p{color:#e6e0d2}.theorem p:last-child{margin:0}
+
+  .teach{background:var(--accent-2);color:var(--paper);border-radius:4px;padding:38px 40px;margin:24px 0;
+    box-shadow:8px 8px 0 var(--ink)}
+  .teach h3{color:var(--gold);margin-top:0}.teach p{color:#e4ded0}.teach p:last-child{margin-bottom:0}
+
+  footer{border-top:2px solid var(--ink);padding:34px 0;font-family:'Spline Sans Mono',monospace;
+    font-size:.78rem;color:#6b6453;letter-spacing:.04em}
+  .pill{display:inline-block;font-family:'Spline Sans Mono',monospace;font-size:.72rem;padding:3px 10px;
+    border-radius:20px;border:1px solid var(--accent-2);color:var(--accent-2);margin:0 4px 6px 0}
+
+  /* interactive shell */
+  .viz{background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:24px;margin:22px 0}
+  .viz-row{display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start}
+  @media(max-width:760px){.viz-row{grid-template-columns:1fr}}
+  .viz canvas{width:100%;height:auto;background:var(--paper);border:1px solid var(--line);border-radius:6px;
+    touch-action:none;display:block}
+  .viz-ctrl label{font-family:'Spline Sans Mono',monospace;font-size:.76rem;color:var(--accent-2);
+    display:flex;justify-content:space-between;margin:12px 0 6px}
+  .viz-ctrl label .v{color:var(--accent);font-weight:600}
+  .viz-ctrl input[type=range]{width:100%}
+  .viz-btns{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+  .viz-btns button{font-family:'Spline Sans Mono',monospace;font-size:.76rem;padding:8px 14px;
+    border:1px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;transition:.15s}
+  .viz-btns button:hover{background:var(--ink);color:var(--paper)}
+  .viz-btns button.on{background:var(--accent-2);color:#fff;border-color:var(--accent-2)}
+  .viz-readout{font-family:'Spline Sans Mono',monospace;font-size:.9rem;background:var(--paper);
+    border:1px solid var(--line);border-radius:6px;padding:14px 16px;margin-top:14px;line-height:1.85}
+  .viz-readout .vp{color:var(--accent);font-weight:600}.viz-readout .vv{color:var(--accent-2);font-weight:600}
+  .viz-readout .vh{color:#8a5e10;font-weight:600}
+  .viz-cap{font-size:.95rem;color:#4a4438;margin-top:14px;line-height:1.6;min-height:24px}
+
+  /* parametric builder vectors */
+  .pv-stage{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;
+    font-family:'Spline Sans Mono',monospace;background:var(--paper);border:1px solid var(--line);
+    border-radius:8px;padding:22px 14px;margin-bottom:14px;overflow-x:auto}
+  .pv-vec{display:inline-grid;gap:5px;border-left:2px solid var(--ink);border-right:2px solid var(--ink);padding:8px 12px}
+  .pv-vec span{text-align:right;min-width:2.2em;padding:0 4px}
+  .pv-sym{font-size:1.3rem;color:var(--accent)}
+  .pv-p span{color:var(--accent);font-weight:600}.pv-v span{color:var(--accent-2);font-weight:600}
+  .pv-coef{font-weight:600;color:#8a5e10}.pv-res span{background:var(--ink);color:var(--paper);border-radius:3px}
+
+  /* worked examples */
+  .example{background:var(--paper);border:2px solid var(--ink);border-radius:6px;padding:26px 30px;margin:22px 0;
+    box-shadow:6px 6px 0 var(--paper-2)}
+  .example .ehead{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+  .example .enum{width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600}
+  .example .etitle{font-family:'Fraunces',serif;font-weight:600;font-size:1.2rem}
+  .example code{font-family:'Spline Sans Mono',monospace;background:var(--paper-2);padding:1px 7px;
+    border-radius:3px;font-size:.93rem;color:var(--accent)}
+  .reveal{font-family:'Spline Sans Mono',monospace;font-size:.76rem;padding:9px 16px;border:1px solid var(--ink);
+    background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;margin-top:8px;transition:.15s}
+  .reveal:hover{background:var(--ink);color:var(--paper)}
+  .ework{display:none;margin-top:16px;padding-top:16px;border-top:1px dashed var(--line)}
+  .ework.show{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .ework h4{font-family:'Spline Sans Mono',monospace;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+    color:#8a5e10;margin:14px 0 8px}.ework h4:first-child{margin-top:0}
+  .ework p{margin-bottom:10px;font-size:.98rem}
+
+  /* quiz */
+  .quiz{margin-top:48px;padding-top:46px;border-top:2px dashed var(--line)}
+  .quiz-rubric{background:var(--paper-2);border-left:5px solid var(--accent);padding:16px 22px;
+    margin:16px 0 28px;font-size:.97rem;color:#4a4438;border-radius:0 4px 4px 0}
+  .quiz-rubric strong{color:var(--accent);font-style:italic}
+  .problem{background:var(--paper);border:2px solid var(--ink);border-radius:6px;padding:26px 30px;margin:22px 0;
+    box-shadow:6px 6px 0 var(--paper-2)}
+  .problem-num{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .problem-num .pnum{width:38px;height:38px;border-radius:50%;background:var(--ink);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem}
+  .problem-num .ptitle{font-family:'Fraunces',serif;font-weight:600;font-size:1.25rem}
+  .problem-q{font-style:italic;color:#3a352b;font-size:1.05rem;margin:8px 0 6px}
+  .statement{text-align:center;font-style:italic;font-size:1.1rem;color:var(--accent-2);margin:16px 0;
+    padding:14px 18px;border:1px dashed var(--accent-2);border-radius:4px;background:rgba(31,94,87,.04)}
+  .choices{list-style:none;margin:14px 0 4px;padding:0}
+  .choices li{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;border:1px solid var(--line);
+    border-radius:6px;margin-bottom:10px;cursor:pointer;transition:.18s;background:var(--paper)}
+  .choices li:hover{border-color:var(--accent-2);background:var(--paper-2)}
+  .choices li.selected{border-color:var(--accent-2);background:rgba(31,94,87,.06)}
+  .choices li.correct{border-color:var(--accent-2);background:rgba(31,94,87,.16);box-shadow:inset 0 0 0 1px var(--accent-2)}
+  .choices li.wrong{border-color:var(--accent);background:rgba(179,67,31,.10)}
+  .choices .letter{flex:0 0 auto;width:28px;height:28px;border-radius:50%;border:2px solid var(--accent-2);
+    display:flex;align-items:center;justify-content:center;font-family:'Spline Sans Mono',monospace;font-size:.8rem;
+    color:var(--accent-2);font-weight:600;margin-top:1px}
+  .choices li.correct .letter{background:var(--accent-2);color:#fff}
+  .choices li.wrong .letter{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .choices .ctext{flex:1;font-size:.99rem;line-height:1.6}
+  .problem-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .problem-actions button{font-family:'Spline Sans Mono',monospace;font-size:.78rem;padding:10px 18px;
+    border:1px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;transition:.16s}
+  .problem-actions button:hover{background:var(--ink);color:var(--paper)}
+  .problem-actions button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .problem-actions button.primary:hover{background:#9a3819}
+  .feedback{margin-top:14px;padding:16px 20px;border-radius:6px;font-size:.97rem;line-height:1.65;display:none}
+  .feedback.show{display:block;animation:fade .25s ease}
+  .feedback.ok{background:rgba(31,94,87,.10);border-left:4px solid var(--accent-2);color:#1a4640}
+  .feedback.no{background:rgba(179,67,31,.10);border-left:4px solid var(--accent);color:#7a2e15}
+  .feedback code{font-family:'Spline Sans Mono',monospace;background:var(--paper);padding:1px 6px;border-radius:3px;color:var(--accent)}
+  .solution-block{background:var(--paper-2);border-left:5px solid var(--gold);border-radius:0 6px 6px 0;
+    padding:22px 26px;margin-top:18px;font-size:1rem;line-height:1.7;display:none}
+  .solution-block.show{display:block;animation:fade .25s ease}
+  .solution-block h4{font-family:'Spline Sans Mono',monospace;font-size:.72rem;letter-spacing:.18em;
+    text-transform:uppercase;color:#8a5e10;margin:18px 0 10px}.solution-block h4:first-child{margin-top:0}
+  .solution-block code{font-family:'Spline Sans Mono',monospace;background:var(--paper);padding:2px 7px;border-radius:3px;color:var(--accent)}
+  .sb-center{display:flex;justify-content:center;margin:14px 0}
+
+  /* AI tutor */
+  #ai-explain-btn{position:absolute;z-index:10000;display:none;font-family:'Spline Sans Mono',monospace;
+    font-size:.72rem;letter-spacing:.08em;background:var(--ink);color:var(--paper);border:none;border-radius:30px;
+    padding:9px 16px;cursor:pointer;box-shadow:0 6px 18px var(--shadow);transform:translate(-50%,-100%);
+    white-space:nowrap;animation:pop .14s ease-out}
+  #ai-explain-btn:hover{background:var(--accent)}#ai-explain-btn::before{content:"✦ ";color:var(--gold)}
+  @keyframes pop{from{opacity:0;transform:translate(-50%,-90%)}to{opacity:1;transform:translate(-50%,-100%)}}
+  #ai-tab{position:fixed;right:0;top:46%;z-index:9000;background:var(--accent-2);color:var(--paper);border:none;
+    cursor:pointer;writing-mode:vertical-rl;text-orientation:mixed;font-family:'Spline Sans Mono',monospace;
+    font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;padding:18px 10px;border-radius:8px 0 0 8px;
+    box-shadow:-4px 4px 14px var(--shadow);transition:.2s}
+  #ai-tab:hover{background:var(--accent);padding-right:16px}
+  #ai-panel{position:fixed;top:0;right:0;height:100%;width:min(420px,92vw);z-index:9500;background:var(--paper);
+    border-left:2px solid var(--ink);box-shadow:-18px 0 50px rgba(40,30,15,.22);transform:translateX(100%);
+    transition:transform .32s cubic-bezier(.6,.05,.2,1);display:flex;flex-direction:column}
+  #ai-panel.open{transform:translateX(0)}
+  .ai-head{background:var(--ink);color:var(--paper);padding:20px 22px;display:flex;align-items:center;
+    justify-content:space-between;flex:0 0 auto}
+  .ai-head .t{font-family:'Fraunces',serif;font-weight:600;font-size:1.25rem}.ai-head .t span{color:var(--gold)}
+  .ai-head .sub2{font-family:'Spline Sans Mono',monospace;font-size:.62rem;letter-spacing:.2em;
+    text-transform:uppercase;color:#bdb6a4;margin-top:3px}
+  .ai-close{background:none;border:1px solid #4a463c;color:var(--paper);width:34px;height:34px;border-radius:50%;
+    cursor:pointer;font-size:1.1rem;line-height:1;transition:.18s}
+  .ai-close:hover{background:var(--accent);border-color:var(--accent)}
+  .ai-body{flex:1 1 auto;overflow-y:auto;padding:20px 22px}
+  .ai-empty{color:#6b6453;font-style:italic;font-size:.98rem;line-height:1.6}.ai-empty b{color:var(--accent-2);font-style:normal}
+  .ai-msg{margin-bottom:20px;animation:fade .25s ease}
+  .ai-msg .who{font-family:'Spline Sans Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px}
+  .ai-msg.user .who{color:var(--accent)}.ai-msg.bot .who{color:var(--accent-2)}
+  .ai-msg .quote{border-left:3px solid var(--gold);padding:6px 12px;margin-bottom:8px;background:var(--paper-2);
+    font-size:.9rem;color:#4a4438;border-radius:0 3px 3px 0}
+  .ai-msg .txt{font-size:1rem;line-height:1.6}
+  .ai-msg .txt code{font-family:'Spline Sans Mono',monospace;background:var(--paper-2);padding:1px 6px;border-radius:3px;font-size:.9rem}
+  .ai-msg .txt strong{color:var(--accent-2)}
+  .dots span{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent-2);margin-right:5px;animation:bounce 1s infinite}
+  .dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+  @keyframes bounce{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-5px)}}
+  .ai-foot{flex:0 0 auto;border-top:1px solid var(--line);padding:14px 16px;background:var(--paper-2)}
+  .ai-foot form{display:flex;gap:8px;align-items:flex-end}
+  #ai-input{flex:1;resize:none;border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+    font-family:'Newsreader',serif;font-size:.98rem;background:var(--paper);color:var(--ink);min-height:44px;max-height:120px}
+  #ai-input:focus{outline:none;border-color:var(--accent-2)}
+  #ai-send{background:var(--ink);color:var(--paper);border:none;border-radius:8px;padding:0 16px;height:44px;
+    cursor:pointer;font-family:'Spline Sans Mono',monospace;font-size:.8rem;transition:.18s}
+  #ai-send:hover{background:var(--accent)}#ai-send:disabled{opacity:.4;cursor:not-allowed}
+  .ai-hint{font-family:'Spline Sans Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;
+    color:#8a836f;margin-top:8px;text-align:center}
+  #ai-scrim{position:fixed;inset:0;background:rgba(22,21,18,.35);z-index:9400;opacity:0;pointer-events:none;transition:opacity .3s}
+  #ai-scrim.show{opacity:1;pointer-events:auto}
+
+  /* ---- example visualization blocks ---- */
+  .ex-vis{position:relative;background:var(--paper);border:1.5px solid var(--accent-2);border-radius:8px;
+    padding:30px 28px 24px;margin:22px 0 28px}
+  .ex-vis-tag{position:absolute;top:-11px;left:22px;background:var(--paper);padding:0 12px;
+    font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent-2);font-weight:600}
+  .ex-vis-title{font-family:'Fraunces',serif;font-weight:600;font-size:1.18rem;color:var(--accent-2);margin-bottom:10px}
+  .ex-vis p{margin-bottom:12px;font-size:.97rem}
+  .ex-vis p:last-child{margin-bottom:0}
+
+  /* bracketed mini matrix */
+  .mini-mat{display:inline-grid;gap:4px;padding:8px 12px;position:relative;
+    font-family:'Spline Sans Mono',monospace;font-size:.98rem;vertical-align:middle}
+  .mini-mat::before,.mini-mat::after{content:"";position:absolute;top:0;bottom:0;width:8px;
+    border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+  .mini-mat::before{left:0;border-left:2px solid var(--ink);border-radius:2px 0 0 2px}
+  .mini-mat::after{right:0;border-right:2px solid var(--ink);border-radius:0 2px 2px 0}
+  .mini-mat span{min-width:1.9em;text-align:center;padding:2px 5px;border-radius:3px;color:var(--ink)}
+  .mini-mat span.piv{background:var(--accent-2);color:#fff;font-weight:600}
+  .mini-mat span.zero{color:#a39c87}
+  .mini-mat span.aug{color:var(--accent);font-weight:600}
+  .mini-mat .sep{width:6px;height:2.1em;justify-self:center;position:relative}
+  .mini-mat .sep::before{content:"";position:absolute;top:2px;bottom:2px;left:50%;width:1px;
+    background:rgba(22,21,18,.4);transform:translateX(-50%)}
+
+  /* step-by-step walkthrough */
+  .steps-walk{display:flex;flex-direction:column;gap:14px;margin:18px 0 8px}
+  .step-card{background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:16px 20px;
+    display:grid;grid-template-columns:42px 1fr;gap:14px;align-items:start}
+  .step-card .num{width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;font-family:'Spline Sans Mono',monospace;
+    font-size:.85rem;font-weight:600;margin-top:3px}
+  .step-card .stitle{font-family:'Fraunces',serif;font-weight:600;font-size:1rem;color:var(--accent-2);margin-bottom:6px}
+  .matview{display:flex;justify-content:center;margin:12px 0;flex-wrap:wrap;gap:10px;align-items:center}
+  .matview .lbl{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.18em;
+    text-transform:uppercase;color:#8a836f;display:block;text-align:center;margin-bottom:4px;font-weight:600}
+  .matview .arrow{font-size:1.3rem;color:var(--accent);font-family:'Spline Sans Mono',monospace;padding:0 6px}
+  .matview .matcell{display:flex;flex-direction:column;align-items:center}
+  .step-card p{font-size:.94rem;margin-bottom:6px}
+  .step-card code{font-family:'Spline Sans Mono',monospace;background:var(--paper);padding:1px 6px;
+    border-radius:3px;font-size:.9rem;color:var(--accent)}
+
+  /* trivial vs nontrivial gallery */
+  .tn-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin:18px 0 8px}
+  .tn-card{background:var(--paper-2);border:2px solid var(--line);border-radius:6px;padding:18px 16px;
+    text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}
+  .tn-card.triv{border-color:#cdc4ad;background:#f0ebda}
+  .tn-card.nontriv{border-color:var(--accent-2);background:rgba(31,94,87,.05)}
+  .tn-tag{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.18em;
+    text-transform:uppercase;font-weight:600;padding:4px 10px;border-radius:14px}
+  .tn-tag.t{color:#5a5446;background:rgba(0,0,0,.06)}
+  .tn-tag.nt{color:#fff;background:var(--accent-2)}
+  .tn-vec{display:inline-grid;grid-template-columns:1.9em;gap:4px;padding:8px 12px;position:relative;
+    font-family:'Spline Sans Mono',monospace;font-size:1rem}
+  .tn-vec::before,.tn-vec::after{content:"";position:absolute;top:0;bottom:0;width:8px;
+    border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+  .tn-vec::before{left:0;border-left:2px solid var(--ink);border-radius:2px 0 0 2px}
+  .tn-vec::after{right:0;border-right:2px solid var(--ink);border-radius:0 2px 2px 0}
+  .tn-vec span{text-align:center;padding:2px 4px;border-radius:3px;min-width:1.9em}
+  .tn-vec span.zero-entry{color:#a39c87;background:rgba(179,67,31,.08)}
+  .tn-vec span.nz-entry{color:var(--accent-2);font-weight:600}
+  .tn-explain{font-size:.84rem;color:#4a4438;line-height:1.5;font-style:italic;padding:0 4px}
+
+  /* p + Span side-by-side */
+  .shift-cmp{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin:18px 0 8px}
+  @media(max-width:760px){.shift-cmp{grid-template-columns:1fr}}
+  .shift-card{background:var(--paper);border:2px solid var(--accent-2);border-radius:6px;padding:20px 22px 16px}
+  .shift-card.b{border-color:var(--gold)}
+  .shift-head{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;color:var(--accent-2);
+    margin-bottom:6px}
+  .shift-card.b .shift-head{color:#8a5e10}
+  .shift-tag{display:inline-block;font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.18em;
+    text-transform:uppercase;font-weight:600;padding:3px 10px;border-radius:14px;margin-bottom:12px}
+  .shift-card .shift-tag{background:rgba(31,94,87,.16);color:var(--accent-2)}
+  .shift-card.b .shift-tag{background:rgba(200,146,42,.22);color:#8a5e10}
+  .shift-eq{font-family:'Spline Sans Mono',monospace;font-size:1rem;text-align:center;
+    background:var(--paper-2);padding:14px 10px;border-radius:6px;line-height:1.8;margin:8px 0}
+  .shift-eq .pv{color:var(--accent);font-weight:600}
+  .shift-eq .vv{color:var(--accent-2);font-weight:600}
+  .shift-note{font-size:.9rem;color:#4a4438;font-style:italic;margin-top:10px;line-height:1.5}
+  .shift-summary{margin-top:14px;padding:14px 18px;background:var(--paper-2);border-left:4px solid var(--gold);
+    border-radius:0 4px 4px 0;font-size:.95rem;color:#4a4438;line-height:1.6}
+  .shift-summary strong{color:var(--accent)}
+
+  /* ---- split-up animation demo ---- */
+  .split-demo{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:24px;margin:14px 0}
+  .split-stage{min-height:260px;display:flex;align-items:center;justify-content:center;
+    background:var(--paper-2);border-radius:6px;padding:30px 20px;margin-bottom:14px;
+    transition:opacity .2s;flex-wrap:wrap;gap:14px}
+  .split-stage.fade{animation:sd-fade .3s ease}
+  @keyframes sd-fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .split-progress{display:flex;gap:6px;justify-content:center;margin:0 0 12px}
+  .sd-dot{width:9px;height:9px;border-radius:50%;background:var(--line);transition:.2s}
+  .sd-dot.on{background:var(--accent);transform:scale(1.3)}
+  .split-controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:8px}
+  .split-controls button{font-family:'Spline Sans Mono',monospace;font-size:.78rem;padding:9px 16px;
+    border:1px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;transition:.15s;letter-spacing:.04em}
+  .split-controls button:hover:not(:disabled){background:var(--ink);color:var(--paper)}
+  .split-controls button:disabled{opacity:.32;cursor:not-allowed}
+  .split-controls button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .split-controls button.primary:hover:not(:disabled){background:#9a3819}
+  .split-cap{text-align:center;font-size:.95rem;color:#4a4438;margin-top:12px;min-height:54px;
+    line-height:1.6;padding:0 18px;max-width:680px;margin-left:auto;margin-right:auto}
+  .split-cap strong{color:var(--accent-2)}
+
+  /* vectors used inside the split-demo */
+  .s-vec{display:inline-grid;gap:5px;padding:10px 14px;position:relative;
+    font-family:'Spline Sans Mono',monospace;font-size:1rem;vertical-align:middle}
+  .s-vec::before,.s-vec::after{content:"";position:absolute;top:0;bottom:0;width:8px;
+    border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+  .s-vec::before{left:0;border-left:2px solid var(--ink);border-radius:2px 0 0 2px}
+  .s-vec::after{right:0;border-right:2px solid var(--ink);border-radius:0 2px 2px 0}
+  .s-vec span{text-align:center;padding:3px 6px;border-radius:3px;transition:.25s}
+  .s-vec span.c0{color:#a39c87}
+  .s-vec span.c1{color:var(--accent-2);background:rgba(31,94,87,.13);font-weight:600}
+  .s-vec span.c2{color:#8a5e10;background:rgba(200,146,42,.20);font-weight:600}
+  .s-vec span.c-mix{background:linear-gradient(90deg,rgba(31,94,87,.18),rgba(200,146,42,.22));font-weight:600}
+  .s-vec span.piv{background:var(--accent-2);color:#fff;font-weight:600}
+  .s-vec span.aug{color:var(--accent);font-weight:600}
+  .s-vec .sep{width:6px;height:2.1em;justify-self:center;position:relative}
+  .s-vec .sep::before{content:"";position:absolute;top:2px;bottom:2px;left:50%;width:1px;
+    background:rgba(22,21,18,.4);transform:translateX(-50%)}
+  .sd-lhs{font-family:'Spline Sans Mono',monospace;font-size:1.12rem;color:var(--ink)}
+  .sd-plus,.sd-eq{font-family:'Spline Sans Mono',monospace;font-size:1.5rem;color:var(--accent);font-weight:600}
+  .sd-coef{font-family:'Spline Sans Mono',monospace;font-size:1.18rem;font-weight:700;padding:0 4px}
+  .sd-coef.x2{color:var(--accent-2)}
+  .sd-coef.x4{color:#8a5e10}
+  .sd-eqs{font-family:'Spline Sans Mono',monospace;font-size:1.05rem;line-height:2.2;text-align:left}
+  .sd-eqs .arr{color:var(--accent);padding:0 8px}
+  .sd-label{display:block;font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.18em;
+    text-transform:uppercase;color:#8a5e10;text-align:center;margin-bottom:6px;font-weight:600}
+  .sd-stack{display:inline-flex;flex-direction:column;align-items:center;gap:6px}
+
+  /* ---- per-section recap box ---- */
+  .recap{margin-top:32px;background:var(--ink);color:var(--paper);
+    border-radius:8px;padding:24px 28px 22px;position:relative;
+    box-shadow:6px 6px 0 var(--paper-2);overflow:hidden}
+  .recap::before{content:"";position:absolute;top:0;left:0;width:64px;height:4px;
+    background:var(--gold);border-radius:8px 0 0 0}
+  .recap::after{content:"";position:absolute;top:0;left:64px;width:32px;height:4px;
+    background:var(--accent)}
+  .recap-tag{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:10px;font-weight:600;display:block;padding-top:8px}
+  .recap-tag::before{content:"§ ";color:var(--accent)}
+  .recap h4{font-family:'Fraunces',serif;font-weight:600;color:var(--paper);font-size:1.12rem;
+    margin-bottom:10px;line-height:1.4}
+  .recap h4 em{font-style:italic;color:var(--gold)}
+  .recap p{color:#d8d1bf;margin:0 0 10px;font-size:.96rem;line-height:1.7}
+  .recap p:last-child{margin-bottom:0}
+  .recap ul{margin:8px 0 0 0;color:#d8d1bf;list-style:none;padding:0}
+  .recap li{margin-bottom:8px;font-size:.95rem;line-height:1.6;padding-left:22px;position:relative}
+  .recap li::before{content:"▸";position:absolute;left:0;top:0;color:var(--gold);font-weight:700}
+  .recap li:last-child{margin-bottom:0}
+  .recap strong{color:var(--gold);font-weight:600}
+  .recap em{color:#bdb6a4;font-style:italic}
+  .recap code{font-family:'Spline Sans Mono',monospace;background:rgba(244,240,230,.08);
+    color:var(--gold);padding:1px 7px;border-radius:3px;font-size:.9rem;border:1px solid rgba(244,240,230,.06)}
+  .recap .bottom{margin-top:14px;padding-top:12px;border-top:1px dashed rgba(244,240,230,.18);
+    font-family:'Spline Sans Mono',monospace;font-size:.86rem;color:var(--gold);letter-spacing:.04em}
+  .recap .bottom::before{content:"BOTTOM LINE → ";color:var(--accent);font-weight:600;letter-spacing:.12em}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="chapnum">1.5</span>
+    <div class="badge">Linear Algebra · Chapter 1 · Section 1.5</div>
+    <h1 class="title">Solution Sets of<br><em>Linear Systems</em></h1>
+    <p class="sub">Solutions aren't just lists of numbers — they're geometric objects. Lines and planes through the origin for Ax = 0, and the very same shape shifted off the origin for Ax = b.</p>
+  </div>
+</header>
+
+<div class="wrap grid">
+
+  <nav class="toc">
+    <div class="label">On this page</div>
+    <a href="#intro">What 1.5 teaches</a>
+    <a href="#homog">Homogeneous systems</a>
+    <a href="#trivial">Trivial vs nontrivial</a>
+    <a href="#param">Parametric vector form</a>
+    <a href="#builder">Build the solution (interactive)</a>
+    <a href="#nonhomog">Nonhomogeneous systems</a>
+    <a href="#shift">p + Span: the shift (interactive)</a>
+    <a href="#examples">Worked examples</a>
+    <a href="#remember">Rules to remember</a>
+    <a href="#quiz">Practice quiz</a>
+  </nav>
+
+  <main>
+
+    <section id="intro">
+      <div class="kicker">The big idea</div>
+      <h2>What is Section 1.5 trying to teach?</h2>
+      <p class="lead">A solution set isn't just "the answer" — it has a <em>shape</em>. Section 1.5 shows you how to write that shape exactly, using parametric vector form, and how homogeneous and nonhomogeneous systems relate geometrically.</p>
+      <p>The central discovery: the solutions of <code class="mono">Ax = b</code> are the solutions of <code class="mono">Ax = 0</code> <strong>translated</strong> by one particular solution <strong>p</strong>. The homogeneous set is a line/plane <em>through the origin</em>; the nonhomogeneous set is that same line/plane <em>shifted</em> so it passes through <strong>p</strong> instead.</p>
+      <p>Every free variable becomes a parameter that traces out one direction of that line or plane. This is where the algebra of 1.2 turns into geometry you can picture.</p>
+    </section>
+
+    <section id="homog">
+      <div class="kicker">The starting point</div>
+      <h2>Homogeneous systems</h2>
+      <p>A system is <span class="term">homogeneous</span> if it has the form <code class="mono">Ax = 0</code> — the right-hand side is the zero vector.</p>
+      <div class="formula">
+        Ax = 0
+        <small>always has at least one solution: x = 0, the trivial solution</small>
+      </div>
+      <p>Because x = 0 always works, the real question is never "is it consistent?" (it always is) but "does it have <em>other</em> solutions?"</p>
+      <div class="theorem">
+        <div class="lbl">Key fact</div>
+        <p><code class="mono">Ax = 0</code> has a <strong>nontrivial solution</strong> if and only if the equation has at least one <strong>free variable</strong>.</p>
+      </div>
+
+      <div class="ex-vis">
+        <span class="ex-vis-tag">See it · concrete homogeneous problem</span>
+        <div class="ex-vis-title">What does a homogeneous system look like?</div>
+        <p>Take the system <code class="mono">3x₁ + 5x₂ − 4x₃ = 0</code>, &nbsp;<code class="mono">−3x₁ − 2x₂ + 4x₃ = 0</code>, &nbsp;<code class="mono">6x₁ + x₂ − 8x₃ = 0</code>. The right-hand side is all zeros — that's what makes it <em>homogeneous</em>. The augmented matrix has a column of zeros that stays zero through every row operation, so we can just work with the coefficient matrix A:</p>
+
+        <div class="steps-walk">
+          <div class="step-card">
+            <div class="num">1</div>
+            <div>
+              <div class="stitle">Start with the augmented matrix [A | 0]</div>
+              <div class="matview">
+                <div class="matcell">
+                  <span class="lbl">[A | 0]</span>
+                  <div class="mini-mat" style="grid-template-columns:repeat(3,1.9em) 6px 1.9em">
+                    <span>3</span><span>5</span><span>−4</span><div class="sep"></div><span class="aug">0</span>
+                    <span>−3</span><span>−2</span><span>4</span><div class="sep"></div><span class="aug">0</span>
+                    <span>6</span><span>1</span><span>−8</span><div class="sep"></div><span class="aug">0</span>
+                  </div>
+                </div>
+              </div>
+              <p>Three equations, three unknowns. The orange last column (all zeros) is the right-hand side.</p>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="num">2</div>
+            <div>
+              <div class="stitle">Row reduce — the zero column stays zero</div>
+              <p>Apply <code>R2 → R2 + R1</code>, then <code>R3 → R3 − 2·R1</code>, then <code>R3 → R3 + 3·R2</code>. Then scale and clear above. You land in reduced echelon form:</p>
+              <div class="matview">
+                <div class="matcell">
+                  <span class="lbl">RREF</span>
+                  <div class="mini-mat" style="grid-template-columns:repeat(3,1.9em) 6px 1.9em">
+                    <span class="piv">1</span><span>0</span><span>−4/3</span><div class="sep"></div><span class="aug">0</span>
+                    <span class="zero">0</span><span class="piv">1</span><span>0</span><div class="sep"></div><span class="aug">0</span>
+                    <span class="zero">0</span><span class="zero">0</span><span class="zero">0</span><div class="sep"></div><span class="aug">0</span>
+                  </div>
+                </div>
+              </div>
+              <p>Pivots in columns 1 and 2 → <strong>x₁ and x₂ are basic</strong>. No pivot in column 3 → <strong>x₃ is free</strong>. Row 3 is just <code>0 = 0</code> (no information).</p>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="num">3</div>
+            <div>
+              <div class="stitle">Read off the equations</div>
+              <p>Row 1: <code>x₁ − (4/3)x₃ = 0</code> &nbsp;→&nbsp; <code>x₁ = (4/3)x₃</code></p>
+              <p>Row 2: <code>x₂ = 0</code></p>
+              <p>x₃ is free — you can pick any value for it, and x₁, x₂ follow.</p>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="num">4</div>
+            <div>
+              <div class="stitle">Write the solution as one vector</div>
+              <div class="matview">
+                <span style="font-family:'Spline Sans Mono',monospace">x =</span>
+                <div class="mini-mat" style="grid-template-columns:1.9em">
+                  <span>x₁</span><span>x₂</span><span>x₃</span>
+                </div>
+                <span style="font-family:'Spline Sans Mono',monospace">=</span>
+                <div class="mini-mat" style="grid-template-columns:2.6em">
+                  <span>(4/3)x₃</span><span>0</span><span>x₃</span>
+                </div>
+                <span style="font-family:'Spline Sans Mono',monospace">= x₃ ·</span>
+                <div class="mini-mat" style="grid-template-columns:1.9em">
+                  <span style="color:var(--accent-2);font-weight:600">4/3</span>
+                  <span style="color:var(--accent-2);font-weight:600">0</span>
+                  <span style="color:var(--accent-2);font-weight:600">1</span>
+                </div>
+              </div>
+              <p>So the <strong>solution set is <code>Span{(4/3, 0, 1)}</code></strong> — a single direction vector scaled by any real number. Geometrically: a <em>line through the origin</em> in ℝ³.</p>
+            </div>
+          </div>
+        </div>
+
+        <p style="margin-top:14px;background:rgba(31,94,87,.08);padding:14px 18px;border-radius:6px;font-size:.95rem"><strong style="color:var(--accent-2)">Plug in to check:</strong> pick <code>x₃ = 3</code>. Then x = (4, 0, 3). Verify: <code>3(4) + 5(0) − 4(3) = 12 − 12 = 0 ✓</code>. Every choice of x₃ gives a different valid solution.</p>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>A <em>homogeneous</em> system is <code>Ax = 0</code> — and the only question worth asking is whether it has solutions <em>besides</em> zero.</h4>
+        <ul>
+          <li><code>Ax = 0</code> is <strong>always consistent</strong> because <code>x = 0</code> (the trivial solution) always works.</li>
+          <li><strong>Nontrivial solutions exist ⟺ there's at least one free variable</strong> — that's the test.</li>
+          <li>In the worked example, RREF left <code>x₃</code> free, so the solution set collapsed to <code>Span{(4/3, 0, 1)}</code> — a line through the origin in ℝ³.</li>
+        </ul>
+        <div class="bottom">Free variable in RREF = infinitely many solutions; no free variable = only x = 0.</div>
+      </div>
+    </section>
+
+    <section id="trivial">
+      <div class="kicker">Vocabulary</div>
+      <h2>Trivial vs. nontrivial</h2>
+      <div class="defs">
+        <div class="def"><div class="word">Trivial solution</div><p>x = 0 (every entry zero). Always a solution of Ax = 0.</p></div>
+        <div class="def"><div class="word">Nontrivial solution</div><p>Any solution x ≠ 0 — i.e. at least one entry is nonzero. Exists ⟺ there's a free variable.</p></div>
+      </div>
+      <div class="callout">
+        <div class="h">Watch the wording</div>
+        <p style="margin:0">"Nontrivial" means <em>the whole vector</em> isn't zero — it does <strong>not</strong> mean every entry is nonzero. A vector like <code class="mono">(0, 3, 0)</code> is perfectly nontrivial. (This is exactly the trap in IQ 1.5 question 1.)</p>
+      </div>
+
+      <div class="ex-vis">
+        <span class="ex-vis-tag">See it · gallery</span>
+        <div class="ex-vis-title">Which of these are nontrivial?</div>
+        <p>Imagine these are all candidate solutions to some <code class="mono">Ax = 0</code>. Which ones count as <em>nontrivial</em>? Tag each one. <strong>Rule:</strong> nontrivial means the vector isn't the zero vector — at least one entry has to be nonzero. Zero entries inside a nontrivial vector are totally fine.</p>
+
+        <div class="tn-gallery">
+          <div class="tn-card triv">
+            <div class="tn-vec">
+              <span class="zero-entry">0</span><span class="zero-entry">0</span><span class="zero-entry">0</span>
+            </div>
+            <span class="tn-tag t">Trivial</span>
+            <div class="tn-explain">All entries are zero → this IS the zero vector. Always a solution; never interesting.</div>
+          </div>
+
+          <div class="tn-card nontriv">
+            <div class="tn-vec">
+              <span class="nz-entry">3</span><span class="nz-entry">1</span><span class="nz-entry">−2</span>
+            </div>
+            <span class="tn-tag nt">Nontrivial</span>
+            <div class="tn-explain">Obviously nonzero — every entry is nonzero. Easy case.</div>
+          </div>
+
+          <div class="tn-card nontriv">
+            <div class="tn-vec">
+              <span class="zero-entry">0</span><span class="nz-entry">4</span><span class="zero-entry">0</span>
+            </div>
+            <span class="tn-tag nt">Nontrivial</span>
+            <div class="tn-explain">Two entries are zero — but the vector itself is NOT zero. The 4 in the middle is enough. <strong>This is the trap</strong>.</div>
+          </div>
+
+          <div class="tn-card nontriv">
+            <div class="tn-vec">
+              <span class="zero-entry">0</span><span class="zero-entry">0</span><span class="nz-entry">7</span>
+            </div>
+            <span class="tn-tag nt">Nontrivial</span>
+            <div class="tn-explain">Same idea — one nonzero entry is enough to make the whole vector nontrivial.</div>
+          </div>
+        </div>
+
+        <p style="margin-top:14px;background:rgba(179,67,31,.08);padding:14px 18px;border-radius:6px;font-size:.95rem"><strong style="color:var(--accent)">Why this matters:</strong> a homogeneous system with at least one free variable has infinitely many nontrivial solutions. Many of them will have zero entries (especially if you pick the free variables to be 0 or 1). If you reject those as "still trivial," you'll miss most of the solution set.</p>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>"Nontrivial" is a statement about <em>the whole vector</em>, not its individual entries.</h4>
+        <ul>
+          <li><strong>Trivial</strong> = the zero vector <code>x = 0</code>. <strong>Nontrivial</strong> = any <code>x ≠ 0</code> — even one nonzero entry is enough.</li>
+          <li>Vectors like <code>(0, 4, 0)</code> or <code>(0, 0, 7)</code> are perfectly nontrivial — zero entries are allowed.</li>
+          <li>This is the exact trap in IQ 1.5 Q1: "every entry nonzero" is <strong>not</strong> what nontrivial means.</li>
+        </ul>
+        <div class="bottom">You'll lose points if you read "nontrivial" as "no zeros anywhere" — it just means the vector isn't 0.</div>
+      </div>
+    </section>
+
+    <section id="param">
+      <div class="kicker">Writing the answer</div>
+      <h2>Parametric vector form</h2>
+      <p>When there are free variables, you write the solution as a sum of vectors, with each free variable as a scalar weight. For a homogeneous system this looks like</p>
+      <div class="formula">
+        x = x₃·v &nbsp; (one free variable) &nbsp;·&nbsp; x = s·u + t·v &nbsp; (two free variables)
+        <small>each free variable scales one direction vector</small>
+      </div>
+      <p>The set of all such x is exactly <span class="term">Span</span> of the direction vectors — a line (one free variable), a plane (two), and so on, always passing through the origin.</p>
+
+      <div class="ex-vis">
+        <span class="ex-vis-tag">See it · two free variables → a plane</span>
+        <div class="ex-vis-title">From a matrix to parametric form, step by step</div>
+        <p>Take a homogeneous system whose RREF is the matrix on the left. We'll factor out each free variable into its own direction vector.</p>
+
+        <div class="steps-walk">
+          <div class="step-card">
+            <div class="num">1</div>
+            <div>
+              <div class="stitle">Start: RREF of [A | 0]</div>
+              <div class="matview">
+                <div class="matcell">
+                  <span class="lbl">RREF</span>
+                  <div class="mini-mat" style="grid-template-columns:repeat(4,1.9em) 6px 1.9em">
+                    <span class="piv">1</span><span>−2</span><span>0</span><span>3</span><div class="sep"></div><span class="aug">0</span>
+                    <span class="zero">0</span><span class="zero">0</span><span class="piv">1</span><span>−1</span><div class="sep"></div><span class="aug">0</span>
+                    <span class="zero">0</span><span class="zero">0</span><span class="zero">0</span><span class="zero">0</span><div class="sep"></div><span class="aug">0</span>
+                  </div>
+                </div>
+              </div>
+              <p>4 variables, pivots in columns 1 and 3. So <strong>x₁ and x₃ are basic</strong>; <strong>x₂ and x₄ are free</strong>. Two free variables means we'll need <em>two</em> direction vectors.</p>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="num">2</div>
+            <div>
+              <div class="stitle">Solve each basic variable in terms of the free ones</div>
+              <p>Row 1: <code>x₁ − 2x₂ + 3x₄ = 0</code> &nbsp;→&nbsp; <code>x₁ = 2x₂ − 3x₄</code></p>
+              <p>Row 2: <code>x₃ − x₄ = 0</code> &nbsp;→&nbsp; <code>x₃ = x₄</code></p>
+              <p>x₂ and x₄ stay as themselves (free).</p>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="num">3</div>
+            <div>
+              <div class="stitle">Write the full x vector, then split it by free variable</div>
+              <div class="matview">
+                <span style="font-family:'Spline Sans Mono',monospace">x =</span>
+                <div class="mini-mat" style="grid-template-columns:3.4em">
+                  <span>2x₂ − 3x₄</span><span>x₂</span><span>x₄</span><span>x₄</span>
+                </div>
+                <span style="font-family:'Spline Sans Mono',monospace">= x₂ ·</span>
+                <div class="mini-mat" style="grid-template-columns:1.9em">
+                  <span style="color:var(--accent-2);font-weight:600">2</span>
+                  <span style="color:var(--accent-2);font-weight:600">1</span>
+                  <span style="color:var(--accent-2);font-weight:600">0</span>
+                  <span style="color:var(--accent-2);font-weight:600">0</span>
+                </div>
+                <span style="font-family:'Spline Sans Mono',monospace">+ x₄ ·</span>
+                <div class="mini-mat" style="grid-template-columns:1.9em">
+                  <span style="color:#8a5e10;font-weight:600">−3</span>
+                  <span style="color:#8a5e10;font-weight:600">0</span>
+                  <span style="color:#8a5e10;font-weight:600">1</span>
+                  <span style="color:#8a5e10;font-weight:600">1</span>
+                </div>
+              </div>
+              <p>Group every x₂ entry into one vector (teal), every x₄ entry into another (gold). The constant pieces sit at the position of their variable.</p>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="num">4</div>
+            <div>
+              <div class="stitle">Read the geometry</div>
+              <p>Solution set = <code>Span&#123;<span style="color:var(--accent-2);font-weight:600">(2, 1, 0, 0)</span>, <span style="color:#8a5e10;font-weight:600">(−3, 0, 1, 1)</span>&#125;</code> — a <strong>plane through the origin</strong> in ℝ⁴ (two independent directions you can combine).</p>
+              <p>Try x₂ = 1, x₄ = 0 → x = (2,1,0,0). Try x₂ = 0, x₄ = 1 → x = (−3,0,1,1). Any combination s·(2,1,0,0) + t·(−3,0,1,1) is also a solution.</p>
+            </div>
+          </div>
+        </div>
+
+        <p style="background:rgba(31,94,87,.08);padding:14px 18px;border-radius:6px;font-size:.95rem;margin-top:14px"><strong style="color:var(--accent-2)">The pattern:</strong> # of free variables = # of direction vectors = dimension of the solution set. 0 free → just the origin (point). 1 → line. 2 → plane. 3+ → "higher" but exactly the same idea.</p>
+      </div>
+
+      <div class="ex-vis">
+        <span class="ex-vis-tag">Watch · matrix → vector split, stage by stage</span>
+        <div class="ex-vis-title">How the matrix solution literally comes apart into vector form</div>
+        <p>This is the <em>same problem</em> as above, but animated. Click through to watch each stage of the transformation: the matrix becomes equations, the equations stack into a vector, the vector splits by free variable, then each free variable factors out into its own direction vector. Hit <strong>▶ Auto</strong> to play it through.</p>
+
+        <div class="split-demo">
+          <div class="split-progress" id="split-progress"></div>
+          <div class="split-stage fade" id="split-stage"></div>
+          <div class="split-controls">
+            <button id="split-back">← Back</button>
+            <button id="split-play" class="primary">▶ Auto</button>
+            <button id="split-next">Next →</button>
+            <button id="split-reset">Reset</button>
+          </div>
+          <div class="split-cap" id="split-cap"></div>
+        </div>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4><em>Parametric vector form</em> turns a row-reduced system into a sum of direction vectors, one per free variable.</h4>
+        <ul>
+          <li>Solve each basic variable in terms of the free ones, then <strong>group entries by free variable</strong> to factor out one vector each.</li>
+          <li>The solution set is <code>Span</code> of those direction vectors — a <strong>line</strong> (1 free var), <strong>plane</strong> (2), and so on, always through the origin.</li>
+          <li>The worked example produced <code>x = x₂·(2,1,0,0) + x₄·(−3,0,1,1)</code> — two free variables, two directions, a plane in ℝ⁴.</li>
+        </ul>
+        <div class="bottom"># of free variables = # of direction vectors = dimension of the solution set.</div>
+      </div>
+    </section>
+
+    <section id="builder">
+      <div class="kicker">See it · the builder</div>
+      <h2>Build a homogeneous solution set</h2>
+      <p>This is the textbook's Example 1 solution: <code class="mono">x = x₃·v</code> with direction <code class="mono">v = (4/3, 0, 1)</code> (drawn in 2D using the x₁ and x₃ entries). Drag the parameter slider — every value of the free variable x₃ gives one point on the line. Together they trace the whole solution set: a line through the origin.</p>
+      <div class="viz">
+        <div class="viz-row">
+          <canvas id="cv-homog" width="500" height="420"></canvas>
+          <div class="viz-ctrl">
+            <label>free variable x₃ &nbsp; <span class="v" id="h-t-out">1.0</span></label>
+            <input type="range" id="h-t" min="-3" max="3" step="0.25" value="1">
+            <label><input type="checkbox" id="h-trace" checked style="width:auto;margin-right:8px">show the whole line (Span v)</label>
+            <div class="viz-readout" id="h-readout"></div>
+          </div>
+        </div>
+        <div class="viz-cap" id="h-cap"></div>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>The slider <em>is</em> the free variable — every value of <code>x₃</code> picks one point on the <code>Span{v}</code> line.</h4>
+        <ul>
+          <li>Setting <code>x₃ = 0</code> lands you back at the origin — that's the <strong>trivial solution</strong>.</li>
+          <li>Every other value of <code>x₃</code> scales <code>v = (4/3, 0, 1)</code> to give a different nontrivial solution.</li>
+          <li>Sweeping <code>x₃</code> through all real numbers traces the entire solution set: a single line through 0.</li>
+        </ul>
+        <div class="bottom">A free variable is just a knob — turning it sweeps out the whole geometric solution set.</div>
+      </div>
+    </section>
+
+    <section id="nonhomog">
+      <div class="kicker">Adding a constant</div>
+      <h2>Nonhomogeneous systems</h2>
+      <p>Now the right side isn't zero: <code class="mono">Ax = b</code> with b ≠ 0. When such a system has many solutions, the general solution splits into two pieces:</p>
+      <div class="formula">
+        x = p + t·v
+        <small>p = one particular solution · t·v = the homogeneous solutions</small>
+      </div>
+      <div class="theorem">
+        <div class="lbl">Theorem 6 — the structure</div>
+        <p>Suppose <code class="mono">Ax = b</code> is consistent with particular solution <strong>p</strong>. Then the solution set of <code class="mono">Ax = b</code> is the set of all vectors <code class="mono">p + v<sub>h</sub></code>, where <code class="mono">v<sub>h</sub></code> ranges over <em>all</em> solutions of the homogeneous equation <code class="mono">Ax = 0</code>.</p>
+      </div>
+      <p>In words: <strong>solve it once</strong> (get p), <strong>solve the homogeneous version</strong> (get the directions), then <strong>add</strong>. The answer set is the homogeneous line/plane, picked up and moved so it passes through p.</p>
+
+      <div class="ex-vis">
+        <span class="ex-vis-tag">See it · same A, two right-hand sides</span>
+        <div class="ex-vis-title">Same direction, different position</div>
+        <p>Take the same matrix as the homogeneous example above: <code class="mono">A = [[3, 5, −4], [−3, −2, 4], [6, 1, −8]]</code>. Compare what happens when the right side is <strong>0</strong> vs. when it's <strong>b = (7, −1, −4)</strong>.</p>
+
+        <div class="shift-cmp">
+          <div class="shift-card">
+            <span class="shift-tag">Homogeneous · Ax = 0</span>
+            <div class="shift-head">Pass through the origin</div>
+            <div class="matview">
+              <div class="matcell">
+                <span class="lbl">[A | 0] reduces to</span>
+                <div class="mini-mat" style="grid-template-columns:repeat(3,1.9em) 6px 1.9em">
+                  <span class="piv">1</span><span>0</span><span>−4/3</span><div class="sep"></div><span class="aug">0</span>
+                  <span class="zero">0</span><span class="piv">1</span><span>0</span><div class="sep"></div><span class="aug">0</span>
+                  <span class="zero">0</span><span class="zero">0</span><span class="zero">0</span><div class="sep"></div><span class="aug">0</span>
+                </div>
+              </div>
+            </div>
+            <div class="shift-eq">
+              x = x₃ · <span class="vv">(4/3, 0, 1)</span>
+            </div>
+            <div class="shift-note">A <strong>line through the origin</strong>. Pick x₃ = 0 → x = (0,0,0). Pick x₃ = 3 → x = (4,0,3).</div>
+          </div>
+
+          <div class="shift-card b">
+            <span class="shift-tag">Nonhomogeneous · Ax = b</span>
+            <div class="shift-head">Same line, shifted to pass through p</div>
+            <div class="matview">
+              <div class="matcell">
+                <span class="lbl">[A | b] reduces to</span>
+                <div class="mini-mat" style="grid-template-columns:repeat(3,1.9em) 6px 1.9em">
+                  <span class="piv">1</span><span>0</span><span>−4/3</span><div class="sep"></div><span class="aug">−1</span>
+                  <span class="zero">0</span><span class="piv">1</span><span>0</span><div class="sep"></div><span class="aug">2</span>
+                  <span class="zero">0</span><span class="zero">0</span><span class="zero">0</span><div class="sep"></div><span class="aug">0</span>
+                </div>
+              </div>
+            </div>
+            <div class="shift-eq">
+              x = <span class="pv">(−1, 2, 0)</span> + x₃ · <span class="vv">(4/3, 0, 1)</span>
+            </div>
+            <div class="shift-note">A line in the <em>same direction</em>, but it passes through <span style="color:var(--accent);font-weight:600">p = (−1, 2, 0)</span> instead of the origin.</div>
+          </div>
+        </div>
+
+        <div class="shift-summary">
+          <strong>The exact same direction vector <span style="color:var(--accent-2)">(4/3, 0, 1)</span> shows up in both</strong> — that's because changing the right-hand side from 0 to b can only <em>shift</em> the solution set, never change its shape or direction. The homogeneous problem decides the <em>shape</em>; the particular solution <span style="color:var(--accent)">p</span> decides <em>where</em> that shape sits.
+        </div>
+
+        <p style="margin-top:14px;font-size:.95rem"><strong>Sanity check at x₃ = 0:</strong> homogeneous gives x = (0, 0, 0). Nonhomogeneous gives x = (−1, 2, 0) = p itself. The nonhomogeneous line is the homogeneous line plus <span style="color:var(--accent);font-weight:600">p</span> — every point on one becomes the matching point on the other after adding <span style="color:var(--accent);font-weight:600">p</span>.</p>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4><em>Theorem 6:</em> a consistent <code>Ax = b</code> has solution set <code>x = p + v<sub>h</sub></code> — one particular <strong>p</strong>, plus every homogeneous solution.</h4>
+        <ul>
+          <li><strong>Procedure:</strong> solve <code>Ax = b</code> once to get <code>p</code>, then solve <code>Ax = 0</code> for the directions, then add.</li>
+          <li>The example used <code>b = (7, −1, −4)</code>: same direction <code>(4/3, 0, 1)</code> as the homogeneous case, but now shifted to pass through <code>p = (−1, 2, 0)</code>.</li>
+          <li>Changing the right-hand side from <code>0</code> to <code>b</code> can only <strong>translate</strong> the solution set — never bend it or change its dimension.</li>
+        </ul>
+        <div class="bottom">Homogeneous gives the shape; the particular solution p gives the position.</div>
+      </div>
+    </section>
+
+    <section id="shift">
+      <div class="kicker">See it · the shift</div>
+      <h2>p + Span: translating the solution set</h2>
+      <p>The orange line is the homogeneous solution set <code class="mono">Span{v}</code> (through the origin). Drag the slider to "turn on" the particular solution <strong>p</strong> — watch the entire line slide off the origin to pass through p. That shifted line is the solution set of <code class="mono">Ax = b</code>. Same direction, different position.</p>
+      <div class="viz">
+        <div class="viz-row">
+          <canvas id="cv-shift" width="500" height="420"></canvas>
+          <div class="viz-ctrl">
+            <label>shift amount (toward p) &nbsp; <span class="v" id="s-mix-out">1.0</span></label>
+            <input type="range" id="s-mix" min="0" max="1" step="0.05" value="1">
+            <label>parameter t along the line &nbsp; <span class="v" id="s-t-out">0.0</span></label>
+            <input type="range" id="s-t" min="-3" max="3" step="0.25" value="0">
+            <div class="viz-readout" id="s-readout"></div>
+          </div>
+        </div>
+        <div class="viz-cap" id="s-cap"></div>
+      </div>
+      <div class="callout">
+        <div class="h">The takeaway</div>
+        <p style="margin:0">Homogeneous set = line/plane <em>through 0</em>. Nonhomogeneous set = the <em>same</em> line/plane translated by p. If Ax = 0 has only the trivial solution (no free variables), then Ax = b — when consistent — has a single point as its solution.</p>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>The "shift" slider is doing exactly what <em>adding p</em> does algebraically — it slides the whole line off the origin.</h4>
+        <ul>
+          <li>At <strong>shift = 0</strong>, the line passes through the origin (the homogeneous set <code>Span{v}</code>).</li>
+          <li>At <strong>shift = 1</strong>, the line passes through <code>p = (−1, 2)</code> with the same direction <code>v = (2, 1)</code> — that's the <code>Ax = b</code> set.</li>
+          <li>If there were <strong>no free variables</strong>, the "line" would shrink to a point — a consistent <code>Ax = b</code> would then have exactly one solution.</li>
+        </ul>
+        <div class="bottom">Adding p moves the set rigidly — direction stays, position changes.</div>
+      </div>
+    </section>
+
+    <section id="examples">
+      <div class="kicker">Worked examples</div>
+      <h2>Focused examples</h2>
+
+      <div class="example">
+        <div class="ehead"><div class="enum">1</div><div class="etitle">Homogeneous, one free variable</div></div>
+        <p>Describe the solutions of <code>Ax = 0</code> when row reduction gives <code>x₁ − 2x₃ = 0</code>, <code>x₂ + x₃ = 0</code>, with x₃ free.</p>
+        <button class="reveal">Show solution</button>
+        <div class="ework">
+          <h4>Solve for basic variables</h4>
+          <p><code>x₁ = 2x₃</code>, <code>x₂ = −x₃</code>, x₃ free.</p>
+          <h4>Parametric vector form</h4>
+          <p><code>x = x₃·(2, −1, 1)</code>. The solution set is <code>Span{(2,−1,1)}</code> — a line through the origin in ℝ³.</p>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="ehead"><div class="enum">2</div><div class="etitle">Homogeneous, two free variables</div></div>
+        <p>A reduced system gives <code>x₁ = 2x₂ − 3x₄</code> with x₂, x₄ free (x₃ basic = 0 say). Write it in parametric vector form.</p>
+        <button class="reveal">Show solution</button>
+        <div class="ework">
+          <h4>Separate the free variables</h4>
+          <p>Group the x₂ terms and the x₄ terms into their own vectors:</p>
+          <p><code>x = x₂·(2, 1, 0, 0) + x₄·(−3, 0, 0, 1)</code>.</p>
+          <h4>Geometry</h4>
+          <p>Two direction vectors → the solution set is a <strong>plane</strong> through the origin (a Span of two vectors).</p>
+        </div>
+      </div>
+
+      <div class="example">
+        <div class="ehead"><div class="enum">3</div><div class="etitle">Nonhomogeneous: p + tv</div></div>
+        <p>The general solution of some <code>Ax = b</code> is <code>x₁ = −1 + (4/3)x₃</code>, <code>x₂ = 2</code>, x₃ free. Write it as p + tv.</p>
+        <button class="reveal">Show solution</button>
+        <div class="ework">
+          <h4>Split into constant + free part</h4>
+          <p><code>x = (−1, 2, 0) + x₃·(4/3, 0, 1)</code>.</p>
+          <h4>Identify the pieces</h4>
+          <p><code>p = (−1, 2, 0)</code> is a particular solution of Ax = b. <code>v = (4/3, 0, 1)</code> spans the solutions of Ax = 0. The solution set is the line through p in direction v.</p>
+        </div>
+      </div>
+
+      <div class="recap">
+        <span class="recap-tag">Section recap</span>
+        <h4>Three drills covering the full <em>p + tv</em> playbook end-to-end.</h4>
+        <ul>
+          <li><strong>Example 1:</strong> homogeneous, one free var → <code>Span{(2, −1, 1)}</code>, a line through 0.</li>
+          <li><strong>Example 2:</strong> homogeneous, two free vars → <code>Span{(2,1,0,0), (−3,0,0,1)}</code>, a plane through 0.</li>
+          <li><strong>Example 3:</strong> nonhomogeneous → <code>x = (−1, 2, 0) + x₃·(4/3, 0, 1)</code> — the same direction as the homogeneous case, shifted by <code>p</code>.</li>
+        </ul>
+        <div class="bottom">Read off the basic vs. free variables, group by free variable, then add p if Ax = b.</div>
+      </div>
+    </section>
+
+    <section id="remember">
+      <div class="kicker">Cheat sheet</div>
+      <h2>Rules &amp; facts to remember</h2>
+      <ol class="rules">
+        <li><strong>Homogeneous</strong> = <code>Ax = 0</code>. Always consistent (x = 0 is the trivial solution).</li>
+        <li><code>Ax = 0</code> has a <strong>nontrivial</strong> solution ⟺ there's at least one <strong>free variable</strong>.</li>
+        <li>"Nontrivial" means the <strong>whole vector</strong> ≠ 0 — individual entries may still be zero.</li>
+        <li><strong>Parametric vector form</strong>: one direction vector per free variable, each scaled by that variable.</li>
+        <li>Homogeneous solution set = <strong>Span</strong> of the direction vectors = line / plane / … <strong>through the origin</strong>.</li>
+        <li><strong>Nonhomogeneous</strong> consistent solution set = <code>p + (homogeneous solutions)</code> (Theorem 6).</li>
+        <li>Geometrically: the <code>Ax = b</code> set is the <code>Ax = 0</code> set <strong>translated by p</strong> — same shape, shifted off the origin.</li>
+        <li>No free variables &amp; consistent → a single point. One free variable → a line. Two → a plane.</li>
+      </ol>
+      <div style="margin-top:14px">
+        <span class="pill">homogeneous</span><span class="pill">trivial solution</span><span class="pill">nontrivial</span>
+        <span class="pill">free variable</span><span class="pill">parametric vector form</span><span class="pill">Span</span>
+        <span class="pill">p + tv</span><span class="pill">translation</span>
+      </div>
+    </section>
+
+    <section id="purpose">
+      <div class="teach">
+        <h3>In one breath</h3>
+        <p>Section 1.5 gives solution sets a geometric identity. Homogeneous systems Ax = 0 always include 0 and have extra solutions exactly when there are free variables; written in parametric vector form, their solution set is a Span — a line or plane through the origin. A consistent nonhomogeneous system Ax = b has the very same shape, just translated by one particular solution p: x = p + tv.</p>
+        <p>This p-plus-Span picture returns constantly — in eigenspaces, null spaces, and the geometry of transformations.</p>
+      </div>
+    </section>
+
+    <section id="quiz" class="quiz">
+      <div class="kicker">Individual Quiz · IQ 1.5</div>
+      <h2>Practice quiz</h2>
+      <div class="quiz-rubric">
+        <strong>Closed book, closed notes, no calculator / computer, no internet, no human help</strong> except by the instructor. Show work for credit and complete work for full credit. Read the questions carefully.
+      </div>
+
+      <div class="problem">
+        <div class="problem-num"><div class="pnum">1</div><div class="ptitle">True or false — justify</div></div>
+        <p class="problem-q">Determine whether the statement below is true or false.</p>
+        <p class="statement">"If x is a nontrivial solution of Ax = 0, then every entry in x is nonzero."</p>
+        <p>Choose the correct answer below:</p>
+        <ul class="choices" id="q1-choices">
+          <li data-letter="A" data-correct="false"><div class="letter">A</div><div class="ctext">The statement is true. A nontrivial solution of Ax = 0 is a nonzero vector x that satisfies Ax = 0. Thus, a nontrivial solution x cannot have any zero entries.</div></li>
+          <li data-letter="B" data-correct="false"><div class="letter">B</div><div class="ctext">The statement is true. A nontrivial solution of Ax = 0 is a nonzero vector x that satisfies Ax = 0. Thus, a nontrivial solution x can have some zero entries so long as not all of its entries are zero.</div></li>
+          <li data-letter="C" data-correct="false"><div class="letter">C</div><div class="ctext">The statement is false. The only solution of Ax = 0 is the zero vector. Thus, a nontrivial solution does not exist.</div></li>
+          <li data-letter="D" data-correct="true"><div class="letter">D</div><div class="ctext">The statement is false. A nontrivial solution of Ax = 0 is a nonzero vector x that satisfies Ax = 0. Thus, a nontrivial solution x can have some zero entries so long as not all of its entries are zero.</div></li>
+        </ul>
+        <div class="problem-actions"><button class="primary" id="q1-check">Check answer</button><button id="q1-reset">Reset</button></div>
+        <div class="feedback" id="q1-fb"></div>
+      </div>
+
+      <div class="problem">
+        <div class="problem-num"><div class="pnum">2</div><div class="ptitle">Parametric vector form</div></div>
+        <p class="problem-q">Write the solution set of the given homogeneous system in parametric vector form.</p>
+        <div class="statement" style="font-family:'Spline Sans Mono',monospace;font-style:normal;color:var(--ink)">
+          3x₁ + 3x₂ + 6x₃ = 0<br>−9x₁ − 9x₂ − 18x₃ = 0<br>−3x₂ − 9x₃ = 0
+        </div>
+        <div class="problem-actions"><button class="primary" id="q2-show">Show solution</button><button id="q2-hide">Hide solution</button></div>
+        <div class="solution-block" id="q2-soln">
+          <h4>Step 1 — Build &amp; reduce the coefficient matrix</h4>
+          <p>Coefficient matrix: <code>[3 3 6 ; −9 −9 −18 ; 0 −3 −9]</code>. Notice row 2 = −3·row 1, so it becomes all zeros. Divide row 1 by 3: <code>[1 1 2]</code>. Divide row 3 by −3: <code>[0 1 3]</code>.</p>
+          <h4>Step 2 — Reduced echelon form</h4>
+          <p>From <code>x₂ + 3x₃ = 0</code> → <code>x₂ = −3x₃</code>. From <code>x₁ + x₂ + 2x₃ = 0</code> → <code>x₁ = −x₂ − 2x₃ = 3x₃ − 2x₃ = x₃</code>.</p>
+          <h4>Step 3 — Identify free variable</h4>
+          <p>x₃ is free; x₁ and x₂ are basic. So <code>x₁ = x₃</code>, <code>x₂ = −3x₃</code>, x₃ free.</p>
+          <h4>Step 4 — Parametric vector form</h4>
+          <div class="sb-center">
+            <div class="pv-stage" style="margin:0">
+              <span class="pv-sym">x =</span>
+              <span class="pv-coef">x₃</span>
+              <div class="pv-vec pv-v"><span>1</span><span>−3</span><span>1</span></div>
+            </div>
+          </div>
+          <p style="margin-top:14px">The solution set is <code>Span{(1, −3, 1)}</code> — a line through the origin in ℝ³. (You can check: the direction vector has x₁=1, x₂=−3, x₃=1.)</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">LINEAR ALGEBRA &nbsp;·&nbsp; §1.5 SOLUTION SETS OF LINEAR SYSTEMS &nbsp;·&nbsp; STUDY REFERENCE &nbsp;·&nbsp; built from your course material</div>
+</footer>
+
+<!-- ===================== AI TUTOR ===================== -->
+<button id="ai-explain-btn">Explain with AI</button>
+<button id="ai-tab">✦ Ask AI</button>
+<div id="ai-scrim"></div>
+<aside id="ai-panel" aria-label="AI tutor">
+  <div class="ai-head">
+    <div><div class="t">AI <span>Tutor</span></div><div class="sub2">§1.5 · Linear Algebra</div></div>
+    <button class="ai-close" id="ai-close" title="Close">×</button>
+  </div>
+  <div class="ai-body" id="ai-body">
+    <p class="ai-empty"><b>Two ways to use me:</b><br><br>
+      1. <b>Highlight any text</b> on the page — an <em>“Explain with AI”</em> button pops up.<br><br>
+      2. <b>Type a question</b> below — e.g. <em>“why is the solution set a line through the origin?”</em> or <em>“what is p + tv?”</em></p>
+  </div>
+  <div class="ai-foot">
+    <form id="ai-form">
+      <textarea id="ai-input" placeholder="Ask anything about Section 1.5…" rows="1"></textarea>
+      <button id="ai-send" type="submit">Send</button>
+    </form>
+    <div class="ai-hint">Powered by DeepSeek · press Enter to send</div>
+  </div>
+</aside>
+
+<script>
+/* ===================== 1.5 CANVAS WIDGETS ===================== */
+(function(){
+  const COL={ink:'#161512',paper:'#f4f0e6',grid:'#d8d0bc',accent:'#b3431f',accent2:'#1f5e57',gold:'#c8922a',muted:'#8a836f'};
+  const STEP=42;
+  function mk(canvas){
+    const ctx=canvas.getContext('2d');const W=canvas.width,H=canvas.height,cx=W/2,cy=H/2;
+    const toPx=(x,y)=>[cx+x*STEP,cy-y*STEP];
+    const clear=()=>{
+      ctx.clearRect(0,0,W,H);ctx.fillStyle=COL.paper;ctx.fillRect(0,0,W,H);
+      ctx.strokeStyle=COL.grid;ctx.lineWidth=1;
+      for(let x=cx%STEP;x<W;x+=STEP){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+      for(let y=cy%STEP;y<H;y+=STEP){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+      ctx.strokeStyle=COL.muted;ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,H);ctx.stroke();
+    };
+    const arrow=(x,y,color,label,lw)=>{
+      const [px,py]=toPx(x,y);ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=lw||3;
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,py);ctx.stroke();
+      const ang=Math.atan2(py-cy,px-cx),h=11;ctx.beginPath();ctx.moveTo(px,py);
+      ctx.lineTo(px-h*Math.cos(ang-0.4),py-h*Math.sin(ang-0.4));
+      ctx.lineTo(px-h*Math.cos(ang+0.4),py-h*Math.sin(ang+0.4));ctx.closePath();ctx.fill();
+      if(label){ctx.fillStyle=color;ctx.font='600 15px "Spline Sans Mono",monospace';ctx.fillText(label,px+8,py-6);}
+    };
+    const arrowFrom=(x0,y0,x,y,color,lw)=>{
+      const [ax,ay]=toPx(x0,y0),[px,py]=toPx(x,y);ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=lw||3;
+      ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(px,py);ctx.stroke();
+      const ang=Math.atan2(py-ay,px-ax),h=10;ctx.beginPath();ctx.moveTo(px,py);
+      ctx.lineTo(px-h*Math.cos(ang-0.4),py-h*Math.sin(ang-0.4));
+      ctx.lineTo(px-h*Math.cos(ang+0.4),py-h*Math.sin(ang+0.4));ctx.closePath();ctx.fill();
+    };
+    const lineDir=(ox,oy,dx,dy,color,dash)=>{
+      ctx.save();ctx.strokeStyle=color;ctx.lineWidth=2.5;if(dash)ctx.setLineDash([6,5]);ctx.globalAlpha=.7;
+      const t=40;const [a,b]=toPx(ox+dx*t,oy+dy*t),[c,d]=toPx(ox-dx*t,oy-dy*t);
+      ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,d);ctx.stroke();ctx.restore();
+    };
+    const dot=(x,y,color,r)=>{const [px,py]=toPx(x,y);ctx.fillStyle=color;ctx.beginPath();ctx.arc(px,py,r||5,0,7);ctx.fill();};
+    const label=(x,y,text,color,dx,dy)=>{const [px,py]=toPx(x,y);ctx.fillStyle=color;
+      ctx.font='600 14px "Spline Sans Mono",monospace';ctx.fillText(text,px+(dx||8),py+(dy||-8));};
+    return {ctx,W,H,cx,cy,toPx,clear,arrow,arrowFrom,lineDir,dot,label};
+  }
+
+  /* ---- homogeneous builder: x = x3 * v, v=(4/3,0,1) drawn as (x1,x3) plane ---- */
+  (function(){
+    const cv=document.getElementById('cv-homog'); if(!cv) return;
+    const g=mk(cv);
+    const v=[4/3,1];  /* using x1 (horiz) and x3 (vert) entries */
+    let t=1, showLine=true;
+    const tIn=document.getElementById('h-t'),tOut=document.getElementById('h-t-out'),
+      trace=document.getElementById('h-trace'),ro=document.getElementById('h-readout'),cap=document.getElementById('h-cap');
+    function draw(){
+      g.clear();
+      g.ctx.fillStyle=COL.muted;g.ctx.font='12px "Spline Sans Mono",monospace';
+      g.ctx.fillText('x₁ →',g.W-44,g.cy-8);g.ctx.fillText('x₃ ↑',g.cx+8,16);
+      if(showLine) g.lineDir(0,0,v[0],v[1],COL.accent,false);
+      g.dot(0,0,COL.ink,6); g.label(0,0,'0',COL.ink,8,16);
+      const pt=[t*v[0],t*v[1]];
+      g.arrow(pt[0],pt[1],COL.accent2,'x = x₃·v',3.5);
+      g.dot(pt[0],pt[1],COL.gold,7);
+      ro.innerHTML='free var x₃ = <span class="vh">'+t.toFixed(2)+'</span><br>'+
+        '<span class="vv">v</span> = (4/3, 0, 1)<br>'+
+        'x = ('+(t*4/3).toFixed(2)+', 0, '+t.toFixed(2)+')';
+      cap.textContent='Each value of x₃ lands one point (gold) on the orange line. The full solution set of Ax = 0 here is Span{v} — a line through the origin. x₃ = 0 gives the trivial solution at 0.';
+    }
+    tIn.oninput=()=>{t=parseFloat(tIn.value);tOut.textContent=t.toFixed(2);draw();};
+    trace.onchange=()=>{showLine=trace.checked;draw();};
+    draw();
+  })();
+
+  /* ---- shift: homogeneous line through 0 translated to pass through p ---- */
+  (function(){
+    const cv=document.getElementById('cv-shift'); if(!cv) return;
+    const g=mk(cv);
+    const v=[2,1], p=[-1,2];  /* direction v, particular solution p */
+    let mix=1, t=0;
+    const mixIn=document.getElementById('s-mix'),mixOut=document.getElementById('s-mix-out'),
+      tIn=document.getElementById('s-t'),tOut=document.getElementById('s-t-out'),
+      ro=document.getElementById('s-readout'),cap=document.getElementById('s-cap');
+    function draw(){
+      g.clear();
+      /* original homogeneous line through 0 (faded) */
+      g.ctx.save();g.ctx.globalAlpha=.35;g.lineDir(0,0,v[0],v[1],COL.gold,true);g.ctx.restore();
+      /* shifted line through mix*p */
+      const ox=mix*p[0], oy=mix*p[1];
+      g.lineDir(ox,oy,v[0],v[1],COL.accent,false);
+      /* p vector */
+      if(mix>0.02){ g.arrow(ox,oy,COL.accent2,'p',2.5); }
+      g.dot(0,0,COL.ink,6); g.label(0,0,'0',COL.ink,-16,16);
+      /* point on shifted line: p + t v */
+      const pt=[ox+t*v[0], oy+t*v[1]];
+      g.dot(pt[0],pt[1],COL.gold,7);
+      if(Math.abs(t)>0.01) g.arrowFrom(ox,oy,pt[0],pt[1],COL.gold,2.5);
+      ro.innerHTML='<span class="vp">p</span> = (−1, 2) · shift '+(mix).toFixed(2)+'<br>'+
+        '<span class="vv">v</span> = (2, 1) · t = <span class="vh">'+t.toFixed(2)+'</span><br>'+
+        'x = ('+(ox+t*v[0]).toFixed(2)+', '+(oy+t*v[1]).toFixed(2)+')';
+      cap.textContent = mix<0.5
+        ? 'At shift 0 the line passes through the origin — that\u2019s the homogeneous set Ax = 0 (gold dashed).'
+        : 'The solid orange line is the Ax = b solution set: the homogeneous line translated by p. Same direction v, now passing through p instead of 0.';
+    }
+    mixIn.oninput=()=>{mix=parseFloat(mixIn.value);mixOut.textContent=mix.toFixed(2);draw();};
+    tIn.oninput=()=>{t=parseFloat(tIn.value);tOut.textContent=t.toFixed(2);draw();};
+    draw();
+  })();
+
+  /* ---- worked-example reveals ---- */
+  document.querySelectorAll('.example .reveal').forEach(btn=>{
+    btn.onclick=()=>{const w=btn.nextElementSibling;const open=w.classList.toggle('show');
+      btn.textContent=open?'Hide solution':'Show solution';};
+  });
+
+  /* ---- quiz Q1 ---- */
+  (function(){
+    const choices=document.getElementById('q1-choices'); if(!choices) return;
+    const fb=document.getElementById('q1-fb'),checkBtn=document.getElementById('q1-check'),resetBtn=document.getElementById('q1-reset');
+    const exp={
+      A:"<strong>No.</strong> \"Nontrivial\" only requires the vector to be nonzero overall — it can still have some zero entries. So the original statement (every entry nonzero) is false, and this option wrongly calls it true.",
+      B:"<strong>Right reasoning, wrong verdict.</strong> The explanation is correct (zero entries are allowed), but it labels the statement \"true.\" The statement is actually false.",
+      C:"<strong>No.</strong> Nontrivial solutions absolutely can exist — whenever there's a free variable. This option denies they exist at all.",
+      D:"<strong>Correct.</strong> The statement is false. A nontrivial solution just needs to be a nonzero vector; it may have some zero entries as long as they're not all zero. Example: (0, 3, 0) is nontrivial."
+    };
+    let selected=null;
+    choices.querySelectorAll('li').forEach(li=>li.addEventListener('click',()=>{
+      if(checkBtn.disabled)return;choices.querySelectorAll('li').forEach(x=>x.classList.remove('selected'));
+      li.classList.add('selected');selected=li;}));
+    checkBtn.addEventListener('click',()=>{
+      if(!selected){fb.className='feedback show no';fb.innerHTML='Pick an answer first.';return;}
+      const letter=selected.dataset.letter,correct=selected.dataset.correct==='true';
+      choices.querySelectorAll('li').forEach(li=>{
+        if(li.dataset.correct==='true')li.classList.add('correct');
+        else if(li===selected)li.classList.add('wrong');li.classList.remove('selected');});
+      fb.className='feedback show '+(correct?'ok':'no');
+      fb.innerHTML=(correct?'✓ ':'✗ ')+exp[letter];checkBtn.disabled=true;});
+    resetBtn.addEventListener('click',()=>{
+      choices.querySelectorAll('li').forEach(li=>li.classList.remove('selected','correct','wrong'));
+      fb.className='feedback';fb.innerHTML='';selected=null;checkBtn.disabled=false;});
+  })();
+
+  /* ---- quiz Q2 reveal ---- */
+  (function(){
+    const soln=document.getElementById('q2-soln'); if(!soln) return;
+    document.getElementById('q2-show').onclick=()=>soln.classList.add('show');
+    document.getElementById('q2-hide').onclick=()=>soln.classList.remove('show');
+  })();
+})();
+</script>
+
+<script>
+/* ============================================================
+   AI TUTOR — DeepSeek integration
+   PASTE YOUR (FRESH) KEY BELOW. A key in client-side HTML is
+   visible to anyone who opens the page — rotate it if exposed,
+   and use a backend proxy for any public deployment.
+   ============================================================ */
+const DEEPSEEK_API_KEY = "sk-3342872f6d7e45f297924e908d646eb0";   // <-- put your key here
+const DEEPSEEK_URL = "https://api.deepseek.com/chat/completions";
+const DEEPSEEK_MODEL = "deepseek-chat";
+const SYSTEM_PROMPT =
+  "You are a friendly, concise linear-algebra tutor embedded in a study website for " +
+  "Section 1.5: Solution Sets of Linear Systems (Lay, Linear Algebra and Its Applications). " +
+  "Topics in scope: homogeneous systems Ax=0, the trivial solution x=0, nontrivial solutions and " +
+  "their link to free variables, parametric vector form, the solution set as a Span (line/plane " +
+  "through the origin), nonhomogeneous systems Ax=b, and Theorem 6 (the solution set of Ax=b is " +
+  "p + the solution set of Ax=0, i.e. the homogeneous solution set translated by a particular " +
+  "solution p). Stress that 'nontrivial' means the whole vector is nonzero, not that every entry " +
+  "is nonzero. Explain clearly for a first-time student. Keep answers short (2-5 sentences unless " +
+  "asked for more). Use plain text; wrap inline math/notation in backticks. Use **bold** for key terms.";
+
+const panel=document.getElementById('ai-panel'),scrim=document.getElementById('ai-scrim'),
+  tab=document.getElementById('ai-tab'),closeB=document.getElementById('ai-close'),
+  body=document.getElementById('ai-body'),form=document.getElementById('ai-form'),
+  input=document.getElementById('ai-input'),sendB=document.getElementById('ai-send'),
+  hlBtn=document.getElementById('ai-explain-btn');
+let history=[],busy=false;
+function openPanel(){panel.classList.add('open');scrim.classList.add('show');}
+function closePanel(){panel.classList.remove('open');scrim.classList.remove('show');}
+tab.addEventListener('click',openPanel);closeB.addEventListener('click',closePanel);
+scrim.addEventListener('click',closePanel);
+document.addEventListener('mouseup',(e)=>{
+  if(panel.contains(e.target)||e.target===hlBtn)return;
+  const sel=window.getSelection(),text=sel.toString().trim();
+  if(text.length>1){const rect=sel.getRangeAt(0).getBoundingClientRect();
+    hlBtn.style.left=(rect.left+rect.width/2+window.scrollX)+'px';
+    hlBtn.style.top=(rect.top+window.scrollY-8)+'px';
+    hlBtn.style.display='block';hlBtn.dataset.text=text;
+  }else{hlBtn.style.display='none';}});
+document.addEventListener('mousedown',(e)=>{if(e.target!==hlBtn)hlBtn.style.display='none';});
+hlBtn.addEventListener('click',()=>{const t=hlBtn.dataset.text;hlBtn.style.display='none';openPanel();
+  ask('Explain this phrase from the section: "'+t+'"',t);});
+input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,120)+'px';});
+input.addEventListener('keydown',(e)=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit();}});
+form.addEventListener('submit',(e)=>{e.preventDefault();const q=input.value.trim();if(!q)return;
+  input.value='';input.style.height='auto';ask(q,null);});
+function clearEmpty(){const e=body.querySelector('.ai-empty');if(e)e.remove();}
+function fmt(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>');}
+function addUser(q,quote){clearEmpty();const d=document.createElement('div');d.className='ai-msg user';
+  d.innerHTML='<div class="who">You</div>'+(quote?'<div class="quote">“'+fmt(quote)+'”</div>':'')+
+  '<div class="txt">'+fmt(quote?'Explain this':q)+'</div>';body.appendChild(d);body.scrollTop=body.scrollHeight;}
+function addBot(){const d=document.createElement('div');d.className='ai-msg bot';
+  d.innerHTML='<div class="who">AI Tutor</div><div class="txt"><span class="dots"><span></span><span></span><span></span></span></div>';
+  body.appendChild(d);body.scrollTop=body.scrollHeight;return d.querySelector('.txt');}
+async function ask(prompt,quote){
+  if(busy)return;busy=true;sendB.disabled=true;addUser(prompt,quote);const target=addBot();
+  history.push({role:'user',content:prompt});
+  const messages=[{role:'system',content:SYSTEM_PROMPT},...history];
+  if(!DEEPSEEK_API_KEY||DEEPSEEK_API_KEY.includes('REPLACE')){
+    target.innerHTML='<em style="color:var(--accent)">No API key set.</em> Open this file and paste your DeepSeek key into the <code>DEEPSEEK_API_KEY</code> line near the bottom of the source.';
+    busy=false;sendB.disabled=false;return;}
+  try{
+    const res=await fetch(DEEPSEEK_URL,{method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+DEEPSEEK_API_KEY},
+      body:JSON.stringify({model:DEEPSEEK_MODEL,messages,temperature:0.4,max_tokens:600})});
+    if(!res.ok){const err=await res.text();
+      target.innerHTML='<em style="color:var(--accent)">Request failed ('+res.status+').</em> Check your key/credits.<br><small>'+fmt(err.slice(0,200))+'</small>';
+      busy=false;sendB.disabled=false;return;}
+    const data=await res.json();
+    const answer=data.choices?.[0]?.message?.content||'No response.';
+    history.push({role:'assistant',content:answer});target.innerHTML=fmt(answer);
+  }catch(err){target.innerHTML='<em style="color:var(--accent)">Network error.</em> '+fmt(String(err));}
+  body.scrollTop=body.scrollHeight;busy=false;sendB.disabled=false;
+}
+</script>
+
+<script>
+/* ===================== SPLIT-UP ANIMATION DEMO =====================
+   Walks through: matrix → equations → stacked vector → split → factored → final
+*/
+(function(){
+  const stage   = document.getElementById('split-stage');
+  if(!stage) return;
+  const cap     = document.getElementById('split-cap');
+  const prog    = document.getElementById('split-progress');
+  const backBtn = document.getElementById('split-back');
+  const nextBtn = document.getElementById('split-next');
+  const playBtn = document.getElementById('split-play');
+  const resetBtn= document.getElementById('split-reset');
+
+  const stages = [
+    {
+      html: `
+        <div class="sd-stack">
+          <span class="sd-label">Start · RREF of [A | 0]</span>
+          <div class="s-vec" style="grid-template-columns:repeat(4,1.9em) 6px 1.9em">
+            <span class="piv">1</span><span>−2</span><span>0</span><span>3</span><div class="sep"></div><span class="aug">0</span>
+            <span class="c0">0</span><span class="c0">0</span><span class="piv">1</span><span>−1</span><div class="sep"></div><span class="aug">0</span>
+            <span class="c0">0</span><span class="c0">0</span><span class="c0">0</span><span class="c0">0</span><div class="sep"></div><span class="aug">0</span>
+          </div>
+        </div>`,
+      cap: "<strong>Stage 1 of 6.</strong> The matrix in reduced echelon form. Pivots (teal) in columns 1 and 3 — so x₁ and x₃ are basic. No pivots in columns 2 and 4 — so x₂ and x₄ are FREE."
+    },
+    {
+      html: `
+        <div class="sd-stack">
+          <span class="sd-label">Read each row as an equation, solve for the basic variable</span>
+          <div class="sd-eqs">
+            x₁ − 2x₂ + 3x₄ = 0 &nbsp;<span class="arr">→</span>&nbsp; x₁ = <span class="sd-coef x2">2x₂</span> <span class="sd-coef x4">− 3x₄</span><br>
+            x₃ − x₄ = 0 &nbsp;<span class="arr">→</span>&nbsp; x₃ = <span class="sd-coef x4">x₄</span><br>
+            <span style="color:#8a836f">0 = 0 (row 3 is vacuous)</span>
+          </div>
+        </div>`,
+      cap: "<strong>Stage 2 of 6.</strong> Each non-zero row gives one equation. Solve the basic variable (x₁, x₃) in terms of the free ones (x₂ teal, x₄ gold). x₂ and x₄ stay as themselves."
+    },
+    {
+      html: `
+        <span class="sd-lhs">x =</span>
+        <div class="s-vec" style="grid-template-columns:5.5em">
+          <span class="c-mix">2x₂ − 3x₄</span>
+          <span class="c1">x₂</span>
+          <span class="c2">x₄</span>
+          <span class="c2">x₄</span>
+        </div>`,
+      cap: "<strong>Stage 3 of 6.</strong> Stack the four equations into a single column vector. Each slot holds whatever the equation said. Notice the top slot mixes BOTH free variables (the gradient), while the others use just one."
+    },
+    {
+      html: `
+        <span class="sd-lhs">x =</span>
+        <div class="sd-stack">
+          <span class="sd-label" style="color:var(--accent-2)">x₂ part</span>
+          <div class="s-vec" style="grid-template-columns:3.2em">
+            <span class="c1">2x₂</span>
+            <span class="c1">x₂</span>
+            <span class="c0">0</span>
+            <span class="c0">0</span>
+          </div>
+        </div>
+        <span class="sd-plus">+</span>
+        <div class="sd-stack">
+          <span class="sd-label" style="color:#8a5e10">x₄ part</span>
+          <div class="s-vec" style="grid-template-columns:3.4em">
+            <span class="c2">−3x₄</span>
+            <span class="c0">0</span>
+            <span class="c2">x₄</span>
+            <span class="c2">x₄</span>
+          </div>
+        </div>`,
+      cap: "<strong>Stage 4 of 6.</strong> Split the single vector into two: one collects ONLY the x₂ contributions, the other ONLY the x₄ contributions. Slots that didn't get any contribution from that free variable become 0."
+    },
+    {
+      html: `
+        <span class="sd-lhs">x =</span>
+        <span class="sd-coef x2">x₂</span>
+        <span class="sd-eq" style="font-size:1.2rem">·</span>
+        <div class="s-vec" style="grid-template-columns:1.9em">
+          <span class="c1">2</span>
+          <span class="c1">1</span>
+          <span class="c1">0</span>
+          <span class="c1">0</span>
+        </div>
+        <span class="sd-plus">+</span>
+        <span class="sd-coef x4">x₄</span>
+        <span class="sd-eq" style="font-size:1.2rem">·</span>
+        <div class="s-vec" style="grid-template-columns:1.9em">
+          <span class="c2">−3</span>
+          <span class="c2">0</span>
+          <span class="c2">1</span>
+          <span class="c2">1</span>
+        </div>`,
+      cap: "<strong>Stage 5 of 6.</strong> Factor the free variable out of EACH vector. What's left behind are constants — these are the DIRECTION VECTORS. The free variables x₂ and x₄ are now the scalars (weights) in front."
+    },
+    {
+      html: `
+        <div class="sd-stack" style="gap:18px">
+          <div style="font-family:'Spline Sans Mono',monospace;font-size:1.18rem;color:var(--ink)">
+            x = <span class="sd-coef x2">x₂</span>·<span style="color:var(--accent-2);font-weight:600">u</span> + <span class="sd-coef x4">x₄</span>·<span style="color:#8a5e10;font-weight:600">v</span>
+          </div>
+          <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center">
+            <div class="sd-stack">
+              <span class="sd-label" style="color:var(--accent-2)">u</span>
+              <div class="s-vec" style="grid-template-columns:1.9em">
+                <span class="c1">2</span><span class="c1">1</span><span class="c1">0</span><span class="c1">0</span>
+              </div>
+            </div>
+            <div class="sd-stack">
+              <span class="sd-label" style="color:#8a5e10">v</span>
+              <div class="s-vec" style="grid-template-columns:1.9em">
+                <span class="c2">−3</span><span class="c2">0</span><span class="c2">1</span><span class="c2">1</span>
+              </div>
+            </div>
+          </div>
+          <div style="font-family:'Spline Sans Mono',monospace;font-size:.98rem;color:var(--accent-2);
+            background:rgba(31,94,87,.10);padding:10px 18px;border-radius:6px">
+            Solution set = Span{u, v} &nbsp;·&nbsp; a PLANE through the origin in ℝ⁴
+          </div>
+        </div>`,
+      cap: "<strong>Stage 6 of 6. Done.</strong> The matrix solution is now in parametric vector form — a linear combination of two fixed direction vectors u and v, weighted by the free variables. Every (x₂, x₄) pair you pick gives one point on the plane."
+    }
+  ];
+
+  let i = 0, timer = null;
+
+  function renderProgress(){
+    prog.innerHTML = stages.map((_,k)=>'<span class="sd-dot'+(k===i?' on':'')+'"></span>').join('');
+  }
+  function render(){
+    stage.classList.remove('fade');
+    void stage.offsetWidth; /* restart anim */
+    stage.classList.add('fade');
+    stage.innerHTML = stages[i].html;
+    cap.innerHTML = stages[i].cap;
+    backBtn.disabled = i === 0;
+    nextBtn.disabled = i === stages.length - 1;
+    renderProgress();
+  }
+  function stopAuto(){
+    if(timer){ clearInterval(timer); timer = null; playBtn.textContent = '▶ Auto'; }
+  }
+  backBtn.onclick  = ()=>{ stopAuto(); if(i>0){ i--; render(); } };
+  nextBtn.onclick  = ()=>{ stopAuto(); if(i<stages.length-1){ i++; render(); } };
+  resetBtn.onclick = ()=>{ stopAuto(); i = 0; render(); };
+  playBtn.onclick  = ()=>{
+    if(timer){ stopAuto(); return; }
+    if(i === stages.length - 1){ i = 0; render(); }
+    playBtn.textContent = '❚❚ Pause';
+    timer = setInterval(()=>{
+      if(i < stages.length - 1){ i++; render(); }
+      else { stopAuto(); }
+    }, 2600);
+  };
+
+  render();
+})();
+</script>
+
+</body>
+</html>
